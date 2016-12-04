@@ -4,3 +4,4 @@ build
 .wercker
 coverage
 .nyc_output
+npm-debug.log
