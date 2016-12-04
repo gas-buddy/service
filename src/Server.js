@@ -24,11 +24,12 @@ export default class Server {
 
   async create(sourcedir) {
     const app = this.service.app;
+    const self = this;
 
     function listenHandler() {
       const { port } = this.address();
       const isTls = this instanceof https.Server;
-      winston.info(`${app.gb.name} listening over ${isTls ? 'TLS' : 'HTTP'}`, { port });
+      winston.info(`${self.service.name} listening over ${isTls ? 'TLS' : 'HTTP'}`, { port });
     }
 
     this.servers = [];
@@ -60,7 +61,7 @@ export default class Server {
         this.servers.push(httpServer);
       }
     } catch (error) {
-      winston.error(`${app ? app.name : 'Service'} failed to start`, winstonError(error));
+      winston.error(`${this.service.name} failed to start`, winstonError(error));
       throw error;
     }
   }
