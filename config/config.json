@@ -7,6 +7,13 @@
     }
   },
   "meddleware": {
+    "attachRequest": {
+      "module": {
+        "name": "@gasbuddy/service",
+        "method": "requestFactory"
+      },
+      "priority": 1
+    },
     "bodyLogger": {
       "enabled": false,
       "module": {

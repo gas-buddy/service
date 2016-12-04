@@ -17,7 +17,13 @@
     }
   },
   "meddleware": {
+    "attachRequest": {
+      "module": {
+        "name": "path:../../src/index"
+      }
+    },
     "bodyLogger": {
+      "enabled": true,
       "module": {
         "name": "path:../../src/index"
       }
@@ -31,6 +37,9 @@
       "module": {
         "name": "path:../../src/index"
       }
+    },
+    "webRoutes": {
+      "enabled": "true"
     }
   }
 }
