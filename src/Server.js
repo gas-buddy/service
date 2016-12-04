@@ -15,7 +15,11 @@ import { winstonError } from './util';
  */
 export default class Server {
   constructor(nameOrOptions) {
-    this.service = new Service(nameOrOptions);
+    if (nameOrOptions instanceof Service) {
+      this.service = nameOrOptions;
+    } else {
+      this.service = new Service(nameOrOptions);
+    }
   }
 
   async create(sourcedir) {
