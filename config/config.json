@@ -1,0 +1,67 @@
+{
+  "connections": {
+    "services": {
+      "module": "require:@gasbuddy/configured-swagger-client",
+      "specs": {},
+      "endpoints": {}
+    }
+  },
+  "meddleware": {
+    "bodyLogger": {
+      "enabled": false,
+      "module": {
+        "name": "@gasbuddy/service",
+        "method": "bodyLoggerFactory"
+      },
+      "priority": 30
+    },
+    "requestLogger": {
+      "module": {
+        "name": "@gasbuddy/service",
+        "method": "loggerFactory"
+      },
+      "priority": 40
+    },
+    "json": {
+      "enabled": true,
+      "priority": 50,
+      "module": {
+        "name": "body-parser",
+        "method": "json"
+      }
+    },
+    "swaggerApi": {
+      "enabled": "servicetype:serv,api",
+      "priority": 90,
+      "module": {
+        "factory": "require:@gasbuddy/configured-swaggerize-express#default",
+        "arguments": [
+          {
+            "spec": "config:apiSpec",
+            "handlers": "sourcepath:handlers",
+            "security": {}
+          }
+        ]
+      }
+    },
+    "webRoutes": {
+      "enabled": "servicetype:web",
+      "priority": 100,
+      "module": {
+        "name": "express-enrouten",
+        "arguments": [
+          {
+            "directory": "sourcepath:routes"
+          }
+        ]
+      }
+    },
+    "finalHandler": {
+      "priority": 999,
+      "module": {
+        "name": "@gasbuddy/service",
+        "method": "finalHandlerFactory"
+      }
+    }
+  }
+}

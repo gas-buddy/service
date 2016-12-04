@@ -1,0 +1,36 @@
+{
+  "apiSpec": "path:./api/hello-world.yaml",
+  "literalShortstop": "literal:foo",
+  "yamlShortstop": "yaml:config/sample.yaml",
+  "winston": "info",
+  "port": 8000,
+  "tls": {
+    "key": "file:config/service.key.pem",
+    "cert": "file:config/service.cert.pem"
+  },
+  "connections": {
+    "trustedCertificates": {
+      "module": [
+        "require:../../src/index#trustCertificates",
+        "path:./config/root-certs.pem"
+      ]
+    }
+  },
+  "meddleware": {
+    "bodyLogger": {
+      "module": {
+        "name": "path:../../src/index"
+      }
+    },
+    "requestLogger": {
+      "module": {
+        "name": "path:../../src/index"
+      }
+    },
+    "finalHandler": {
+      "module": {
+        "name": "path:../../src/index"
+      }
+    }
+  }
+}

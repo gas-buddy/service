@@ -1,0 +1,30 @@
+box: node:6
+
+build:
+  steps:
+    - script:
+      name: add NPM_TOKEN
+      code: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+    - npm-install
+
+    - script:
+      name: lint
+      code: npm run lint
+
+    - script:
+      name: test with coverage
+      code: npm run cover
+
+    - script:
+      name: build
+      code: npm run build
+
+deploy:
+  steps:
+    - script:
+      name: npm publish
+      code: |
+        npm config set unsafe-perm true
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        npm publish . --tag latest
