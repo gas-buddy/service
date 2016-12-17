@@ -1,5 +1,6 @@
 import URL from 'url';
 import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
+import Service from './Service';
 
 /**
  * Swagger client returns a wrapped error. Unwrap it.
@@ -23,11 +24,12 @@ export function winstonError(error) {
  * correlationId forward, optionally using a global proxy as well
  */
 export function serviceProxy(req, propName, proxy) {
-  if (!req[propName] || !req[propName].services) {
+  const svc = Service.get(req);
+  if (!svc || !svc.services) {
     return null;
   }
 
-  return servicesWithOptions(req[propName].services, {
+  return servicesWithOptions(svc.services, {
     requestInterceptor() {
       this.headers.CorrelationId = this.headers.CorrelationId || req.headers.CorrelationId;
       if (proxy) {
