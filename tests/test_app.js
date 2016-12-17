@@ -9,6 +9,7 @@ const sourcedir = path.join(__dirname, 'app', 'src');
 tap.test('service startup', async (t) => {
   const s = new service.Service('hello-serv');
   t.ok(s, 'should construct');
+  t.ok(service.Service.get({ app: s.app }), 'Service should save on simulated request');
   await s.configure(sourcedir);
   t.ok(s.app, 'should make an app');
   t.strictEquals(s.name, 'hello-serv', 'name should match');

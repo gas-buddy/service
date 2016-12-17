@@ -1,5 +1,11 @@
+import Service from '../../../../src/Service';
+
 export default function (router) {
   router.post('/', (req, res) => {
-    res.json(req.body);
+    if (Service.get(req)) {
+      res.json(req.body);
+    } else {
+      res.status(500).send('fail');
+    }
   });
 }

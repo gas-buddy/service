@@ -24,6 +24,7 @@ async function pathExists(f) {
 }
 
 const CONNECTIONS = Symbol('Property key for objects that need shutdown');
+const SERVICE = Symbol('The Service class attached to an app');
 const environments = ['production', 'staging', 'test', 'development'];
 
 export default class Service extends EventEmitter {
@@ -44,6 +45,7 @@ export default class Service extends EventEmitter {
     } else {
       this.app = express();
     }
+    this.app[SERVICE] = this;
   }
 
   get configurationDirectory() {
@@ -163,5 +165,13 @@ export default class Service extends EventEmitter {
     if (pathExists(baseConfig)) {
       configFactory.addDefault(baseConfig);
     }
+  }
+
+  static get(req) {
+    let app = req.app;
+    while (app && !app[SERVICE]) {
+      app = app.parent;
+    }
+    return app ? app[SERVICE] : null;
   }
 }
