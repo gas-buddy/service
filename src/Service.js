@@ -92,7 +92,10 @@ export default class Service extends EventEmitter {
     }
 
     // Ok, now hydrate the "connections" key
-    const appObjects = await hydrate({ logger: winston }, this.config.get('connections'));
+    const appObjects = await hydrate({
+      logger: winston,
+      service: this,
+    }, this.config.get('connections'));
     this[CONNECTIONS] = appObjects.allObjects;
 
     // I realize that this can clobber properties. But it's just too verbose
