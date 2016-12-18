@@ -108,6 +108,16 @@ export default class Service extends EventEmitter {
     // will someday.
     const middlewareFunction = await meddleware(this.config.get('meddleware'));
     this.app.use(middlewareFunction);
+    this.configured = true;
+    this.emit('configured');
+  }
+
+  async waitForConfiguration() {
+    if (!this.configured) {
+      await new Promise((accept) => {
+        this.once('configured', accept);
+      });
+    }
   }
 
   /**
