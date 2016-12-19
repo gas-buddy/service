@@ -24,6 +24,7 @@ async function pathExists(f) {
 }
 
 const CONNECTIONS = Symbol('Property key for objects that need shutdown');
+const CONNECTIONS_TREE = Symbol('Structured values for the result of hydration');
 const SERVICE = Symbol('The Service class attached to an app');
 const environments = ['production', 'staging', 'test', 'development'];
 
@@ -54,6 +55,10 @@ export default class Service extends EventEmitter {
 
   get name() {
     return this.options.name;
+  }
+
+  get hydratedObjects() {
+    return this[CONNECTIONS_TREE];
   }
 
   /**
@@ -97,6 +102,7 @@ export default class Service extends EventEmitter {
       service: this,
     }, this.config.get('connections'));
     this[CONNECTIONS] = appObjects.allObjects;
+    this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
 
     // I realize that this can clobber properties. But it's just too verbose
     // otherwise. Typically we have connections like "db" or "elastic", so
@@ -126,6 +132,8 @@ export default class Service extends EventEmitter {
   async destroy() {
     winston.info('Beginning application shutdown');
     await dehydrate({ logger: winston }, this[CONNECTIONS]);
+    delete this[CONNECTIONS];
+    delete this[CONNECTIONS_TREE];
     this.emit('shutdown');
     // Don't want to tickle winston. So just write to console.
     // eslint-disable-next-line no-console
