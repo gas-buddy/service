@@ -23,7 +23,7 @@ build:
       name: Post to coveralls
       code: |
         npm install --silent coveralls
-        ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
+        npm run --silent ci-coveralls
 
 deploy:
   steps:

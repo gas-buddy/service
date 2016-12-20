@@ -8,6 +8,7 @@
     "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js && nyc check-coverage && nyc report --reporter=text",
     "ci-test": "cross-env NODE_ENV=test nyc tap -Rtap tests/test_*.js | tee .tap_output | tap -Rspec -",
     "ci-cover": "nyc check-coverage",
+    "ci-coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
     "prepublish": "npm run build",
     "build": "babel src/ --out-dir build/"
