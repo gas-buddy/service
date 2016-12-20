@@ -5,7 +5,10 @@
   "main": "build/index.js",
   "scripts": {
     "test": "tap --node-arg=-r --node-arg=babel-register tests/test_*.js",
-    "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js",
+    "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js && nyc check-coverage && nyc report --reporter=text",
+    "ci-test": "cross-env NODE_ENV=test nyc tap -Rtap tests/test_*.js | tee .tap_output | tap -Rspec -",
+    "ci-cover": "nyc check-coverage",
+    "ci-coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
     "prepublish": "npm run build",
     "build": "babel src/ --out-dir build/"
@@ -44,9 +47,7 @@
     ],
     "sourceMap": false,
     "instrument": false,
-    "checkCoverage": true,
     "reporter": [
-      "text",
       "lcov"
     ]
   },
@@ -77,6 +78,7 @@
     "eslint": "^3.1.0",
     "eslint-config-gasbuddy": "^1",
     "supertest": "^2.0.0",
-    "tap": "^8.0.1"
+    "tap": "^8.0.1",
+    "tap-markdown": "^1.2.1"
   }
 }

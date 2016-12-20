@@ -90,10 +90,16 @@ export function bodyLoggerFactory() {
 
 export function finalHandlerFactory() {
   return function finalHandler(error, req, res, next) {
+    if (res.headersSent) {
+      next(error);
+      return;
+    }
     if (error) {
       const reqLogger = (req.gb && req.gb.logger) || winston;
       reqLogger.error('Handler exception', winstonError(error));
+      res.status(error.status || 500).end();
+    } else {
+      res.status(404).send('Page not found');
     }
-    next(error);
   };
 }
