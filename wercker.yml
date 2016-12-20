@@ -11,8 +11,8 @@ build:
     - script:
       name: test with coverage
       code: |
-        npm run ci-test
-        npm run ci-cover
+        npm run --silent ci-test
+        npm run --silent ci-cover
 
     - script:
       name: build
@@ -22,8 +22,8 @@ build:
     - script:
       name: Post to coveralls
       code: |
-        npm install coveralls
-        nyc report --reporter=text-lcov | coveralls
+        npm install --silent coveralls
+        ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
 
 deploy:
   steps:
