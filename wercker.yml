@@ -19,9 +19,10 @@ build:
       code: npm run build
 
   after-steps:
-    - script:
+    - script: Post to coveralls
       code: |
-        echo $WERCKER_RESULT
+        npm install coveralls
+        nyc report --reporter=text-lcov | coveralls
 
 deploy:
   steps:
