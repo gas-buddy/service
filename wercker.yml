@@ -19,7 +19,8 @@ build:
       code: npm run build
 
   after-steps:
-    - script: Post to coveralls
+    - script:
+      name: Post to coveralls
       code: |
         npm install coveralls
         nyc report --reporter=text-lcov | coveralls
