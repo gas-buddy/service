@@ -135,9 +135,6 @@ export default class Service extends EventEmitter {
     delete this[CONNECTIONS];
     delete this[CONNECTIONS_TREE];
     this.emit('shutdown');
-    // Don't want to tickle winston. So just write to console.
-    // eslint-disable-next-line no-console
-    console.log('Completed application shutdown.');
   }
 
   /**

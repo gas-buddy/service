@@ -10,11 +10,18 @@ build:
 
     - script:
       name: test with coverage
-      code: npm run cover
+      code: |
+        npm run ci-test
+        npm run ci-cover
 
     - script:
       name: build
       code: npm run build
+
+  after-steps:
+    - script:
+      code: |
+        echo $WERCKER_RESULT
 
 deploy:
   steps:

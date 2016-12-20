@@ -4,6 +4,10 @@ import winston from 'winston';
 import request from 'supertest';
 import * as service from '../src/index';
 
+if (process.env.NODE_ENV === 'test') {
+  winston.remove(winston.transports.Console);
+}
+
 const sourcedir = path.join(__dirname, 'app', 'src');
 
 tap.test('service startup', async (t) => {
