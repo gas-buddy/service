@@ -100,6 +100,7 @@ export default class Service extends EventEmitter {
     const appObjects = await hydrate({
       logger: winston,
       service: this,
+      name: this.name,
     }, this.config.get('connections'));
     this[CONNECTIONS] = appObjects.allObjects;
     this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
