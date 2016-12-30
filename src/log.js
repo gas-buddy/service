@@ -61,8 +61,8 @@ export function logger(req, res, next) {
       rqInfo.e = error.message;
       rqInfo.st = error.stack;
     }
-    if (req.headers && req.headers.CorrelationId) {
-      rqInfo.c = req.headers.CorrelationId;
+    if (req.headers && req.headers.correlationid) {
+      rqInfo.c = req.headers.correlationid;
     }
     if (req[SHOULD_LOG_BODY]) {
       // winston flattens JSON, so I guess we need to wrap it. Hrmph.

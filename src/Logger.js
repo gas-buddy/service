@@ -19,7 +19,7 @@ export default class Logger {
   metaMap(meta) {
     if (this[REQUEST_KEY]) {
       const newMeta = Object.assign({}, meta);
-      newMeta.correlationId = this[REQUEST_KEY].headers.CorrelationId;
+      newMeta.correlationId = this[REQUEST_KEY].headers.correlationid;
       return newMeta;
     }
     return meta;
