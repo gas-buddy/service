@@ -9,6 +9,18 @@
     "cert": "file:config/service.cert.pem"
   },
   "connections": {
+    "services": {
+      "specs": {
+        "self": "path:./api/hello-world.yaml"
+      },
+      "endpoints": {
+        "self": {
+          "port": 8000,
+          "protocol": "http",
+          "hostname": "localhost"
+        }
+      }
+    },
     "trustedCertificates": {
       "module": [
         "require:../../src/index#trustCertificates",

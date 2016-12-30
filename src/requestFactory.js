@@ -38,9 +38,9 @@ export default function requestFactory(options) {
       }
     }
 
-    if (!req.headers.CorrelationId) {
+    if (!req.headers.correlationid) {
       // Make up a correlation id if one was not passed
-      req.headers.CorrelationId = objectID().toString('base64');
+      req.headers.correlationid = objectID().toString('base64');
     }
 
     req[propName] = Object.assign({}, service.hydratedObjects, {

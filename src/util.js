@@ -31,7 +31,8 @@ export function serviceProxy(req, propName, proxy) {
 
   return servicesWithOptions(svc.services, {
     requestInterceptor() {
-      this.headers.CorrelationId = this.headers.CorrelationId || req.headers.CorrelationId;
+      this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
+      svc.emit(Service.Event.BeforeServiceCall, this);
       if (proxy) {
         const { protocol, path: pathAndQuery, hostname, port } = URL.parse(this.url);
         if (!hostname.includes('.')) {
@@ -41,6 +42,9 @@ export function serviceProxy(req, propName, proxy) {
           this.url = `http://${proxy}${pathAndQuery}`;
         }
       }
+    },
+    responseInterceptor(originalRequest) {
+      svc.emit(Service.Event.AfterServiceCall, this, originalRequest);
     },
   });
 }

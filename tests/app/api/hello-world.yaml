@@ -5,9 +5,6 @@ info:
 paths:
   /hello/world:
     get:
-      security:
-        - fake_auth:
-          - admin
       description: Returns a greeting to the user!
       responses:
         200:
@@ -16,8 +13,3 @@ paths:
             type: string
         400:
           description: Invalid characters in "user" were provided.
-securityDefinitions:
-  fake_auth:
-    type: oauth2
-    scopes:
-      admin: Do it all

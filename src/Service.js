@@ -194,3 +194,8 @@ export default class Service extends EventEmitter {
     return app ? app[SERVICE] : null;
   }
 }
+
+Service.Event = {
+  BeforeServiceCall: 'service.request.before',
+  AfterServiceCall: 'service.request.after',
+};
