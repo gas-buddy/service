@@ -42,9 +42,11 @@ export function serviceProxy(req, propName, proxy) {
           this.url = `http://${proxy}${pathAndQuery}`;
         }
       }
+      return this;
     },
     responseInterceptor(originalRequest) {
       svc.emit(Service.Event.AfterServiceCall, this, originalRequest);
+      return this;
     },
   });
 }
