@@ -159,6 +159,18 @@ export default class Service extends EventEmitter {
   }
 
   /**
+   * This proxy allows you to run OUTSIDE of docker but still call services
+   * inside via a bridging proxy. It will always return null in production
+   */
+  get configuredProxy() {
+    const proxyConfig = this.config.get('connections:services:proxy');
+    if (proxyConfig && !this.config.get('env:production')) {
+      return proxyConfig;
+    }
+    return null;
+  }
+
+  /**
    * This module has default configuration files, and your specialized
    * version may have its own overlays to that. You may call this method
    * to add your own defaults. Note that in confit, when using addDefault,
@@ -187,6 +199,10 @@ export default class Service extends EventEmitter {
   }
 
   static get(req) {
+    if (req instanceof Service) {
+      return req;
+    }
+
     let app = req.app;
     while (app && !app[SERVICE]) {
       app = app.parent;

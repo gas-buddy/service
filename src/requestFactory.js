@@ -30,12 +30,7 @@ export default function requestFactory(options) {
     // This proxy allows you to run OUTSIDE of docker but still call services
     // inside via the nginx gasbuddy/proxy container.
     if (proxy === undefined) {
-      const proxyConfig = service.config.get('connections:services:proxy');
-      if (proxyConfig && !service.config.get('env:production')) {
-        proxy = proxyConfig;
-      } else {
-        proxy = null;
-      }
+      proxy = service.configuredProxy;
     }
 
     if (!req.headers.correlationid) {
@@ -54,7 +49,7 @@ export default function requestFactory(options) {
        * This means the services property is "special" which is not great.
        * But did I say this was an opinionated library? I did.
        */
-      services: serviceProxy(req, propName, proxy),
+      services: serviceProxy(req, proxy),
     });
     next();
   };
