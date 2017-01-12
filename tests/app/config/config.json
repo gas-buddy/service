@@ -3,8 +3,9 @@
   "literalShortstop": "literal:foo",
   "yamlShortstop": "yaml:config/sample.yaml",
   "winston": "info",
-  "port": 8000,
+  "port": 0,
   "tls": {
+    "port": 0,
     "key": "file:config/service.key.pem",
     "cert": "file:config/service.cert.pem"
   },

@@ -10,3 +10,7 @@
 =====
 * Change CorrelationId to correlationid everywhere since express headers are always lower cased
 * Add request/response events to the service on swagger outbound calls to enable metrics
+
+2.0.0
+=====
+* Removed exported Logger class in favor of a logger property on the Service.

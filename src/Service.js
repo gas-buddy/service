@@ -92,10 +92,6 @@ export default class Service extends EventEmitter {
       configFactory.create((err, config) => (err ? reject(err) : accept(config)));
     }));
 
-    if (this.config.get('winston')) {
-      winston.level = this.config.get('winston');
-    }
-
     // Ok, now hydrate the "connections" key
     const appObjects = await hydrate({
       logger: winston,

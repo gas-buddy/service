@@ -4,6 +4,13 @@ import winston from 'winston';
 import Service from './Service';
 import { winstonError } from './util';
 
+function portOrNull(v) {
+  if (v === 0) {
+    return 0;
+  }
+  return v || null;
+}
+
 /**
  * A convenience class to start an HTTP/S server based on
  * a Service.
@@ -39,7 +46,7 @@ export default class Server {
       await this.service.configure(sourcedir);
 
       const { key, cert, ca, port } = this.service.config.get('tls') || {};
-      const httpPort = this.service.config.get('port');
+      const httpPort = portOrNull(this.service.config.get('port'), null);
 
       // If TLS is configured, run that service
       if (key && cert) {
@@ -48,16 +55,19 @@ export default class Server {
           cert,
           ca,
         }, app);
-        const tlsPort = port || 8443;
+        let tlsPort = portOrNull(port);
+        if (tlsPort === null) {
+          tlsPort = 8443;
+        }
         tlsServer.listen(tlsPort, listenHandler);
         this.servers.push(tlsServer);
       }
 
       // If TLS is not configured, or both are configured, run http
-      if (!bestServer || httpPort) {
+      if (!bestServer || httpPort !== null) {
         const httpServer = http.createServer(app);
         bestServer = bestServer || httpServer;
-        httpServer.listen(httpPort || 8000, listenHandler);
+        httpServer.listen(httpPort === null ? 8000 : httpPort, listenHandler);
         this.servers.push(httpServer);
       }
     } catch (error) {

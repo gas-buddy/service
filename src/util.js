@@ -9,6 +9,7 @@ import Service from './Service';
 export function winstonError(error) {
   let message = error.message;
   let stack = error.stack;
+  const status = error.status;
   if (error.errObj) {
     message = error.statusText || error.errObj.message;
     stack = error.errObj.stack;
@@ -16,6 +17,7 @@ export function winstonError(error) {
   return {
     message,
     stack,
+    status,
   };
 }
 
