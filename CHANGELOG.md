@@ -13,4 +13,4 @@
 
 2.0.0
 =====
-* Removed exported Logger class in favor of a logger property on the Service. Rewired request annotation to include service name and node name
+* Removed exported Logger class in favor of a logger property on the Service.
