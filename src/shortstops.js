@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import shortstop from 'shortstop-handlers';
 import shortstopYaml from 'shortstop-yaml';
@@ -98,6 +99,7 @@ export default function shortstops(service, sourcedir) {
     servicetype: serviceTypeFactory(service.name),
     servicename: v => v.replace(/\$\{name\}/g, service.name),
 
+    os: (p) => os[p](),
     // No-op in case you have values that start with a shortstop handler name (and colon)
     literal: v => v,
   };

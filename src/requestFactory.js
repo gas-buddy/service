@@ -1,7 +1,6 @@
 import objectID from 'bson-objectid';
 import winston from 'winston';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
-import Logger from './Logger';
 import Service from './Service';
 import { serviceProxy, winstonError } from './util';
 
@@ -43,7 +42,7 @@ export default function requestFactory(options) {
       /**
        * A request specific logger that adds the correlation id
        */
-      logger: new Logger(req),
+      logger: service.logger.loggerWithDefaults({ correlationId: req.headers.correlationid }),
       /**
        * A requestInterceptor for swagger calls that adds correlation id.
        * This means the services property is "special" which is not great.

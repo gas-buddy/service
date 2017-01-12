@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -55,6 +55,7 @@
     "@gasbuddy/composert": "^1.0.0",
     "@gasbuddy/configured-swagger-client": "^1.4.0",
     "@gasbuddy/configured-swaggerize-express": "^1.0.0",
+    "@gasbuddy/configured-winston": "^1.0.0",
     "@gasbuddy/express-promise-patch": "^1.0.0",
     "@gasbuddy/hydration": "^1.0.0",
     "@gasbuddy/kms-crypto": "^1.2.1",
@@ -78,7 +79,7 @@
     "eslint": "^3.1.0",
     "eslint-config-gasbuddy": "^1",
     "supertest": "^2.0.0",
-    "tap": "^8.0.1",
+    "tap": "^9",
     "tap-markdown": "^1.2.1"
   }
 }

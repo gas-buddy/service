@@ -1,5 +1,8 @@
 {
   "connections": {
+    "logger": {
+      "module": "require:@gasbuddy/configured-winston"
+    },
     "services": {
       "module": "require:@gasbuddy/configured-swagger-client",
       "specs": {},
