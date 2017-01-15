@@ -8,6 +8,7 @@ import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
 import { hydrate, dehydrate } from '@gasbuddy/hydration';
 import shortstops from './shortstops';
+import { winstonError } from './util';
 
 async function pathExists(f) {
   return new Promise((accept, reject) => {
@@ -59,6 +60,11 @@ export default class Service extends EventEmitter {
 
   get hydratedObjects() {
     return this[CONNECTIONS_TREE];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  wrapError(error) {
+    return winstonError(error);
   }
 
   /**
