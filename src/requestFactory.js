@@ -44,6 +44,10 @@ export default function requestFactory(options) {
        */
       logger: service.logger.loggerWithDefaults({ correlationId: req.headers.correlationid }),
       /**
+       * Wrap different forms of errors into something useful for winston
+       */
+      wrapError(...args) { return service.wrapError(...args); },
+      /**
        * A requestInterceptor for swagger calls that adds correlation id.
        * This means the services property is "special" which is not great.
        * But did I say this was an opinionated library? I did.
