@@ -27,12 +27,16 @@ export function winstonError(error) {
  */
 export function serviceProxy(req, proxy) {
   const svc = Service.get(req);
-  if (!svc || !svc.services) {
+  if (!svc) {
+    return null;
+  }
+  const services = svc.services || req.services;
+  if (!services) {
     return null;
   }
 
   const useProxy = proxy || svc.configuredProxy;
-  return servicesWithOptions(svc.services, {
+  return servicesWithOptions(services, {
     requestInterceptor() {
       this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
       svc.emit(Service.Event.BeforeServiceCall, this);
