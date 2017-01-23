@@ -70,6 +70,7 @@ export default class Server {
         httpServer.listen(httpPort === null ? 8000 : httpPort, listenHandler);
         this.servers.push(httpServer);
       }
+      this.service.emit('listening', this.servers);
     } catch (error) {
       winston.error(`${this.service.name} failed to start`, winstonError(error));
       throw error;
