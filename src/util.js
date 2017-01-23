@@ -1,4 +1,3 @@
-import URL from 'url';
 import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
@@ -23,9 +22,9 @@ export function winstonError(error) {
 
 /**
  * Add a request interceptor to outbound swagger that carries the
- * correlationId forward, optionally using a global proxy as well
+ * correlationId forward and fires events on the Service
  */
-export function serviceProxy(req, proxy) {
+export function serviceProxy(req) {
   const svc = Service.get(req);
   if (!svc) {
     return null;
@@ -35,20 +34,10 @@ export function serviceProxy(req, proxy) {
     return null;
   }
 
-  const useProxy = proxy || svc.configuredProxy;
   return servicesWithOptions(services, {
     requestInterceptor() {
       this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
       svc.emit(Service.Event.BeforeServiceCall, this);
-      if (useProxy) {
-        const { protocol, path: pathAndQuery, hostname, port } = URL.parse(this.url);
-        if (!hostname.includes('.')) {
-          this.headers.Port = port;
-          this.headers.Host = hostname;
-          this.headers.Protocol = protocol.replace(/:$/, '');
-          this.url = `http://${useProxy}${pathAndQuery}`;
-        }
-      }
       return this;
     },
     responseInterceptor(originalRequest) {

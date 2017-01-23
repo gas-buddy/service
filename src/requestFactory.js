@@ -17,19 +17,12 @@ export default function requestFactory(options) {
     logger.error('express error', winstonError(e));
   });
 
-  let proxy;
   return function requestMiddleware(req, res, next) {
     const service = Service.get(req);
 
     if (!service) {
       // Not a request with our object attached, so we're out.
       return;
-    }
-
-    // This proxy allows you to run OUTSIDE of docker but still call services
-    // inside via the nginx gasbuddy/proxy container.
-    if (proxy === undefined) {
-      proxy = service.configuredProxy;
     }
 
     if (!req.headers.correlationid) {
@@ -52,7 +45,7 @@ export default function requestFactory(options) {
        * This means the services property is "special" which is not great.
        * But did I say this was an opinionated library? I did.
        */
-      services: serviceProxy(req, proxy),
+      services: serviceProxy(req),
     });
     next();
   };
