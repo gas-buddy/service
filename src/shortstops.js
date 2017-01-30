@@ -54,7 +54,7 @@ function serviceTypeFactory(name) {
   };
 }
 
-export default function shortstops(service, sourcedir) {
+export default function shortstops(service, sourcedir, isProduction) {
   /**
    * Since we use transpiled sources a lot,
    * basedir and sourcedir are meaningfully different reference points.
@@ -69,8 +69,8 @@ export default function shortstops(service, sourcedir) {
    * By using these shortstops, you can encode config values in
    * non-secret documents that are only useful on the target VMs
    */
-  const kmsDecrypt = decryptorInContext(service.name);
-  const kmsDecryptText = textDecryptorInContext(service.name);
+  const kmsDecrypt = decryptorInContext(service.name, isProduction === false);
+  const kmsDecryptText = textDecryptorInContext(service.name, isProduction === false);
 
   return {
     env: shortstop.env(),

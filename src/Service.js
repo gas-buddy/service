@@ -78,14 +78,15 @@ export default class Service extends EventEmitter {
       this.options.configDir = path.join(sourcedir, '..', 'config');
     }
 
-    // Load shortstop handlers
-    const defaultProtocols = shortstops(this, sourcedir);
-    this.options.protocols = Object.assign(defaultProtocols, this.options.protocols);
-
     // This confit version just gets us environment info
     const envConfit = await new Promise((accept, reject) => {
       confit().create((err, config) => (err ? reject(err) : accept(config)));
     });
+
+    // Load shortstop handlers
+    const defaultProtocols = shortstops(this, sourcedir, envConfit.get('env:production'));
+    this.options.protocols = Object.assign(defaultProtocols, this.options.protocols);
+
     const confOptions = {
       basedir: this.options.configDir,
       protocols: this.options.protocols,
