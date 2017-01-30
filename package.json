@@ -58,7 +58,7 @@
     "@gasbuddy/configured-winston": "^1.0.0",
     "@gasbuddy/express-promise-patch": "^1.0.0",
     "@gasbuddy/hydration": "^1.0.0",
-    "@gasbuddy/kms-crypto": "^1.2.1",
+    "@gasbuddy/kms-crypto": "^1.3.2",
     "@gasbuddy/meddleware": "^1.0.0",
     "body-parser": "^1.14.2",
     "bson-objectid": "^1.1.4",
