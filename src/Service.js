@@ -97,28 +97,34 @@ export default class Service extends EventEmitter {
     this.config = this.app.config = await (new Promise(async (accept, reject) => {
       configFactory.create((err, config) => (err ? reject(err) : accept(config)));
     }));
+    this.emit('configurationLoaded', this.config);
 
     // Ok, now hydrate the "connections" key
-    const appObjects = await hydrate({
-      logger: winston,
-      service: this,
-      name: this.name,
-    }, this.config.get('connections'));
-    this[CONNECTIONS] = appObjects.allObjects;
-    this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
+    try {
+      const appObjects = await hydrate({
+        logger: winston,
+        service: this,
+        name: this.name,
+      }, this.config.get('connections'));
+      this[CONNECTIONS] = appObjects.allObjects;
+      this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
 
-    // I realize that this can clobber properties. But it's just too verbose
-    // otherwise. Typically we have connections like "db" or "elastic", so
-    // this results in service.db or service.elastic, which is more better.
-    Object.assign(this, appObjects.tree);
+      // I realize that this can clobber properties. But it's just too verbose
+      // otherwise. Typically we have connections like "db" or "elastic", so
+      // this results in service.db or service.elastic, which is more better.
+      Object.assign(this, appObjects.tree);
 
-    // And add meddleware to express. The GasBuddy version of this
-    // originally-PayPal module handles promises. Maybe the PayPal one
-    // will someday.
-    const middlewareFunction = await meddleware(this.config.get('meddleware'));
-    this.app.use(middlewareFunction);
-    this.configured = true;
-    this.emit('configured');
+      // And add meddleware to express. The GasBuddy version of this
+      // originally-PayPal module handles promises. Maybe the PayPal one
+      // will someday.
+      const middlewareFunction = await meddleware(this.config.get('meddleware'));
+      this.app.use(middlewareFunction);
+      this.configured = true;
+      this.emit('configured');
+    } catch (error) {
+      console.error('HYDRATE ERROR', error);
+      throw error;
+    }
   }
 
   async waitForConfiguration() {
