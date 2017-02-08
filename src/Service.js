@@ -122,7 +122,8 @@ export default class Service extends EventEmitter {
       this.configured = true;
       this.emit('configured');
     } catch (error) {
-      console.error('HYDRATE ERROR', error);
+      // eslint-disable-next-line no-console
+      winston.error('@gasbuddy/service hydration failed', error);
       throw error;
     }
   }
