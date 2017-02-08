@@ -9,6 +9,11 @@
       "endpoints": {}
     }
   },
+  "swaggerApi": {
+    "spec": "config:apiSpec",
+    "handlers": "sourcepath:handlers",
+    "security": {}
+  },
   "meddleware": {
     "attachRequest": {
       "module": {
@@ -46,11 +51,7 @@
       "module": {
         "factory": "require:@gasbuddy/configured-swaggerize-express#default",
         "arguments": [
-          {
-            "spec": "config:apiSpec",
-            "handlers": "sourcepath:handlers",
-            "security": {}
-          }
+          "config:swaggerApi"
         ]
       }
     },
