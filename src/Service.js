@@ -105,14 +105,9 @@ export default class Service extends EventEmitter {
         logger: winston,
         service: this,
         name: this.name,
-      }, this.config.get('connections'));
+      }, this.config.get('connections'), this);
       this[CONNECTIONS] = appObjects.allObjects;
       this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
-
-      // I realize that this can clobber properties. But it's just too verbose
-      // otherwise. Typically we have connections like "db" or "elastic", so
-      // this results in service.db or service.elastic, which is more better.
-      Object.assign(this, appObjects.tree);
 
       // And add meddleware to express. The GasBuddy version of this
       // originally-PayPal module handles promises. Maybe the PayPal one

@@ -14,3 +14,8 @@
 2.0.0
 =====
 * Removed exported Logger class in favor of a logger property on the Service.
+
+2.3.0
+=====
+* Apply hydrated objects to the service while they are being hydrated (they will be a promise until they resolve to a value).
+This means you can just `await service.foobar` in your own hydrated objects start method to depend on another object.

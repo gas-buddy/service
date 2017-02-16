@@ -57,7 +57,7 @@
     "@gasbuddy/configured-swaggerize-express": "^1.0.0",
     "@gasbuddy/configured-winston": "^1.0.0",
     "@gasbuddy/express-promise-patch": "^1.0.0",
-    "@gasbuddy/hydration": "^1.0.0",
+    "@gasbuddy/hydration": "^1.2.2",
     "@gasbuddy/kms-crypto": "^1.2.1",
     "@gasbuddy/meddleware": "^1.0.0",
     "body-parser": "^1.14.2",
