@@ -35,7 +35,10 @@ export default function requestFactory(options) {
       /**
        * A request specific logger that adds the correlation id
        */
-      logger: service.logger.loggerWithDefaults({ correlationId: req.headers.correlationid }),
+      logger: service.logger.loggerWithDefaults({
+        correlationId: req.headers.correlationid,
+        spanId: req.headers.spanid,
+      }),
       /**
        * Wrap different forms of errors into something useful for winston
        */
