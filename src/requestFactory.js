@@ -30,15 +30,17 @@ export default function requestFactory(options) {
       req.headers.correlationid = objectID().toString('base64');
     }
 
+    const logDefaults = { correlationid: req.headers.correlationid };
+    if (req.headers.spanid) {
+      logDefaults.spanid = req.headers.spanid;
+    }
+
     req[propName] = Object.assign({}, service.hydratedObjects, {
       config: service.config,
       /**
        * A request specific logger that adds the correlation id
        */
-      logger: service.logger.loggerWithDefaults({
-        correlationId: req.headers.correlationid,
-        spanId: req.headers.spanid,
-      }),
+      logger: service.logger.loggerWithDefaults(logDefaults),
       /**
        * Wrap different forms of errors into something useful for winston
        */
