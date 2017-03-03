@@ -1,4 +1,3 @@
 {
-  "presets": ["gasbuddy"],
-  "sourceMaps": true
+  "presets": ["gasbuddy"]
 }
