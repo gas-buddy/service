@@ -2,26 +2,72 @@ import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
 /**
+ * Error normalization functions
+ */
+function serialize(error) {
+  const type = typeof error;
+  const byType = {
+    string: e => e,
+    object: e => JSON.stringify(e),
+  };
+
+  return byType[type] && byType[type](error);
+}
+
+function normalizeError(error) {
+  const isError = error instanceof Error;
+
+  if (isError) {
+    return error;
+  }
+
+  let localError = error;
+  const props = {
+    message: serialize(error),
+    name: 'NormalizedError',
+  };
+
+  Error.captureStackTrace(props, normalizeError);
+
+  if (typeof error !== 'object') {
+    localError = {};
+  }
+
+  Object.assign(props, localError);
+  Object.setPrototypeOf(props, Error.prototype);
+  Error.call(props);
+
+  return props;
+}
+
+/**
  * Swagger client returns a wrapped error. Unwrap it.
  * Also avoids non-serializable errors.
  */
 export function winstonError(error) {
-  let message = error.message;
-  let stack = error.stack;
-  const status = error.status;
+  const errorData = error;
   if (error.errObj) {
-    message = error.statusText || error.errObj.message;
-    stack = error.errObj.stack;
+    errorData.message = error.statusText || error.errObj.message;
+    errorData.stack = error.errObj.stack;
   }
-  const wrapped = {
-    message,
-    stack,
-    status,
-  };
   if (error.url) {
-    wrapped.url = error.url;
+    errorData.url = error.url;
   }
-  return wrapped;
+// <<<<<<< variant A
+//     message,
+//     stack,
+//     status,
+// >>>>>>> variant B
+
+//   const errorObject = normalizeError(errorData);
+
+//   const wrapped = {
+//     message: errorObject.message,
+//     stack: errorObject.stack,
+//     status: errorObject.status,
+// ======= end
+//   };
+  return errorData;
 }
 
 /**
