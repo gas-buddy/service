@@ -13,11 +13,15 @@ export function winstonError(error) {
     message = error.statusText || error.errObj.message;
     stack = error.errObj.stack;
   }
-  return {
+  const wrapped = {
     message,
     stack,
     status,
   };
+  if (error.url) {
+    wrapped.url = error.url;
+  }
+  return wrapped;
 }
 
 /**
