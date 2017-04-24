@@ -38,9 +38,14 @@ export function serviceProxy(req) {
     return null;
   }
 
+  const defaultTimeout = svc.config.get('connections:services:defaultTimeout');
+
   return servicesWithOptions(services, {
     requestInterceptor() {
       this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
+      if (defaultTimeout) {
+        this.timeout = this.timeout || defaultTimeout;
+      }
       svc.emit(Service.Event.BeforeServiceCall, this);
       return this;
     },

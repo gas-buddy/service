@@ -5,6 +5,7 @@
     },
     "services": {
       "module": "require:@gasbuddy/configured-swagger-client",
+      "defaultTimeout": 20000,
       "specs": {},
       "endpoints": {}
     }
