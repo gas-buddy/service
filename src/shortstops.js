@@ -75,6 +75,10 @@ export default function shortstops(service, sourcedir) {
   return {
     env: shortstop.env(),
     base64: shortstop.base64(),
+    regex: (v) => {
+      const [, pattern, flags] = v.match(/^\/(.*)\/([a-z]*)/);
+      return new RegExp(pattern, flags);
+    },
 
     // handle source and base directory intelligently
     path: shortstop.path(basedir),
