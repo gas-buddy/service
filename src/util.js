@@ -2,18 +2,8 @@ import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
 /**
- * Error normalization functions
+ * Turn most inputs into real errors.
  */
-function serialize(error) {
-  const type = typeof error;
-  const byType = {
-    string: e => e,
-    object: e => JSON.stringify(e),
-  };
-
-  return byType[type] && byType[type](error);
-}
-
 function normalizeError(error) {
   const isError = error instanceof Error;
 
@@ -21,23 +11,16 @@ function normalizeError(error) {
     return error;
   }
 
-  let localError = error;
   const props = {
-    message: serialize(error),
+    message: (typeof error === 'string') ? error : JSON.stringify(error),
     name: 'NormalizedError',
   };
 
-  Error.captureStackTrace(props, normalizeError);
+  const newError = Error.call(props);
+  Error.captureStackTrace(newError, normalizeError);
+  Object.assign(newError, props, (typeof error === 'object' ? error : {}));
 
-  if (typeof error !== 'object') {
-    localError = {};
-  }
-
-  Object.assign(props, localError);
-  Object.setPrototypeOf(props, Error.prototype);
-  Error.call(props);
-
-  return props;
+  return newError;
 }
 
 /**
