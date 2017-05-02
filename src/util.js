@@ -50,24 +50,8 @@ export function winstonError(error) {
     errorData.message = error.statusText || error.errObj.message;
     errorData.stack = error.errObj.stack;
   }
-  if (error.url) {
-    errorData.url = error.url;
-  }
-// <<<<<<< variant A
-//     message,
-//     stack,
-//     status,
-// >>>>>>> variant B
 
-//   const errorObject = normalizeError(errorData);
-
-//   const wrapped = {
-//     message: errorObject.message,
-//     stack: errorObject.stack,
-//     status: errorObject.status,
-// ======= end
-//   };
-  return errorData;
+  return normalizeError(errorData);
 }
 
 /**
