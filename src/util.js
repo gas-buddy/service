@@ -2,26 +2,39 @@ import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
 /**
+ * Turn most inputs into real errors.
+ */
+function normalizeError(error) {
+  const isError = error instanceof Error;
+
+  if (isError) {
+    return error;
+  }
+
+  const props = {
+    message: (typeof error === 'string') ? error : JSON.stringify(error),
+    name: 'NormalizedError',
+  };
+
+  const newError = Error.call(props);
+  Error.captureStackTrace(newError, normalizeError);
+  Object.assign(newError, props, (typeof error === 'object' ? error : {}));
+
+  return newError;
+}
+
+/**
  * Swagger client returns a wrapped error. Unwrap it.
  * Also avoids non-serializable errors.
  */
 export function winstonError(error) {
-  let message = error.message;
-  let stack = error.stack;
-  const status = error.status;
+  const errorData = error;
   if (error.errObj) {
-    message = error.statusText || error.errObj.message;
-    stack = error.errObj.stack;
+    errorData.message = error.statusText || error.errObj.message;
+    errorData.stack = error.errObj.stack;
   }
-  const wrapped = {
-    message,
-    stack,
-    status,
-  };
-  if (error.url) {
-    wrapped.url = error.url;
-  }
-  return wrapped;
+
+  return normalizeError(errorData);
 }
 
 /**
