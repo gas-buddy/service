@@ -26,6 +26,7 @@ tap.test('service startup', async (t) => {
   winston.error = (...args) => {
     t.strictEquals(args[0], 'Handler exception', 'error should be logged');
     t.strictEquals(args[1].error.message, 'Thrown synchronously', 'message should match');
+    t.ok(args[1].error.stack, 'Error should have a stack');
   };
   res = await request(s.app).get('/error/sync');
   t.strictEquals(res.status, 500, 'Should get 500 error');
@@ -33,6 +34,7 @@ tap.test('service startup', async (t) => {
   winston.error = (...args) => {
     t.strictEquals(args[0], 'Handler exception', 'error should be logged');
     t.strictEquals(args[1].error.message, 'Thrown in a promise', 'message should match');
+    t.ok(args[1].error.stack, 'Error should have a stack');
   };
   res = await request(s.app).get('/error/async');
   t.strictEquals(res.status, 500, 'Should get 500 error');
