@@ -94,9 +94,10 @@ export default class Service extends EventEmitter {
     const configFactory = confit(confOptions);
     await this.loadDefaultConfiguration(configFactory, envConfit);
 
-    this.config = this.app.config = await (new Promise(async (accept, reject) => {
+    this.config = await (new Promise(async (accept, reject) => {
       configFactory.create((err, config) => (err ? reject(err) : accept(config)));
     }));
+    this.app.config = this.config;
     this.emit('configurationLoaded', this.config);
 
     // Ok, now hydrate the "connections" key
@@ -180,6 +181,7 @@ export default class Service extends EventEmitter {
     };
 
     for (const e of environments) {
+      // eslint-disable-next-line no-await-in-loop
       if (await addIfEnv(e)) {
         break;
       }

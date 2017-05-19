@@ -50,11 +50,12 @@ export default class Server {
 
       // If TLS is configured, run that service
       if (key && cert) {
-        const tlsServer = bestServer = https.createServer({
+        const tlsServer = https.createServer({
           key,
           cert,
           ca,
         }, app);
+        bestServer = tlsServer;
         let tlsPort = portOrNull(port);
         if (tlsPort === null) {
           tlsPort = 8443;
