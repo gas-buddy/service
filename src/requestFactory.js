@@ -40,7 +40,7 @@ export default function requestFactory(options) {
       /**
        * A request specific logger that adds the correlation id
        */
-      logger: service.logger.loggerWithDefaults(logDefaults),
+      logger: service.logger.loggerWithDefaults(logDefaults, { addTimestamp: true }),
       /**
        * Wrap different forms of errors into something useful for winston
        */
