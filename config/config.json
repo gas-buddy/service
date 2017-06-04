@@ -1,7 +1,9 @@
 {
   "connections": {
     "logger": {
-      "module": "require:@gasbuddy/configured-winston"
+      "module": "require:@gasbuddy/configured-winston",
+      "addTimestamp": true,
+      "addCounter": true
     },
     "services": {
       "module": "require:@gasbuddy/configured-swagger-client",
