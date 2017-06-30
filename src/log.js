@@ -94,11 +94,18 @@ export function finalHandlerFactory() {
       next(error);
       return;
     }
+
+    const reqLogger = (req.gb && req.gb.logger) || winston;
+    const reqDescription = `${req.method} ${req.url}`;
     if (error) {
-      const reqLogger = (req.gb && req.gb.logger) || winston;
-      reqLogger.error('Handler exception', winstonError(error));
-      res.status(error.status || 500).end();
+      reqLogger.error(`Handler exception for ${reqDescription}`, winstonError(error));
+      res.status(error.status || 500).send({
+        code: error.code,
+        message: error.message,
+        domain: error.domain,
+      });
     } else {
+      reqLogger.error(`Page not found for ${reqDescription}`);
       res.status(404).send('Page not found');
     }
   };

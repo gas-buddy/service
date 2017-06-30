@@ -18,26 +18,55 @@ tap.test('service startup', async (t) => {
   t.ok(s.app, 'should make an app');
   t.strictEquals(s.name, 'hello-serv', 'name should match');
 
-  let res = await request(s.app).post('/simple').send({ ok: true });
-  t.strictEquals(res.status, 200, 'should be status 200');
-  t.strictEquals(res.body.ok, true, 'should return body');
-
   const oldError = winston.error;
-  winston.error = (...args) => {
-    t.strictEquals(args[0], 'Handler exception', 'error should be logged');
-    t.strictEquals(args[1].error.message, 'Thrown synchronously', 'message should match');
-    t.ok(args[1].error.stack, 'Error should have a stack');
-  };
-  res = await request(s.app).get('/error/sync');
-  t.strictEquals(res.status, 500, 'Should get 500 error');
 
-  winston.error = (...args) => {
-    t.strictEquals(args[0], 'Handler exception', 'error should be logged');
-    t.strictEquals(args[1].error.message, 'Thrown in a promise', 'message should match');
-    t.ok(args[1].error.stack, 'Error should have a stack');
-  };
-  res = await request(s.app).get('/error/async');
-  t.strictEquals(res.status, 500, 'Should get 500 error');
+  tap.test('test simple request', async (tt) => {
+    const res = await request(s.app).post('/simple').send({ ok: true });
+    tt.strictEquals(res.status, 200, 'should be status 200');
+    tt.strictEquals(res.body.ok, true, 'should return body');
+  });
+
+  tap.test('test sync error', async (tt) => {
+    tt.plan(4);
+
+    winston.error = (...args) => {
+      tt.strictEquals(args[0], 'Handler exception for GET /error/sync', 'error should be logged');
+      tt.strictEquals(args[1].message, 'Thrown synchronously', 'message should match');
+      tt.ok(args[1].stack, 'Error should have a stack');
+    };
+
+    const res = await request(s.app).get('/error/sync');
+    tt.strictEquals(res.status, 500, 'Should get 500 error');
+  });
+
+  tap.test('test async error', async (tt) => {
+    tt.plan(4);
+
+    winston.error = (...args) => {
+      tt.strictEquals(args[0], 'Handler exception for GET /error/async', 'error should be logged');
+      tt.strictEquals(args[1].message, 'Thrown in a promise', 'message should match');
+      tt.ok(args[1].stack, 'Error should have a stack');
+    };
+
+    const res = await request(s.app).get('/error/async');
+    tt.strictEquals(res.status, 500, 'Should get 500 error');
+  });
+
+  tap.test('test helper error', async (tt) => {
+    tt.plan(7);
+
+    winston.error = (...args) => {
+      tt.strictEquals(args[0], 'Handler exception for GET /error/helper', 'error should be logged');
+      tt.strictEquals(args[1].code, 'helpererror', 'code should match');
+      tt.strictEquals(args[1].status, 599, 'status should match');
+      tt.strictEquals(args[1].domain, s.name, 'domain should be service name');
+      tt.strictEquals(args[1].message, 'helper error message', 'message should match');
+      tt.ok(args[1].stack, 'Error should have a stack');
+    };
+
+    const res = await request(s.app).get('/error/helper');
+    tt.strictEquals(res.status, 599, 'Should get 599 error');
+  });
 
   winston.error = oldError;
 
