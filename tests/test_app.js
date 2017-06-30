@@ -30,7 +30,7 @@ tap.test('service startup', async (t) => {
     tt.plan(4);
 
     winston.error = (...args) => {
-      tt.strictEquals(args[0], 'Handler exception for GET /error/sync', 'error should be logged');
+      tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].message, 'Thrown synchronously', 'message should match');
       tt.ok(args[1].stack, 'Error should have a stack');
     };
@@ -43,7 +43,7 @@ tap.test('service startup', async (t) => {
     tt.plan(4);
 
     winston.error = (...args) => {
-      tt.strictEquals(args[0], 'Handler exception for GET /error/async', 'error should be logged');
+      tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].message, 'Thrown in a promise', 'message should match');
       tt.ok(args[1].stack, 'Error should have a stack');
     };
@@ -53,19 +53,32 @@ tap.test('service startup', async (t) => {
   });
 
   tap.test('test helper error', async (tt) => {
-    tt.plan(7);
+    tt.plan(9);
 
     winston.error = (...args) => {
-      tt.strictEquals(args[0], 'Handler exception for GET /error/helper', 'error should be logged');
+      tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].code, 'helpererror', 'code should match');
       tt.strictEquals(args[1].status, 599, 'status should match');
       tt.strictEquals(args[1].domain, s.name, 'domain should be service name');
       tt.strictEquals(args[1].message, 'helper error message', 'message should match');
+      tt.strictEquals(args[1].reqMethod, 'GET', 'message should match');
+      tt.strictEquals(args[1].reqUrl, '/error/helper', 'message should match');
       tt.ok(args[1].stack, 'Error should have a stack');
     };
 
     const res = await request(s.app).get('/error/helper');
     tt.strictEquals(res.status, 599, 'Should get 599 error');
+  });
+
+  tap.test('test 404', async (tt) => {
+    tt.plan(2);
+
+    winston.error = (...args) => {
+      tt.strictEquals(args[0], 'No handler for request. Returning 404', 'error should be logged');
+    };
+
+    const res = await request(s.app).get('/error/404');
+    tt.strictEquals(res.status, 404, 'Should get 404 error');
   });
 
   winston.error = oldError;

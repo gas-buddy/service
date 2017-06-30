@@ -40,7 +40,7 @@ export function winstonError(error) {
 /**
  * Build and throw a well formed error to be caught and sent in finalHandler
  */
-export function throwError(serviceName, codeOrError = 'nocode', message = 'nomessage', status = 500, domain = '') {
+export function throwError(serviceName, codeOrError = 'nocode', message = 'nomessage', status = 500, domain) {
   let error = codeOrError;
   if (!(error instanceof Error)) {
     error = new Error(message);
