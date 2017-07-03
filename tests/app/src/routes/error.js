@@ -8,4 +8,8 @@ export default function (router) {
       reject(new Error('Thrown in a promise'));
     });
   });
+
+  router.get('/helper', async (req) => {
+    req.gb.throwError('helpererror', 'helper error message', 599);
+  });
 }

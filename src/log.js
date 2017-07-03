@@ -89,17 +89,39 @@ export function bodyLoggerFactory() {
 }
 
 export function finalHandlerFactory() {
-  return function finalHandler(error, req, res, next) {
-    if (res.headersSent) {
-      next(error);
-      return;
-    }
-    if (error) {
+  return [
+    function finalHandler(req, res) {
       const reqLogger = (req.gb && req.gb.logger) || winston;
+      const reqProps = {
+        reqMethod: req.method,
+        reqUrl: req.url,
+      };
+
+      reqLogger.error('No handler for request. Returning 404', reqProps);
+      res.status(404).send({
+        code: 'NoHandler',
+        message: 'No handler that matches request',
+        domain: 'service',
+      });
+    },
+    function finalErrorHandler(error, req, res, next) {
+      if (res.headersSent) {
+        next(error);
+        return;
+      }
+
+      const reqLogger = (req.gb && req.gb.logger) || winston;
+      const reqProps = {
+        reqMethod: req.method,
+        reqUrl: req.url,
+      };
+
+      Object.assign(error, reqProps);
       reqLogger.error('Handler exception', winstonError(error));
-      res.status(error.status || 500).end();
-    } else {
-      res.status(404).send('Page not found');
-    }
-  };
+      res.status(error.status || 500).send({
+        code: error.code,
+        message: error.message,
+        domain: error.domain,
+      });
+    }];
 }

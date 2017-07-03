@@ -2,7 +2,7 @@ import objectID from 'bson-objectid';
 import winston from 'winston';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
-import { serviceProxy, winstonError } from './util';
+import { serviceProxy, winstonError, throwError } from './util';
 
 /**
  * Middleware to attach the "service" object to the request and add various request-specific
@@ -45,6 +45,10 @@ export default function requestFactory(options) {
        * Wrap different forms of errors into something useful for winston
        */
       wrapError(...args) { return service.wrapError(...args); },
+      /**
+       * Throw a well formed error to be caught and sent in finalHandler
+       */
+      throwError: throwError.bind(this, service.name),
       /**
        * A requestInterceptor for swagger calls that adds correlation id.
        * This means the services property is "special" which is not great.

@@ -38,6 +38,22 @@ export function winstonError(error) {
 }
 
 /**
+ * Build and throw a well formed error to be caught and sent in finalHandler
+ */
+export function throwError(serviceName, codeOrError = 'nocode', message = 'nomessage', status = 500, domain) {
+  let error = codeOrError;
+  if (!(error instanceof Error)) {
+    error = new Error(message);
+  }
+
+  error.code = error.code || codeOrError;
+  error.status = error.status || status;
+  error.domain = error.domain || domain || serviceName;
+
+  throw error;
+}
+
+/**
  * Add a request interceptor to outbound swagger that carries the
  * correlationId forward and fires events on the Service
  */
