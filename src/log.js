@@ -90,20 +90,25 @@ export function bodyLoggerFactory() {
 
 export function finalHandlerFactory() {
   return [
-    function finalHandler(req, res) {
-      const reqLogger = (req.gb && req.gb.logger) || winston;
-      const reqProps = {
-        reqMethod: req.method,
-        reqUrl: req.url,
-      };
+    // TODO: Reintroduce explicit 404 handling at the right place.
+    // We can't have it as just the final route because gb-services-tester
+    // depends on appending routes to the end and that won't happen if we
+    // catch all here.
+    //
+    // function finalHandler(req, res) {
+    //   const reqLogger = (req.gb && req.gb.logger) || winston;
+    //   const reqProps = {
+    //     reqMethod: req.method,
+    //     reqUrl: req.url,
+    //   };
 
-      reqLogger.error('No handler for request. Returning 404', reqProps);
-      res.status(404).send({
-        code: 'NoHandler',
-        message: 'No handler that matches request',
-        domain: 'service',
-      });
-    },
+    //   reqLogger.error('No handler for request. Returning 404', reqProps);
+    //   res.status(404).send({
+    //     code: 'NoHandler',
+    //     message: 'No handler that matches request',
+    //     domain: 'service',
+    //   });
+    // },
     function finalErrorHandler(error, req, res, next) {
       if (res.headersSent) {
         next(error);
