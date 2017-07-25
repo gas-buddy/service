@@ -30,11 +30,7 @@ export default function requestFactory(options) {
       req.headers.correlationid = objectID().toString('base64');
     }
 
-    const logDefaults = {
-      // Start the migration to "c" by writing both
-      c: req.headers.correlationid,
-      correlationid: req.headers.correlationid,
-    };
+    const logDefaults = { c: req.headers.correlationid };
     if (req.headers.spanid) {
       logDefaults.spanid = req.headers.spanid;
     }
