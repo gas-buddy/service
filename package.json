@@ -77,7 +77,7 @@
     "bluebird": "^3.2.1",
     "cross-env": "^5",
     "eslint": "^3.1.0",
-    "eslint-config-gasbuddy": "^2",
+    "eslint-config-gasbuddy": "^3.0.0",
     "supertest": "^3.0.0",
     "tap": "^10.3.3",
     "tap-markdown": "^1.2.1"
