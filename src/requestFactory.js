@@ -22,6 +22,7 @@ export default function requestFactory(options) {
 
     if (!service) {
       // Not a request with our object attached, so we're out.
+      next();
       return;
     }
 
