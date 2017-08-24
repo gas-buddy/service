@@ -1,5 +1,6 @@
 import winston from 'winston';
 import onFinished from 'on-finished';
+import Service from './Service';
 import { winstonError } from './util';
 
 const SHOULD_LOG_BODY = Symbol('Whether to log the request body for all requests');
@@ -24,24 +25,45 @@ export function requestBodyLogger(req, res, next) {
   next();
 }
 
+let metricHistogram = null;
+
 // Inspired by morgan
 // https://github.com/expressjs/morgan/blob/master/index.js
 // But logs direct to winston with json fields
 
 export function logger(req, res, next) {
+  if (metricHistogram === null) {
+    const svc = Service.get(req);
+    if (svc) {
+      if (svc.metrics) {
+        metricHistogram = new svc.metrics.Histogram(
+          `${svc.name.replace(/-/g, '_')}_requests`,
+          `overall request metrics for ${svc.name}`,
+          ['status', 'url']);
+      }
+    }
+  }
+
   const start = process.hrtime();
 
   const url = req.originalUrl || req.url;
-  if (url === '/health') {
+  if (url === '/-/healthz') {
     return next();
   }
 
   onFinished(res, (error) => {
+    const dur = process.hrtime(start)[1];
+    if (metricHistogram && res) {
+      metricHistogram.observe(dur / 1000000, {
+        status: res.statusCode || 0,
+        url: req.originalUrl || req.url,
+      });
+    }
     const rqInfo = {
       url: req.originalUrl || req.url,
       m: req.method,
       ts: Date.now(),
-      dur: process.hrtime(start)[1],
+      dur,
       ip: getip(req),
       ua: req.headers['user-agent'],
       v: `${req.httpVersionMajor}.${req.httpVersionMinor}`,
@@ -63,6 +85,8 @@ export function logger(req, res, next) {
     }
     if (req.headers && req.headers.spanid) {
       rqInfo.sp = req.headers.spanid;
+    } else if (req.gb && req.gb.logger && req.gb.logger.spanId) {
+      rqInfo.sp = req.gb.logger.spanId;
     }
     if (req[SHOULD_LOG_BODY]) {
       // winston flattens JSON, so I guess we need to wrap it. Hrmph.

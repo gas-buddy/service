@@ -2,6 +2,9 @@
   "connections": {
     "logger": {
       "level": "debug"
+    },
+    "metrics": {
+      "port": 0
     }
   }
 }

@@ -3,7 +3,13 @@
     "logger": {
       "module": "require:@gasbuddy/configured-winston",
       "addTimestamp": true,
-      "addCounter": true
+      "addCounter": true,
+      "meta": {
+        "host": "env:HOSTNAME"
+      }
+    },
+    "metrics": {
+      "module": "require:@gasbuddy/configured-prometheus-client"
     },
     "services": {
       "module": "require:@gasbuddy/configured-swagger-client",

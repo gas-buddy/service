@@ -32,8 +32,14 @@ export default function requestFactory(options) {
     }
 
     const logDefaults = { c: req.headers.correlationid };
+    let logOpts;
     if (req.headers.spanid) {
       logDefaults.spanid = req.headers.spanid;
+      logOpts.spanId = req.headers.spanid;
+    }
+    let logger = service.logger.loggerWithDefaults(logDefaults, logOpts);
+    if (!req.headers.spanid) {
+      logger = logger.loggerWithNewSpan();
     }
 
     req[propName] = Object.assign({}, service.hydratedObjects, {
@@ -41,7 +47,7 @@ export default function requestFactory(options) {
       /**
        * A request specific logger that adds the correlation id
        */
-      logger: service.logger.loggerWithDefaults(logDefaults),
+      logger,
       /**
        * Wrap different forms of errors into something useful for winston
        */
