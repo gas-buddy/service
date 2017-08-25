@@ -1,3 +1,4 @@
+import winston from 'winston';
 import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
@@ -83,4 +84,24 @@ export function serviceProxy(req) {
       return this;
     },
   });
+}
+
+export function addCorrelationWarning(clientInfo, endpointConfig) {
+  if (!endpointConfig || endpointConfig.disableCorrelation !== true) {
+    clientInfo.config.requestInterceptor = function requestInterceptor() {
+      winston.warn(`
+********************************************************************
+Service call is missing requestInterceptor for logging. Please call
+the service via req.gb.services, or disable logging by setting
+disableCorrelation: true in the endpoint configuration.
+********************************************************************
+`,
+        {
+          method: this.method,
+          url: this.url,
+        },
+      );
+      return this;
+    };
+  }
 }

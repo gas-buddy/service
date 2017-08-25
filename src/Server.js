@@ -1,6 +1,8 @@
 import http from 'http';
 import https from 'https';
 import winston from 'winston';
+import onFinished from 'on-finished';
+import onHeaders from 'on-headers';
 import Service from './Service';
 import { winstonError } from './util';
 
@@ -9,6 +11,16 @@ function portOrNull(v) {
     return 0;
   }
   return v || null;
+}
+
+function addConnectionClose() {
+  this.setHeader('Connection', 'close');
+}
+
+function destroySocket(_, { socket }) {
+  if (socket && !socket.destroyed) {
+    socket.destory();
+  }
 }
 
 /**
@@ -27,6 +39,12 @@ export default class Server {
     } else {
       this.service = new Service(nameOrOptions);
     }
+    this.service.once('drain', () => {
+      this.servers.forEach(s => s.on('request', (req, res) => {
+        onHeaders(res, addConnectionClose);
+        onFinished(res, destroySocket);
+      }));
+    });
   }
 
   async create(sourcedir) {

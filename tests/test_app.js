@@ -128,3 +128,12 @@ tap.test('server startup', async (t) => {
   await s.destroy();
   t.ok(true, 'servers should stop');
 });
+
+tap.test('SIGTERM shutdown', async (t) => {
+  const s = new service.Server('pet-serv');
+  t.ok(s, 'should construct');
+  await s.create(sourcedir);
+  t.ok(s.servers, 'should have servers');
+
+  process.emit('SIGTERM');
+});

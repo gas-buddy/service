@@ -12,7 +12,18 @@
     "key": "file:config/service.key.pem",
     "cert": "file:config/service.cert.pem"
   },
+  "gracefulShutdownTimeout": 1,
   "connections": {
+    "logger": {
+      "transports": {
+        "logstash": {
+          "enabled": false
+        }
+      }
+    },
+    "metadata": {
+      "module": "require:../../src/index#MetadataServer"
+    },
     "services": {
       "specs": {
         "self": "path:./api/hello-world.yaml"
@@ -23,6 +34,9 @@
           "protocol": "http",
           "hostname": "localhost"
         }
+      },
+      "options": {
+        "preProcessor": "require:../../src/index#addCorrelationWarning"
       }
     },
     "trustedCertificates": {

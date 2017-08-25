@@ -1,0 +1,16 @@
+{
+  "gracefulShutdownTimeout": 30,
+  "connections": {
+    "logger": {
+      "console": "env_switch:LOG_TO_CONSOLE",
+      "transports": {
+        "logstash": {
+          "config": {
+            "max_connect_retries": -1,
+            "timeout_connect_retries": 250
+          }
+        }
+      }
+    }
+  }
+}

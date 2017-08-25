@@ -7,6 +7,7 @@ import winston from 'winston';
 import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
 import { hydrate, dehydrate } from '@gasbuddy/hydration';
+import { drain } from './drain';
 import shortstops from './shortstops';
 import { winstonError } from './util';
 
@@ -117,6 +118,10 @@ export default class Service extends EventEmitter {
       this.app.use(middlewareFunction);
       this.configured = true;
       this.emit('configured');
+      // Setup for graceful shutdown
+      if (this.config.get('gracefulShutdownTimeout')) {
+        drain(this, this.config.get('gracefulShutdownTimeout'));
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       winston.error('@gasbuddy/service hydration failed', error);
@@ -130,6 +135,27 @@ export default class Service extends EventEmitter {
         this.once('configured', accept);
       });
     }
+  }
+
+  /**
+   * Check the health of your service. By default we just respond with {healthy:true}
+   */
+  // eslint-disable-next-line no-unused-vars
+  async health(req) {
+    if (this.shuttingDown) {
+      throw new Error('Server is shutting down');
+    }
+    return {
+      healthy: true,
+    };
+  }
+
+  /**
+   * Begin shutting down existing connections and generally preparing to stop
+   */
+  drain() {
+    this.shuttingDown = true;
+    this.emit('drain');
   }
 
   /**
