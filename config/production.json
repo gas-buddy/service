@@ -1,5 +1,5 @@
 {
-  "gracefulShutdownTimeout": 30,
+  "gracefulShutdownTimeout": 20,
   "connections": {
     "logger": {
       "console": "env_switch:LOG_TO_CONSOLE",

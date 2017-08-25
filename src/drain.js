@@ -15,6 +15,7 @@ export function drain(service, timeout) {
 
   if (!attached.length) {
     process.once('SIGTERM', () => {
+      process.once('SIGTERM', () => process.exit(-1));
       Promise.all(attached.map((s) => {
         s.logger.info('Received SIGTERM, draining requests');
         return s.drain();
@@ -27,7 +28,7 @@ export function drain(service, timeout) {
           }))
           .then(() => process.exit(0))
           .catch(() => process.exit(-1));
-      }, timeout * 1000);
+      }, timeout * 1000).unref();
     });
   }
   biggestTimeout = Math.max(biggestTimeout, timeout);

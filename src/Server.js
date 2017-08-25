@@ -40,10 +40,13 @@ export default class Server {
       this.service = new Service(nameOrOptions);
     }
     this.service.once('drain', () => {
-      this.servers.forEach(s => s.on('request', (req, res) => {
-        onHeaders(res, addConnectionClose);
-        onFinished(res, destroySocket);
-      }));
+      this.servers.forEach(s => {
+        s.on('request', (req, res) => {
+          onHeaders(res, addConnectionClose);
+          onFinished(res, destroySocket);
+        });
+        s.close();
+      });
     });
   }
 
