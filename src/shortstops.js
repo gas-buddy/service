@@ -2,6 +2,7 @@ import os from 'os';
 import path from 'path';
 import shortstop from 'shortstop-handlers';
 import shortstopYaml from 'shortstop-yaml';
+import shortstopDns from 'shortstop-dns';
 import { decryptorInContext, textDecryptorInContext } from '@gasbuddy/kms-crypto';
 
 /**
@@ -72,8 +73,17 @@ export default function shortstops(service, sourcedir) {
   const kmsDecrypt = decryptorInContext(service.name);
   const kmsDecryptText = textDecryptorInContext(service.name);
 
+  const env = shortstop.env();
   return {
-    env: shortstop.env(),
+    env,
+    // A version of env that can default to false
+    env_switch: (v) => {
+      if (v && v[0] === '!') {
+        const bval = env(`${v.substring(1)}|b`);
+        return !bval;
+      }
+      return !!env(v);
+    },
     base64: shortstop.base64(),
     regex: (v) => {
       const [, pattern, flags] = v.match(/^\/(.*)\/([a-z]*)/);
@@ -104,6 +114,7 @@ export default function shortstops(service, sourcedir) {
     servicename: v => v.replace(/\$\{name\}/g, service.name),
 
     os: p => os[p](),
+    dns: shortstopDns(),
     // No-op in case you have values that start with a shortstop handler name (and colon)
     literal: v => v,
   };

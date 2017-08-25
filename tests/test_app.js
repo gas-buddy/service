@@ -17,6 +17,9 @@ tap.test('service startup', async (t) => {
   await s.configure(sourcedir);
   t.ok(s.app, 'should make an app');
   t.strictEquals(s.name, 'hello-serv', 'name should match');
+  t.ok(Array.isArray(s.config.get('google')), 'DNS shortstop should work');
+  t.strictEquals(s.config.get('envswitchoff'), false, 'Default false');
+  t.strictEquals(s.config.get('envswitchon'), true, 'Default true');
 
   const oldError = winston.error;
 

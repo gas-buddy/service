@@ -4,6 +4,9 @@
   "yamlShortstop": "yaml:config/sample.yaml",
   "winston": "info",
   "port": 0,
+  "google": "dns:google.com",
+  "envswitchoff": "env_switch:ENV_VAR_DOESNT_EXIST",
+  "envswitchon": "env_switch:!ENV_VAR_DOESNT_EXIST",
   "tls": {
     "port": 0,
     "key": "file:config/service.key.pem",
