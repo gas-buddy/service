@@ -135,7 +135,6 @@ tap.test('server startup', async (t) => {
   ]);
   const res = await request(s.service.metrics.app)
     .get('/metrics');
-    console.error(res.text);
   t.match(res.text, /# TYPE test_metric counter/, 'Should have our counter');
   t.match(res.text, /test_metric 101/, 'Should have our counter value');
   t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
