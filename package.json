@@ -17,6 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/gas-buddy/service.git"
   },
+  "bin": {
+    "start-server": "build/start-server.js"
+  },
   "keywords": [
     "gasbuddy",
     "service",
