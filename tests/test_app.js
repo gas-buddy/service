@@ -125,6 +125,22 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
+  const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
+  t.ok(ctr, 'Should make a new Counter metric');
+  ctr.inc(99);
+  ctr.inc(2);
+  await Promise.all([
+    s.service.fakemetrics.fakeIt(),
+    s.service.fakemetrics.fakeError(),
+  ]);
+  const res = await request(s.service.metrics.app)
+    .get('/metrics');
+    console.error(res.text);
+  t.match(res.text, /# TYPE test_metric counter/, 'Should have our counter');
+  t.match(res.text, /test_metric 101/, 'Should have our counter value');
+  t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
+  t.match(res.text, /faker_error_count{source="pet-serv",success="false"}/, 'Should have faker');
+
   await s.destroy();
   t.ok(true, 'servers should stop');
 });

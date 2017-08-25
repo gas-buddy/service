@@ -24,6 +24,11 @@
     "metadata": {
       "module": "require:../../src/index#MetadataServer"
     },
+    "fakemetrics": {
+      "module": "require:../../src/index#metricsShim",
+      "baseModule": "require:./fakeMetrics",
+      "metricDescription": "A fake metric"
+    },
     "services": {
       "specs": {
         "self": "path:./api/hello-world.yaml"
