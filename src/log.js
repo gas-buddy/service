@@ -4,7 +4,6 @@ import Service from './Service';
 import { winstonError } from './util';
 
 const SHOULD_LOG_BODY = Symbol('Whether to log the request body for all requests');
-const HISTOGRAM = Symbol('Request histogram');
 
 /**
  * Get request IP address.
@@ -26,21 +25,20 @@ export function requestBodyLogger(req, res, next) {
   next();
 }
 
+let metricsHistogram;
+
 // Inspired by morgan
 // https://github.com/expressjs/morgan/blob/master/index.js
 // But logs direct to winston with json fields
 
 export function logger(req, res, next) {
-  let metricsHistogram;
   const svc = Service.get(req);
   if (svc) {
-    metricsHistogram = svc[HISTOGRAM];
     if (!metricsHistogram && svc.metrics) {
       metricsHistogram = new svc.metrics.Histogram(
-        `${svc.name.replace(/-/g, '_')}_requests`,
-        `overall request metrics for ${svc.name}`,
-        ['status', 'url']);
-      svc[HISTOGRAM] = metricsHistogram;
+        'service_requests',
+        'HTTP/S metrics for @gasbuddy/service instances',
+        ['status', 'url', 'service']);
     }
   }
 
@@ -55,6 +53,7 @@ export function logger(req, res, next) {
     const dur = process.hrtime(start)[1];
     if (metricsHistogram && res) {
       metricsHistogram.observe(dur / 1000000, {
+        service: svc.name,
         status: res.statusCode || 0,
         url: req.originalUrl || req.url,
       });
