@@ -3,13 +3,38 @@
     "logger": {
       "module": "require:@gasbuddy/configured-winston",
       "addTimestamp": true,
-      "addCounter": true
+      "addCounter": true,
+      "meta": {
+        "host": "env:HOSTNAME"
+      },
+      "transports": {
+        "logstash": {
+          "module": "require:@gasbuddy/configured-winston-logstash",
+          "config": {
+            "host": "logstash",
+            "port": 9999,
+            "node_name": "os:hostname",
+            "label": "servicename:${name}"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "module": "require:@gasbuddy/service#MetadataServer",
+      "port": 3001
+    },
+    "metrics": {
+      "module": "require:@gasbuddy/configured-prometheus-client"
     },
     "services": {
       "module": "require:@gasbuddy/configured-swagger-client",
       "defaultTimeout": 20000,
       "specs": {},
-      "endpoints": {}
+      "endpoints": {},
+      "options": {
+        "basedir": "path:.",
+        "preProcessor": "require:@gasbuddy/service#addCorrelationWarning"
+      }
     }
   },
   "swaggerApi": {

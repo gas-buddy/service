@@ -1,0 +1,17 @@
+{
+  "connections": {
+    "logger": {
+      "transports": {
+        "logstash": {
+          "enabled": false
+        },
+        "file": {
+          "name": "File",
+          "config": {
+            "filename": "test_output.log"
+          }
+        }
+      }
+    }
+  }
+}

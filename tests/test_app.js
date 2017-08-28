@@ -17,6 +17,9 @@ tap.test('service startup', async (t) => {
   await s.configure(sourcedir);
   t.ok(s.app, 'should make an app');
   t.strictEquals(s.name, 'hello-serv', 'name should match');
+  t.ok(Array.isArray(s.config.get('google')), 'DNS shortstop should work');
+  t.strictEquals(s.config.get('envswitchoff'), false, 'Default false');
+  t.strictEquals(s.config.get('envswitchon'), true, 'Default true');
 
   const oldError = winston.error;
 
@@ -122,6 +125,30 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
+  const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
+  t.ok(ctr, 'Should make a new Counter metric');
+  ctr.inc(99);
+  ctr.inc(2);
+  await Promise.all([
+    s.service.fakemetrics.fakeIt(),
+    s.service.fakemetrics.fakeError(),
+  ]);
+  const res = await request(s.service.metrics.app)
+    .get('/metrics');
+  t.match(res.text, /# TYPE test_metric counter/, 'Should have our counter');
+  t.match(res.text, /test_metric 101/, 'Should have our counter value');
+  t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
+  t.match(res.text, /faker_error_count{source="pet-serv",success="false"}/, 'Should have faker');
+
   await s.destroy();
   t.ok(true, 'servers should stop');
+});
+
+tap.test('SIGTERM shutdown', async (t) => {
+  const s = new service.Server('pet-serv');
+  t.ok(s, 'should construct');
+  await s.create(sourcedir);
+  t.ok(s.servers, 'should have servers');
+
+  process.emit('SIGTERM');
 });

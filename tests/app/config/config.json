@@ -4,12 +4,31 @@
   "yamlShortstop": "yaml:config/sample.yaml",
   "winston": "info",
   "port": 0,
+  "google": "dns:google.com",
+  "envswitchoff": "env_switch:ENV_VAR_DOESNT_EXIST",
+  "envswitchon": "env_switch:!ENV_VAR_DOESNT_EXIST",
   "tls": {
     "port": 0,
     "key": "file:config/service.key.pem",
     "cert": "file:config/service.cert.pem"
   },
+  "gracefulShutdownTimeout": 1,
   "connections": {
+    "logger": {
+      "transports": {
+        "logstash": {
+          "enabled": false
+        }
+      }
+    },
+    "metadata": {
+      "module": "require:../../src/index#MetadataServer"
+    },
+    "fakemetrics": {
+      "module": "require:../../src/index#metricsShim",
+      "baseModule": "require:./fakeMetrics",
+      "metricDescription": "A fake metric"
+    },
     "services": {
       "specs": {
         "self": "path:./api/hello-world.yaml"
@@ -20,6 +39,9 @@
           "protocol": "http",
           "hostname": "localhost"
         }
+      },
+      "options": {
+        "preProcessor": "require:../../src/index#addCorrelationWarning"
       }
     },
     "trustedCertificates": {
