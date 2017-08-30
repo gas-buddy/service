@@ -53,3 +53,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 4.0.1
 =====
 * Fix dur (duration) to be fractional seconds
+
+4.0.2
+=====
+* Add method to prometheus request metric

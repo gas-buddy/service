@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -78,12 +78,12 @@
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
     "source-map-support": "^0.4.16",
-    "superagent": "^3",
+    "superagent": "^3.6.0",
     "winston": "^2.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
-    "babel-preset-gasbuddy": "^2.0.0",
+    "babel-preset-gasbuddy": "^2.6.0",
     "cross-env": "^5",
     "eslint-config-gasbuddy": "^4",
     "supertest": "^3.0.0",

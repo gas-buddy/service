@@ -38,7 +38,7 @@ export function logger(req, res, next) {
       metricsHistogram = new svc.metrics.Histogram(
         'service_requests',
         'HTTP/S metrics for @gasbuddy/service instances',
-        ['status', 'url', 'service']);
+        ['status', 'method', 'url', 'service']);
     }
   }
 
@@ -57,6 +57,7 @@ export function logger(req, res, next) {
         service: svc.name,
         status: res.statusCode || 0,
         url: req.originalUrl || req.url,
+        method: req.method,
       });
     }
     const rqInfo = {
