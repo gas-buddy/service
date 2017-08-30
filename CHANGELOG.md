@@ -49,3 +49,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 * Add dns shortstop handler for service resolution
 * Add env_switch shortstop handler to allow env vars with either true/false defaults. env_switch:!FOO would default to true, env_switch:FOO would default to false
 * Add start-server script that does most of what we normally do to run a service. This avoids similar boilerplate in your project
+
+4.0.1
+=====
+* Fix dur (duration) to be fractional seconds
