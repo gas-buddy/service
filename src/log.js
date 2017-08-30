@@ -50,7 +50,7 @@ export function logger(req, res, next) {
   }
 
   onFinished(res, (error) => {
-    let hrdur = process.hrtime(start);
+    const hrdur = process.hrtime(start);
     const dur = hrdur[0] + (hrdur[1] / 1000000000);
     if (metricsHistogram && res) {
       metricsHistogram.observe(dur, {
