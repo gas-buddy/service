@@ -38,30 +38,27 @@ export function logger(req, res, next) {
       metricsHistogram = new svc.metrics.Histogram(
         'service_requests',
         'HTTP/S metrics for @gasbuddy/service instances',
-        ['status', 'method', 'url', 'service']);
+        ['status', 'method', 'path', 'service']);
     }
   }
 
   const start = process.hrtime();
 
   const url = req.originalUrl || req.url;
-  if (url === '/-/healthz') {
-    return next();
-  }
-
   onFinished(res, (error) => {
     const hrdur = process.hrtime(start);
     const dur = hrdur[0] + (hrdur[1] / 1000000000);
     if (metricsHistogram && res) {
-      metricsHistogram.observe(dur, {
+      const path = req.route ? req.route.path : null;
+      metricsHistogram.observe({
         service: svc.name,
         status: res.statusCode || 0,
-        url: req.originalUrl || req.url,
+        path,
         method: req.method,
-      });
+      }, dur);
     }
     const rqInfo = {
-      url: req.originalUrl || req.url,
+      url,
       m: req.method,
       ts: Date.now(),
       dur,
