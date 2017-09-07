@@ -10,6 +10,12 @@ if (process.env.NODE_ENV === 'test') {
 
 const sourcedir = path.join(__dirname, 'app', 'src');
 
+tap.test('run batch job', async (t) => {
+  let ran = false;
+  await service.runWithService(() => { ran = true; }, { srcRoot: sourcedir });
+  t.ok(ran, 'Should run the async function');
+});
+
 tap.test('service startup', async (t) => {
   const s = new service.Service('hello-serv');
   t.ok(s, 'should construct');
@@ -151,10 +157,4 @@ tap.test('SIGTERM shutdown', async (t) => {
   t.ok(s.servers, 'should have servers');
 
   process.emit('SIGTERM');
-});
-
-tap.test('run batch job', async (t) => {
-  let ran = false;
-  await service.runWithService(() => { ran = true; }, { srcRoot: sourcedir });
-  t.ok(ran, 'Should run the async function');
 });
