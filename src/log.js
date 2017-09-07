@@ -26,6 +26,7 @@ export function requestBodyLogger(req, res, next) {
 }
 
 let metricsHistogram;
+let hostname;
 
 // Inspired by morgan
 // https://github.com/expressjs/morgan/blob/master/index.js
@@ -39,6 +40,9 @@ export function logger(req, res, next) {
         'service_requests',
         'HTTP/S metrics for @gasbuddy/service instances',
         ['status', 'method', 'path', 'service']);
+    }
+    if (hostname === undefined) {
+      hostname = svc.config.get('connections:logger:meta:host') || null;
     }
   }
 
@@ -69,6 +73,9 @@ export function logger(req, res, next) {
 
     if (req.user) {
       rqInfo.u = req.user.id;
+    }
+    if (hostname) {
+      rqInfo.host = hostname;
     }
     if (res._header) { // eslint-disable-line no-underscore-dangle
       rqInfo.s = res.statusCode;
