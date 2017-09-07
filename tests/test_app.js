@@ -152,3 +152,9 @@ tap.test('SIGTERM shutdown', async (t) => {
 
   process.emit('SIGTERM');
 });
+
+tap.test('run batch job', async (t) => {
+  let ran = false;
+  await service.runWithService(() => { ran = true; }, { srcRoot: sourcedir });
+  t.ok(ran, 'Should run the async function');
+});

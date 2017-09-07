@@ -57,3 +57,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 4.0.2
 =====
 * Add method to prometheus request metric
+
+4.1.0
+=====
+* Add runWithService to bring up a service, run a function, and then tear it down
