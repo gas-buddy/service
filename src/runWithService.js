@@ -37,7 +37,7 @@ export async function runWithService(asyncFn, options) {
     .then(asyncFn)
     .then(() => service.destroy())
     .catch((e) => {
-      if (service.logger) {
+      if (service.logger && service.logger.error) {
         service.logger.error('Failed to complete service cleanup', service.wrapError(e));
         service.destroy();
       } else {
