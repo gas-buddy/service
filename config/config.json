@@ -13,7 +13,6 @@
           "config": {
             "host": "logstash",
             "port": 9999,
-            "node_name": "os:hostname",
             "label": "servicename:${name}"
           }
         }
