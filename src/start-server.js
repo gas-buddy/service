@@ -89,19 +89,17 @@ if (argv.repl) {
     prompt: '> ',
     writer(v) {
       if (v instanceof global.Promise) {
-        let me = promiseCounter;
+        const me = promiseCounter;
         promiseCounter += 1;
         v
-          .then(r => {
-            console.log(`\nPromise #${me} returns`, util.inspect(r));
-          })
-          .catch(e => {
-            console.error(`\nPromise #${me} error`, util.inspect(e));
-          });
+          // eslint-disable-next-line no-console
+          .then(r => console.log(`\nPromise #${me} returns`, util.inspect(r)))
+          // eslint-disable-next-line no-console
+          .catch(e => console.error(`\nPromise #${me} error`, util.inspect(e)));
         return `{ Returned Promise #${me} }`;
       }
       return util.inspect(v);
-    }
+    },
   });
   rl.on('exit', () => {
     service.destroy();
