@@ -163,7 +163,11 @@ export default class Service extends EventEmitter {
    */
   async destroy() {
     winston.info('Beginning application shutdown');
-    await dehydrate({ logger: winston }, this[CONNECTIONS]);
+    await dehydrate({
+      service: this,
+      name: this.name,
+      logger: winston,
+    }, this[CONNECTIONS]);
     delete this[CONNECTIONS];
     delete this[CONNECTIONS_TREE];
     this.emit('shutdown');

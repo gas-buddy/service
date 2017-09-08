@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import util from 'util';
 import repl from 'repl';
 import winston from 'winston';
 import minimist from 'minimist';
@@ -83,10 +84,29 @@ if (argv.nobind) {
 }
 
 if (argv.repl) {
-  const rl = repl.start('> ');
+  let promiseCounter = 1;
+  const rl = repl.start({
+    prompt: '> ',
+    writer(v) {
+      if (v instanceof global.Promise) {
+        let me = promiseCounter;
+        promiseCounter += 1;
+        v
+          .then(r => {
+            console.log(`\nPromise #${me} returns`, util.inspect(r));
+          })
+          .catch(e => {
+            console.error(`\nPromise #${me} error`, util.inspect(e));
+          });
+        return `{ Returned Promise #${me} }`;
+      }
+      return util.inspect(v);
+    }
+  });
   rl.on('exit', () => {
     service.destroy();
   });
   rl.context.server = server;
   rl.context.service = service;
+  rl.context.repl = rl;
 }

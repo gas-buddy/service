@@ -61,3 +61,12 @@ This means you can just `await service.foobar` in your hydrated object's start m
 4.1.0
 =====
 * Add runWithService to bring up a service, run a function, and then tear it down
+
+4.1.1
+=====
+* Add hostname to request logs for consistency
+
+4.1.2
+=====
+* REPL is now promise aware just to make life easier
+* Pass service to hydration shutdown
