@@ -5,6 +5,9 @@
     },
     "metrics": {
       "port": 0
+    },
+    "metadata": {
+      "port": 0
     }
   }
 }
