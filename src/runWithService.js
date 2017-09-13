@@ -30,7 +30,7 @@ export async function runWithService(asyncFn, options) {
   const ServiceClass = opts.serviceClass || Service;
   const service = new ServiceClass(opts.name);
   if (opts.onConfigurationLoaded) {
-    service.onConfigurationLoaded(opts.onConfigurationLoaded);
+    service.on('configurationLoaded', opts.onConfigurationLoaded);
   }
 
   return service.configure(opts.srcRoot)
