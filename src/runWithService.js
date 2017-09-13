@@ -34,7 +34,7 @@ export async function runWithService(asyncFn, options) {
   }
 
   return service.configure(opts.srcRoot)
-    .then(asyncFn)
+    .then(() => asyncFn(service))
     .then(() => service.destroy())
     .catch((e) => {
       if (service.logger && service.logger.error) {
