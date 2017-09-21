@@ -88,7 +88,7 @@ if (argv.repl) {
   const rl = repl.start({
     prompt: '> ',
     writer(v) {
-      if (v instanceof global.Promise) {
+      if (v && typeof v.then === 'function' && typeof v.catch === 'function') {
         const me = promiseCounter;
         promiseCounter += 1;
         v
