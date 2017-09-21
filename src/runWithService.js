@@ -30,11 +30,11 @@ export async function runWithService(asyncFn, options) {
   const ServiceClass = opts.serviceClass || Service;
   const service = new ServiceClass(opts.name);
   if (opts.onConfigurationLoaded) {
-    service.onConfigurationLoaded(opts.onConfigurationLoaded);
+    service.on('configurationLoaded', opts.onConfigurationLoaded);
   }
 
   return service.configure(opts.srcRoot)
-    .then(asyncFn)
+    .then(() => asyncFn(service))
     .then(() => service.destroy())
     .catch((e) => {
       if (service.logger && service.logger.error) {
