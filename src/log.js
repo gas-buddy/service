@@ -88,8 +88,8 @@ export function logger(req, res, next) {
     if (req.headers && req.headers.correlationid) {
       rqInfo.c = req.headers.correlationid;
     }
-    if (req.headers && req.headers.spanid) {
-      rqInfo.sp = req.headers.spanid;
+    if (req.headers && req.headers.span) {
+      rqInfo.sp = req.headers.span;
     } else if (req.gb && req.gb.logger && req.gb.logger.spanId) {
       rqInfo.sp = req.gb.logger.spanId;
     }

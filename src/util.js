@@ -73,6 +73,10 @@ export function serviceProxy(req) {
   return servicesWithOptions(services, {
     requestInterceptor() {
       this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
+      if (req.gb && req.gb.logger && typeof req.gb.logger.loggerWithNewSpan === 'function') {
+        const newLogger = req.gb.logger.loggerWithNewSpan();
+        this.headers.span = newLogger.spanId;
+      }
       if (defaultTimeout) {
         this.timeout = this.timeout || defaultTimeout;
       }
