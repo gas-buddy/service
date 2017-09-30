@@ -70,3 +70,11 @@ This means you can just `await service.foobar` in your hydrated object's start m
 =====
 * REPL is now promise aware just to make life easier
 * Pass service to hydration shutdown
+
+4.2.0
+=====
+* runWithService now passes a synthetic "req-like" object to your function that has a custom logger and service proxy
+
+4.3.0
+=====
+* Change spanid header to span, mostly to avoid a bug with spanid header and old services (causing a 'null ref' error)

@@ -6,6 +6,6 @@ export default function (router) {
           this.url = this.url.replace(':8000', `:${req.query.port}`);
         },
       });
-    res.json(response);
+    res.json(response.obj);
   });
 }
