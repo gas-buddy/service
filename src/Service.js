@@ -108,6 +108,7 @@ export default class Service extends EventEmitter {
         service: this,
         name: this.name,
       }, this.config.get('connections'), this);
+      winston.info('Hydration completed');
       this[CONNECTIONS] = appObjects.allObjects;
       this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
 
@@ -115,6 +116,7 @@ export default class Service extends EventEmitter {
       // originally-PayPal module handles promises. Maybe the PayPal one
       // will someday.
       const middlewareFunction = await meddleware(this.config.get('meddleware'));
+      winston.info('Meddleware loaded');
       this.app.use(middlewareFunction);
       this.configured = true;
       this.emit('configured');

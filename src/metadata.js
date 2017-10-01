@@ -24,12 +24,23 @@ export class MetadataServer {
     });
 
     this.app.get('/modules', (req, res, next) => {
-      exec('npm ls --json', (err, stdout) => {
+      let depth = Number(req.query.depth || 0);
+      if (!Number.isSafeInteger(depth)) {
+        depth = 0;
+      }
+      if (this.npmls && this.npmls[depth]) {
+        res.json(this.npmls[depth]);
+        return;
+      }
+      exec(`npm ls --json --depth=${depth}`, (err, stdout) => {
         if (err) {
           next(err);
         }
         try {
-          res.json(JSON.parse(stdout));
+          const info = JSON.parse(stdout);
+          this.npmls = this.npmls || {};
+          this.npmls[depth] = info;
+          res.json(info);
         } catch (parseError) {
           next(parseError);
         }
