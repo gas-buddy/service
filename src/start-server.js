@@ -45,8 +45,10 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' 
     // Get babelrc file because the ignore property isn't recognized by default
     // see https://github.com/babel/babel/issues/4082
     babelrc = JSON.parse(fs.readFileSync(babelrcPath, 'utf8'));
+    // eslint-disable-next-line global-require, import/no-extraneous-dependencies
     require('babel-register')(babelrc);
   } catch (e) {
+    // eslint-disable-next-line global-require, import/no-extraneous-dependencies
     require('babel-register');
   }
 }
