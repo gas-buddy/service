@@ -39,8 +39,16 @@ let dirname = path.join(process.cwd(), 'src');
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' || argv.built) {
   dirname = path.join(process.cwd(), 'build');
 } else {
-  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  require('babel-register');
+  const babelrcPath = path.join(process.cwd(), '.babelrc');
+  let babelrc;
+  try {
+    // Get babelrc file because the ignore property isn't recognized by default
+    // see https://github.com/babel/babel/issues/4082
+    babelrc = JSON.parse(fs.readFileSync(babelrcPath, 'utf8'));
+    require('babel-register')(babelrc);
+  } catch (e) {
+    require('babel-register');
+  }
 }
 
 try {
