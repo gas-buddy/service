@@ -78,3 +78,8 @@ This means you can just `await service.foobar` in your hydrated object's start m
 4.3.0
 =====
 * Change spanid header to span, mostly to avoid a bug with spanid header and old services (causing a 'null ref' error)
+
+4.3.3
+=====
+* Provide a "req" object to repl
+* Parse babelrc because of bug with babel ignores [https://github.com/babel/babel/issues/4082]

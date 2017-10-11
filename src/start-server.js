@@ -7,6 +7,7 @@ import winston from 'winston';
 import minimist from 'minimist';
 import 'source-map-support/register';
 import Service from './Service';
+import { serviceProxy } from './util';
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ['built', 'repl', 'nobind'],
@@ -113,7 +114,21 @@ if (argv.repl) {
   rl.on('exit', () => {
     service.destroy();
   });
+
+  // Build a synthetic req to make calls easier
+  const req = {
+    app: service.app,
+    gb: Object.create(Object.getPrototypeOf(service)),
+    headers: {
+      correlationid: argv.correlationid || `${service.name}-repl-${Date.now()}`,
+    },
+  };
+  const services = serviceProxy(req);
+  const logger = service.logger.loggerWithDefaults({ c: req.headers.correlationid });
+  Object.assign(req.gb, service, { services, logger });
+
   rl.context.server = server;
   rl.context.service = service;
+  rl.context.req = req;
   rl.context.repl = rl;
 }
