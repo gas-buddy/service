@@ -26,7 +26,7 @@ if (argv.module) {
   }
 }
 
-let ServerClass = ServiceClass.Server || Server;
+const ServerClass = ServiceClass.Server || Server;
 
 // eslint-disable-next-line import/no-dynamic-require
 const pkg = require(path.join(process.cwd(), 'package.json'));
