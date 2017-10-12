@@ -7,6 +7,7 @@ import winston from 'winston';
 import minimist from 'minimist';
 import 'source-map-support/register';
 import Service from './Service';
+import Server from './Server';
 import { serviceProxy } from './util';
 
 const argv = minimist(process.argv.slice(2), {
@@ -24,6 +25,8 @@ if (argv.module) {
     ServiceClass = serviceModule;
   }
 }
+
+let ServerClass = ServiceClass.Server || Server;
 
 // eslint-disable-next-line import/no-dynamic-require
 const pkg = require(path.join(process.cwd(), 'package.json'));
@@ -72,7 +75,7 @@ if (argv.nobind) {
     winston.error('Configuration failed', service.wrapError(err));
   });
 } else {
-  server = new ServiceClass.Server(name);
+  server = new ServerClass(name);
   service = server.service;
 
   server
