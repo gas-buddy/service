@@ -112,6 +112,10 @@ export default class Service extends EventEmitter {
       this[CONNECTIONS] = appObjects.allObjects;
       this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
 
+      if (this.config.get('trustProxy') !== undefined) {
+        this.app.set('trust proxy', this.config.get('trustProxy'));
+      }
+
       // And add meddleware to express. The GasBuddy version of this
       // originally-PayPal module handles promises. Maybe the PayPal one
       // will someday.

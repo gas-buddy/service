@@ -1,0 +1,4 @@
+{
+  "gracefulShutdownTimeout": 20,
+  "trustProxy": true
+}
