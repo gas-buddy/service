@@ -1,6 +1,5 @@
 {
   "gracefulShutdownTimeout": 20,
-  "trustProxy": true,
   "connections": {
     "logger": {
       "console": "env_switch:LOG_TO_CONSOLE",
