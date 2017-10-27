@@ -20,6 +20,16 @@ function getip(req) {
     || undefined;
 }
 
+/**
+ * Get logger, mimis Winston API
+ *
+ * @param {IncomingMessage} req
+ * @export
+ */
+export function getLogger(req) {
+  return (req.gb && req.gb.logger) || winston;
+}
+
 export function requestBodyLogger(req, res, next) {
   req[SHOULD_LOG_BODY] = true;
   next();
@@ -144,7 +154,7 @@ export function finalHandlerFactory() {
         return;
       }
 
-      const reqLogger = (req.gb && req.gb.logger) || winston;
+      const reqLogger = getLogger(req);
       const reqProps = {
         reqMethod: req.method,
         reqUrl: req.url,
