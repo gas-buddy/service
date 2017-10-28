@@ -117,7 +117,9 @@ export function bodyLoggerFactory() {
   return requestBodyLogger;
 }
 
-export function finalHandlerFactory() {
+export function finalHandlerFactory(options) {
+  const { shouldRenderResponse = true } = options || {};
+
   return [
     // TODO: Reintroduce explicit 404 handling at the right place.
     // We can't have it as just the final route because gb-services-tester
@@ -152,10 +154,15 @@ export function finalHandlerFactory() {
 
       Object.assign(error, reqProps);
       reqLogger.error('Handler exception', winstonError(error));
-      res.status(error.status || 500).send({
-        code: error.code,
-        message: error.message,
-        domain: error.domain,
-      });
+
+      if (shouldRenderResponse) {
+        res.status(error.status || 500).send({
+          code: error.code,
+          message: error.message,
+          domain: error.domain,
+        });
+      } else {
+        next(error);
+      }
     }];
 }
