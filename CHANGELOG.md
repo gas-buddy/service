@@ -83,3 +83,8 @@ This means you can just `await service.foobar` in your hydrated object's start m
 =====
 * Provide a "req" object to repl
 * Parse babelrc because of bug with babel ignores [https://github.com/babel/babel/issues/4082]
+
+4.5.0
+=====
+* finalHandlerFactory takes a shouldRenderResponse configuration argument now, allowing you to have your own final handler that decides whether to render HTML, redirect, or whatever, while still getting logs.
+* metricsShim takes logAboveMs configuration value to log the operation names of things taking more than a configurable timeout in milliseconds.
