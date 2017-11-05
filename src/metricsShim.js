@@ -11,6 +11,7 @@ const MY_TIMER = Symbol('Internal timer for logging long running operations');
 export class metricsShim {
   constructor(context, config) {
     const callMetrics = {};
+    let gauge;
 
     assert(config.baseModule, 'MetricsShim needs a baseModule configuration parameter');
     let ClassConstructor = config.baseModule;
@@ -22,6 +23,26 @@ export class metricsShim {
     this.logAboveMs = config.logAboveMs;
 
     this.instance = new ClassConstructor(context, config);
+
+    // A count event is translated into a gauage
+    this.instance.on('count', (count) => {
+      try {
+        if (!gauge) {
+          gauge = new gb.metrics.Gauge({
+            name: `${config.metricPrefix || ''}${config.gaugeName || 'count'}`,
+            help: `${config.metricDescription} count`,
+          });
+        }
+        gauge.set(count);
+      } catch (error) {
+        winston.error('Failed to create count gauge', {
+          message: error.message,
+          stack: error.stack,
+        });
+      }
+    });
+
+    // Start/finish/error events are translated into Histograms
     this.instance.on('start', (callInfo) => {
       if (!gb || !gb.metrics) {
         return;
