@@ -106,5 +106,8 @@ export class metricsShim {
     if (this.instance.stop) {
       this.stop = (...args) => this.instance.stop(...args);
     }
+    if (this.instance.metadata) {
+      this.metadata = (...args) => this.instance.metadata(...args);
+    }
   }
 }
