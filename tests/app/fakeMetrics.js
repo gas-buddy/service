@@ -22,4 +22,12 @@ export default class FakeMetrics extends EventEmitter {
         accept();
       }, 50));
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  async metadata() {
+    return new Promise(accept =>
+      setTimeout(() => {
+        accept({ ok: true });
+      }, 50));
+  }
 }

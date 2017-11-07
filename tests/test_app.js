@@ -147,6 +147,15 @@ tap.test('server startup', async (t) => {
   t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
   t.match(res.text, /faker_error_count{source="pet-serv",success="false"}/, 'Should have faker');
 
+  const mdres = await request(s.service.metadata.app)
+    .get('/connections/fakemetrics');
+  t.strictEquals(mdres.status, 200, 'Should get 200 from module metadata');
+  t.same(mdres.body, { ok: true }, 'Should get proper metadata');
+
+  const md404 = await request(s.service.metadata.app)
+    .get('/connections/nobodyhome');
+  t.strictEquals(md404.status, 404, 'Should 404 for non existent connection');
+
   await s.destroy();
   t.ok(true, 'servers should stop');
 });
