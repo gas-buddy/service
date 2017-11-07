@@ -47,6 +47,20 @@ export class MetadataServer {
       });
     });
 
+    this.app.get('/connections/:component', async (req, res) => {
+      const component = this.service[req.params.component];
+      if (!component) {
+        res.sendStatus(404);
+        return;
+      }
+      if (typeof component.metadata !== 'function') {
+        res.sendStatus(405);
+        return;
+      }
+      const rz = await component.metadata(req.query);
+      res.json(rz);
+    });
+
     this.server = this.app.listen(this.port, () => {
       context.logger.info('Service metadata server listening', { port: this.server.address().port });
     });
