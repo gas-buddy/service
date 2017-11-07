@@ -88,3 +88,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 =====
 * finalHandlerFactory takes a shouldRenderResponse configuration argument now, allowing you to have your own final handler that decides whether to render HTML, redirect, or whatever, while still getting logs.
 * metricsShim takes logAboveMs configuration value to log the operation names of things taking more than a configurable timeout in milliseconds.
+
+4.6.0
+=====
+* If a hydrated module exposes a metadata function, ::3001/connections/OBJECT_NAME will return it
