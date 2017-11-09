@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "4.6.1",
+  "version": "5.0.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "ci-cover": "nyc check-coverage",
     "ci-coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "build": "babel src/ --out-dir build/"
   },
   "repository": {
@@ -19,6 +19,9 @@
   },
   "bin": {
     "start-server": "build/start-server.js"
+  },
+  "engines": {
+    "node": ">=8.9"
   },
   "keywords": [
     "gasbuddy",
@@ -59,9 +62,9 @@
     "@gasbuddy/configured-prometheus-client": "^1.4.2",
     "@gasbuddy/configured-swagger-client": "^1.6.0",
     "@gasbuddy/configured-swaggerize-express": "^1.5.0",
-    "@gasbuddy/configured-winston": "^1.6.0",
+    "@gasbuddy/configured-winston": "^1.7.0",
     "@gasbuddy/configured-winston-logstash": "^2.0.0",
-    "@gasbuddy/express-promise-patch": "^1.0.0",
+    "@gasbuddy/express-promise-patch": "^1.0.3",
     "@gasbuddy/hydration": "^1.2.2",
     "@gasbuddy/kms-crypto": "^1.2.1",
     "@gasbuddy/meddleware": "^1.0.0",
@@ -78,16 +81,16 @@
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
     "source-map-support": "^0.5.0",
-    "superagent": "^3.8.0",
+    "superagent": "^3.8.1",
     "winston": "^2.4.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
-    "babel-preset-gasbuddy": "^2.6.0",
+    "babel-preset-gasbuddy": "^3.1.0",
     "cross-env": "^5.1.1",
     "eslint-config-gasbuddy": "^4",
     "supertest": "^3.0.0",
-    "tap": "^10.3.3",
+    "tap": "^10.7.3",
     "tap-markdown": "^1.2.1"
   }
 }

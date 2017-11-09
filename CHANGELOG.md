@@ -92,3 +92,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 4.6.0
 =====
 * If a hydrated module exposes a metadata function, ::3001/connections/OBJECT_NAME will return it
+
+5.0.0
+=====
+* Move to node 8.9 which reduces the amount of transpiling to take advantage of built in support for various things (like async/await)
