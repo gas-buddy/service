@@ -130,7 +130,7 @@ export default class Service extends EventEmitter {
       }
     } catch (error) {
       // eslint-disable-next-line no-console
-      winston.error('@gasbuddy/service hydration failed', error);
+      winston.error('@gasbuddy/service hydration failed', this.wrapError(error));
       throw error;
     }
   }
