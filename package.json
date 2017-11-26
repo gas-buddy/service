@@ -90,7 +90,7 @@
     "cross-env": "^5.1.1",
     "eslint-config-gasbuddy": "^4",
     "supertest": "^3.0.0",
-    "tap": "^10.7.3",
+    "tap": "^11.0.0",
     "tap-markdown": "^1.2.1"
   }
 }
