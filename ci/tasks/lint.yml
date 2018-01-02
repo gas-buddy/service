@@ -12,8 +12,8 @@ inputs:
   - name: dependency-cache
 
 run:
-  path: sh
+  path: npm
   dir: gasbuddy-service
   args:
-  - -exc
-  - npm run lint
+  - run
+  - lint
