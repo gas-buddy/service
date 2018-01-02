@@ -32,5 +32,5 @@ jobs:
         passed: [Install dependencies]
       - get: dependency-cache
         passed: [Install dependencies]
-      - task: lint
-        file: gasbuddy-service/ci/tasks/lint.yml
+      - task: test
+        file: gasbuddy-service/ci/tasks/test.yml
