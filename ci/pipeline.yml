@@ -11,7 +11,7 @@ resources:
     type: git
     source: &repo-source
       uri: https://github.com/gas-buddy/service
-      branch: master
+      branch: concourse
   - name: dependency-cache
     type: npm-cache
     source:
