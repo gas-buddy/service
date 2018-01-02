@@ -1,0 +1,36 @@
+---
+resource_types:
+  - name: npm-cache
+    type: docker-image
+    source:
+      repository: ymedlop/npm-cache-resource
+      tag: 8
+
+resources:
+  - name: gasbuddy-service
+    type: git
+    source: &repo-source
+      uri: https://github.com/gas-buddy/service
+      branch: master
+  - name: dependency-cache
+    type: npm-cache
+    source:
+      <<: *repo-source
+      paths:
+        - package.json
+
+jobs:
+  - name: Install dependencies
+    plan:
+      - get: gasbuddy-service
+        trigger: true
+      - get: dependency-cache
+  - name: Lint and Test
+    plan:
+      - get: gasbuddy-service
+        trigger: true
+        passed: [Install dependencies]
+      - get: dependency-cache
+        passed: [Install dependencies]
+      - task: lint
+        file: gasbuddy-service/ci/tasks/lint.yml
