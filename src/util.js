@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { servicesWithOptions } from '@gasbuddy/configured-swagger-client';
+import { servicesWithOptions, OriginalCallPropertyKey } from '@gasbuddy/configured-swagger-client';
 import Service from './Service';
 
 /**
@@ -85,6 +85,15 @@ export function serviceProxy(req) {
     },
     responseInterceptor(originalRequest) {
       svc.emit(Service.Event.AfterServiceCall, this, originalRequest);
+      // Swagger errObj's are crap. So we change them to not crap.
+      if (this.errObj && originalRequest[OriginalCallPropertyKey]) {
+        Object.assign(originalRequest[OriginalCallPropertyKey], {
+          message: this.errObj.message,
+          status: this.errObj.status,
+          response: this.errObj.response,
+        });
+        this.errObj = originalRequest[OriginalCallPropertyKey];
+      }
       return this;
     },
   });
