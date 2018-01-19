@@ -96,3 +96,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 5.0.0
 =====
 * Move to node 8.9 which reduces the amount of transpiling to take advantage of built in support for various things (like async/await)
+
+5.3.2
+=====
+* Avoid nesting errors coming from swagger clients by looking for code/domain/message on the body of the response and just passing along that data

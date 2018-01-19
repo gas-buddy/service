@@ -156,10 +156,22 @@ export function finalHandlerFactory(options) {
       reqLogger.error('Handler exception', winstonError(error));
 
       if (shouldRenderResponse) {
-        res.status(error.status || 500).send({
-          code: error.code,
-          message: error.message,
-          domain: error.domain,
+        // Check to see if it's a nested error and send
+        // consumable errors upstream
+        let loggable = error;
+        if (error.obj && error.obj.domain && error.obj.code && error.obj.message) {
+          loggable = {
+            message: error.obj.message,
+            domain: error.obj.domain,
+            code: error.obj.domain,
+            display_message: error.obj.display_message,
+          };
+        }
+        res.status(loggable.status || 500).send({
+          code: loggable.code,
+          message: loggable.message,
+          domain: loggable.domain,
+          display_message: loggable.display_message,
         });
       } else {
         next(error);
