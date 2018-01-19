@@ -163,7 +163,7 @@ export function finalHandlerFactory(options) {
           loggable = {
             message: error.obj.message,
             domain: error.obj.domain,
-            code: error.obj.domain,
+            code: error.obj.code,
             display_message: error.obj.display_message,
           };
         }
