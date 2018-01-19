@@ -161,6 +161,7 @@ export function finalHandlerFactory(options) {
         let loggable = error;
         if (error.obj && error.obj.domain && error.obj.code && error.obj.message) {
           loggable = {
+            status: error.status,
             message: error.obj.message,
             domain: error.obj.domain,
             code: error.obj.code,
