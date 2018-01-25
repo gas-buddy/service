@@ -100,3 +100,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 5.3.2
 =====
 * Avoid nesting errors coming from swagger clients by looking for code/domain/message on the body of the response and just passing along that data
+
+5.4.0
+=====
+* Allow singleMetric config on metricsShim to centralize metrics with an operation label where desired

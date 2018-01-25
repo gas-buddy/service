@@ -48,18 +48,35 @@ export class metricsShim {
         return;
       }
 
-      const keyname = `${config.metricPrefix || ''}${callInfo.operationName}`;
-      let histo = callMetrics[keyname];
       try {
-        if (!histo) {
-          histo = new gb.metrics.Histogram(
-            keyname,
-            `${config.metricDescription} ${callInfo.operationName}`,
-            ['success', 'source'],
-          );
-          callMetrics[keyname] = histo;
+        if (config.singleMetric) {
+          const keyname = `${config.metric || config.metricPrefix}`;
+          let histo = callMetrics[keyname];
+          if (!histo) {
+            histo = new gb.metrics.Histogram(
+              keyname,
+              `${config.metricDescription}`,
+              ['success', 'source', 'operation'],
+            );
+            callMetrics[keyname] = histo;
+          }
+          callInfo[CALL_TIMER] = histo.startTimer({
+            source: gb.options.name,
+            operation: callInfo.operationName,
+          });
+        } else {
+          const keyname = `${config.metricPrefix || ''}${callInfo.operationName}`;
+          let histo = callMetrics[keyname];
+          if (!histo) {
+            histo = new gb.metrics.Histogram(
+              keyname,
+              `${config.metricDescription} ${callInfo.operationName}`,
+              ['success', 'source'],
+            );
+            callMetrics[keyname] = histo;
+          }
+          callInfo[CALL_TIMER] = histo.startTimer({ source: gb.options.name });
         }
-        callInfo[CALL_TIMER] = histo.startTimer({ source: gb.options.name });
         if (this.logAboveMs) {
           callInfo[MY_TIMER] = process.hrtime();
         }
