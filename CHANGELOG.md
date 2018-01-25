@@ -104,3 +104,8 @@ This means you can just `await service.foobar` in your hydrated object's start m
 5.4.0
 =====
 * Allow singleMetric config on metricsShim to centralize metrics with an operation label where desired
+
+5.5.0
+=====
+* Log a "pre" event at the beginning of a request to aid in tracking down abandoned requests
+* Use request-ip to properly get the originating client ip

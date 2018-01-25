@@ -1,24 +1,10 @@
 import winston from 'winston';
+import requestIp from 'request-ip';
 import onFinished from 'on-finished';
 import Service from './Service';
 import { winstonError } from './util';
 
 const SHOULD_LOG_BODY = Symbol('Whether to log the request body for all requests');
-
-/**
- * Get request IP address.
- *
- * @private
- * @param {IncomingMessage} req
- * @return {string}
- */
-
-function getip(req) {
-  return req.ip
-    || req._remoteAddress // eslint-disable-line no-underscore-dangle
-    || (req.connection && req.connection.remoteAddress)
-    || undefined;
-}
 
 export function requestBodyLogger(req, res, next) {
   req[SHOULD_LOG_BODY] = true;
@@ -27,6 +13,28 @@ export function requestBodyLogger(req, res, next) {
 
 let metricsHistogram;
 let hostname;
+
+function getBasicInfo(req) {
+  const url = req.originalUrl || req.url;
+
+  const preInfo = {
+    url,
+    m: req.method,
+    ts: Date.now(),
+  };
+  if (req.headers && req.headers.correlationid) {
+    preInfo.c = req.headers.correlationid;
+  }
+  if (req.headers && req.headers.span) {
+    preInfo.sp = req.headers.span;
+  } else if (req.gb && req.gb.logger && req.gb.logger.spanId) {
+    preInfo.sp = req.gb.logger.spanId;
+  }
+  if (hostname) {
+    preInfo.host = hostname;
+  }
+  return preInfo;
+}
 
 // Inspired by morgan
 // https://github.com/expressjs/morgan/blob/master/index.js
@@ -48,7 +56,8 @@ export function logger(req, res, next) {
 
   const start = process.hrtime();
 
-  const url = req.originalUrl || req.url;
+  winston.info('pre', getBasicInfo(req));
+
   onFinished(res, (error) => {
     const hrdur = process.hrtime(start);
     const dur = hrdur[0] + (hrdur[1] / 1000000000);
@@ -61,21 +70,17 @@ export function logger(req, res, next) {
         method: req.method,
       }, dur);
     }
-    const rqInfo = {
-      url,
-      m: req.method,
-      ts: Date.now(),
+    // Run getBasicInfo again just in case req processing
+    // has changed any values
+    const rqInfo = Object.assign(getBasicInfo(req), {
       dur,
-      ip: getip(req),
+      ip: requestIp.getClientIp(req),
       ua: req.headers['user-agent'],
       v: `${req.httpVersionMajor}.${req.httpVersionMinor}`,
-    };
+    });
 
     if (req.user) {
       rqInfo.u = req.user.id;
-    }
-    if (hostname) {
-      rqInfo.host = hostname;
     }
     if (res._header) { // eslint-disable-line no-underscore-dangle
       rqInfo.s = res.statusCode;
@@ -84,14 +89,6 @@ export function logger(req, res, next) {
     if (error) {
       rqInfo.e = error.message;
       rqInfo.st = error.stack;
-    }
-    if (req.headers && req.headers.correlationid) {
-      rqInfo.c = req.headers.correlationid;
-    }
-    if (req.headers && req.headers.span) {
-      rqInfo.sp = req.headers.span;
-    } else if (req.gb && req.gb.logger && req.gb.logger.spanId) {
-      rqInfo.sp = req.gb.logger.spanId;
     }
     if (req[SHOULD_LOG_BODY]) {
       // winston flattens JSON, so I guess we need to wrap it. Hrmph.

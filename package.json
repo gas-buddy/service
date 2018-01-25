@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -77,6 +77,7 @@
     "minimist": "^1.2.0",
     "on-finished": "^2.3.0",
     "on-headers": "^1.0.1",
+    "request-ip": "^2.0.2",
     "shortstop-dns": "^1.0.0",
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
