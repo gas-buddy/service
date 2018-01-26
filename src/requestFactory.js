@@ -21,6 +21,8 @@ function superagentFunctor(service, logger) {
     const newRequest = request[method.toLowerCase()](url);
     const existingThen = newRequest.then;
     newRequest.then = function gbThen(resolve, reject) {
+      // Take our override out, we're all set now.
+      delete newRequest.then;
       return existingThen.call(newRequest, (rz) => {
         if (superagentHistogram) {
           const hrdur = process.hrtime(startTime);
