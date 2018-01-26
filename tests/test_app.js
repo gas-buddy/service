@@ -132,6 +132,19 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
+  const { body: superBody, status: superStatus } = await request(s.service.app)
+    .get(`/callSelf/superagent?port=${httpPort}&ep=simple`)
+    .set('CorrelationId', 'FAKE_CORRELATION_ID');
+  t.strictEquals(superBody.body.hello, 'world', 'Should return the expected body');
+  t.strictEquals(superBody.headers['custom-header'], 'hello-world', 'Should receive header');
+  t.strictEquals(superStatus, 200, 'Should get a 200');
+
+  const { body: failBody, status: failStatus } = await request(s.service.app)
+    .get(`/callSelf/superagent?port=${httpPort}&ep=simple-fail`)
+    .set('CorrelationId', 'FAKE_CORRELATION_ID');
+  t.strictEquals(failBody.status, 404, 'Should get a 404 from catch');
+  t.strictEquals(failStatus, 200, 'Should get a 200');
+
   const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
   t.ok(ctr, 'Should make a new Counter metric');
   ctr.inc(99);
@@ -142,6 +155,7 @@ tap.test('server startup', async (t) => {
   ]);
   const res = await request(s.service.metrics.app)
     .get('/metrics');
+  t.match(res.text, /superagent_http_requests_bucket/, 'Should have a superagent metric');
   t.match(res.text, /# TYPE test_metric counter/, 'Should have our counter');
   t.match(res.text, /test_metric 101/, 'Should have our counter value');
   t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
@@ -155,6 +169,14 @@ tap.test('server startup', async (t) => {
   const md404 = await request(s.service.metadata.app)
     .get('/connections/nobodyhome');
   t.strictEquals(md404.status, 404, 'Should 404 for non existent connection');
+
+  const mdhealth = await request(s.service.metadata.app)
+    .get('/health');
+  t.strictEquals(mdhealth.status, 200, 'Should get 200 health check');
+
+  const mdmodules = await request(s.service.metadata.app)
+    .get('/modules?depth=1');
+  t.strictEquals(mdmodules.status, 200, 'Should get 200 module check');
 
   await s.destroy();
   t.ok(true, 'servers should stop');

@@ -41,10 +41,10 @@
   },
   "homepage": "https://github.com/gas-buddy/service#readme",
   "nyc": {
-    "lines": 70,
-    "statements": 70,
-    "functions": 75,
-    "branches": 45,
+    "lines": 75,
+    "statements": 75,
+    "functions": 80,
+    "branches": 50,
     "include": [
       "src"
     ],

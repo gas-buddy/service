@@ -2,6 +2,7 @@ import objectID from 'bson-objectid';
 import winston from 'winston';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
+import { superagentFunctor } from './superagentHelper';
 import { serviceProxy, winstonError, throwError } from './util';
 
 /**
@@ -62,6 +63,10 @@ export default function requestFactory(options) {
        * But did I say this was an opinionated library? I did.
        */
       services: serviceProxy(req),
+      /**
+       * A superagent request with automatic metrics and tracking
+       */
+      requestWithContext: superagentFunctor(service, req, logger),
     });
     next();
   };

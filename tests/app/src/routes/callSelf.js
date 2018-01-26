@@ -8,4 +8,17 @@ export default function (router) {
       });
     res.json(response.obj);
   });
+
+  router.get('/superagent', async (req, res) => {
+    await new Promise(accept => setTimeout(accept, 500));
+    try {
+      const { body, status, headers } = await req.gb
+        .requestWithContext('post', `http://localhost:${req.query.port}/${req.query.ep}`)
+        .set('custom-header', 'hello-world')
+        .send({ hello: 'world' });
+      res.json({ body, status, headers });
+    } catch (error) {
+      res.json({ status: error.status });
+    }
+  });
 }
