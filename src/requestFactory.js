@@ -31,7 +31,7 @@ function superagentFunctor(service, logger) {
             endpoint: `${method}_${url}`,
           }, dur);
         }
-        return resolve(rz);
+        return resolve ? resolve(rz) : rz;
       }, shouldLogErrors ? (e) => {
         const hrdur = process.hrtime(startTime);
         const dur = hrdur[0] + (hrdur[1] / 1000000000);
