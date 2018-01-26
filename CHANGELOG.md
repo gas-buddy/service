@@ -109,3 +109,7 @@ This means you can just `await service.foobar` in your hydrated object's start m
 =====
 * Log a "pre" event at the beginning of a request to aid in tracking down abandoned requests
 * Use request-ip to properly get the originating client ip
+
+5.6.0
+=====
+* Expose requestWithContext to front superagent with metrics, error logging, and correlation id/span id support
