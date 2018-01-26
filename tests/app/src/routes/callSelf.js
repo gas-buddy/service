@@ -11,10 +11,14 @@ export default function (router) {
 
   router.get('/superagent', async (req, res) => {
     await new Promise(accept => setTimeout(accept, 500));
-    console.error('MAKE IT', req.query.port);
-    const { body, status } = await req.gb
-      .doHttpRequest('post', `http://localhost:${req.query.port}/simple`)
-      .send({ hello: 'world' });
-    res.json({ body, status });
+    try {
+      const { body, status } = await req.gb
+        .doHttpRequest('post', `http://localhost:${req.query.port}/${req.query.ep}`)
+        .set('custom-header', 'value')
+        .send({ hello: 'world' });
+      res.json({ body, status });
+    } catch (error) {
+      res.json({ status: error.status });
+    }
   });
 }

@@ -132,10 +132,17 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
-  const { body: superBody } = await request(s.service.app)
-    .get(`/callSelf/superagent?port=${httpPort}`)
+  const { body: superBody, status: superStatus } = await request(s.service.app)
+    .get(`/callSelf/superagent?port=${httpPort}&ep=simple`)
     .set('CorrelationId', 'FAKE_CORRELATION_ID');
-  console.error(superBody);
+  t.strictEquals(superBody.body.hello, 'world', 'Should return the expected body');
+  t.strictEquals(superStatus, 200, 'Should get a 200');
+
+  const { body: failBody, status: failStatus } = await request(s.service.app)
+    .get(`/callSelf/superagent?port=${httpPort}&ep=simple-fail`)
+    .set('CorrelationId', 'FAKE_CORRELATION_ID');
+  t.strictEquals(failBody.status, 404, 'Should get a 404 from catch');
+  t.strictEquals(failStatus, 200, 'Should get a 200');
 
   const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
   t.ok(ctr, 'Should make a new Counter metric');
@@ -147,6 +154,7 @@ tap.test('server startup', async (t) => {
   ]);
   const res = await request(s.service.metrics.app)
     .get('/metrics');
+  t.match(res.text, /superagent_http_requests_bucket/, 'Should have a superagent metric');
   t.match(res.text, /# TYPE test_metric counter/, 'Should have our counter');
   t.match(res.text, /test_metric 101/, 'Should have our counter value');
   t.match(res.text, /faker_count{source="pet-serv",success="true"}/, 'Should have faker');
