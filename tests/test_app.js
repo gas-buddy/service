@@ -132,6 +132,11 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
+  const { body: superBody } = await request(s.service.app)
+    .get(`/callSelf/superagent?port=${httpPort}`)
+    .set('CorrelationId', 'FAKE_CORRELATION_ID');
+  console.error(superBody);
+
   const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
   t.ok(ctr, 'Should make a new Counter metric');
   ctr.inc(99);

@@ -1,5 +1,6 @@
 import objectID from 'bson-objectid';
 import winston from 'winston';
+import request from 'superagent';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
 import { serviceProxy, winstonError, throwError } from './util';
@@ -62,6 +63,29 @@ export default function requestFactory(options) {
        * But did I say this was an opinionated library? I did.
        */
       services: serviceProxy(req),
+      /**
+       * A superagent request with automatic metrics and tracking
+       */
+      doHttpRequest(method, url, shouldLogErrors = true) {
+        const startTime = process.hrtime();
+        const newRequest = request[method.toLowerCase()](url);
+        const thenable = newRequest.then((rz) => {
+          console.log('DONE');
+          return rz;
+        });
+        if (shouldLogErrors) {
+          thenable.catch((e) => {
+            console.log('THROWS');
+            logger.error('Http request failed', {
+              status: e,
+              url,
+              method,
+            });
+            throw e;
+          });
+        }
+        return newRequest;
+      },
     });
     next();
   };
