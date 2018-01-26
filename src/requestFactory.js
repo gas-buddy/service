@@ -1,65 +1,9 @@
 import objectID from 'bson-objectid';
 import winston from 'winston';
-import request from 'superagent';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
+import { superagentFunctor } from './superagentHelper';
 import { serviceProxy, winstonError, throwError } from './util';
-
-let superagentHistogram;
-
-function superagentFunctor(service, logger) {
-  return function superagentWithLog(method, url, shouldLogErrors = true) {
-    if (!superagentHistogram && service.metrics) {
-      superagentHistogram = new service.metrics.Histogram(
-        'superagent_http_requests',
-        'Outbound SuperAgent requests',
-        ['status', 'source', 'endpoint'],
-      );
-    }
-
-    const startTime = process.hrtime();
-    const newRequest = request[method.toLowerCase()](url);
-    const existingThen = newRequest.then;
-    newRequest.then = function gbThen(resolve, reject) {
-      // Take our override out, we're all set now.
-      delete newRequest.then;
-      return existingThen.call(newRequest, (rz) => {
-        if (superagentHistogram) {
-          const hrdur = process.hrtime(startTime);
-          const dur = hrdur[0] + (hrdur[1] / 1000000000);
-          superagentHistogram.observe({
-            source: service.name,
-            status: rz.status,
-            endpoint: `${method}_${url}`,
-          }, dur);
-        }
-        return resolve ? resolve(rz) : rz;
-      }, shouldLogErrors ? (e) => {
-        const hrdur = process.hrtime(startTime);
-        const dur = hrdur[0] + (hrdur[1] / 1000000000);
-        if (superagentHistogram) {
-          superagentHistogram.observe({
-            source: service.name,
-            status: e.status,
-            endpoint: `${method}_${url}`,
-          }, dur);
-        }
-        logger.error('Http request failed', {
-          status: e.status,
-          url,
-          method,
-          dur,
-        });
-        if (reject) {
-          reject(e);
-        } else {
-          throw e;
-        }
-      } : reject);
-    };
-    return newRequest;
-  };
-}
 
 /**
  * Middleware to attach the "service" object to the request and add various request-specific
@@ -122,7 +66,7 @@ export default function requestFactory(options) {
       /**
        * A superagent request with automatic metrics and tracking
        */
-      doHttpRequest: superagentFunctor(service, logger),
+      requestWithContext: superagentFunctor(service, req, logger),
     });
     next();
   };

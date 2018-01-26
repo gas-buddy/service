@@ -12,11 +12,11 @@ export default function (router) {
   router.get('/superagent', async (req, res) => {
     await new Promise(accept => setTimeout(accept, 500));
     try {
-      const { body, status } = await req.gb
-        .doHttpRequest('post', `http://localhost:${req.query.port}/${req.query.ep}`)
-        .set('custom-header', 'value')
+      const { body, status, headers } = await req.gb
+        .requestWithContext('post', `http://localhost:${req.query.port}/${req.query.ep}`)
+        .set('custom-header', 'hello-world')
         .send({ hello: 'world' });
-      res.json({ body, status });
+      res.json({ body, status, headers });
     } catch (error) {
       res.json({ status: error.status });
     }

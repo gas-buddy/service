@@ -136,6 +136,7 @@ tap.test('server startup', async (t) => {
     .get(`/callSelf/superagent?port=${httpPort}&ep=simple`)
     .set('CorrelationId', 'FAKE_CORRELATION_ID');
   t.strictEquals(superBody.body.hello, 'world', 'Should return the expected body');
+  t.strictEquals(superBody.headers['custom-header'], 'hello-world', 'Should receive header');
   t.strictEquals(superStatus, 200, 'Should get a 200');
 
   const { body: failBody, status: failStatus } = await request(s.service.app)
@@ -168,6 +169,14 @@ tap.test('server startup', async (t) => {
   const md404 = await request(s.service.metadata.app)
     .get('/connections/nobodyhome');
   t.strictEquals(md404.status, 404, 'Should 404 for non existent connection');
+
+  const mdhealth = await request(s.service.metadata.app)
+    .get('/health');
+  t.strictEquals(mdhealth.status, 200, 'Should get 200 health check');
+
+  const mdmodules = await request(s.service.metadata.app)
+    .get('/modules?depth=1');
+  t.strictEquals(mdmodules.status, 200, 'Should get 200 module check');
 
   await s.destroy();
   t.ok(true, 'servers should stop');
