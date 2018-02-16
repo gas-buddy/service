@@ -12,7 +12,7 @@ export function superagentFunctor(service, req, logger) {
       superagentHistogram = new service.metrics.Histogram(
         'superagent_http_requests',
         'Outbound SuperAgent requests',
-        ['status', 'source', 'endpoint'],
+        ['status', 'source', 'endpoint', 'method'],
       );
     }
 
@@ -35,7 +35,8 @@ export function superagentFunctor(service, req, logger) {
         superagentHistogram.observe({
           source: service.name,
           status: newRequest.res ? newRequest.res.statusCode : 0,
-          endpoint: `${method}_${loggableUrl || url}`,
+          endpoint: loggableUrl || url,
+          method: method.toUpperCase(),
         }, dur);
       }
     });
@@ -47,14 +48,15 @@ export function superagentFunctor(service, req, logger) {
         superagentHistogram.observe({
           source: service.name,
           status: error.status,
-          endpoint: `${method}_${loggableUrl || url}`,
+          endpoint: loggableUrl || url,
+          method: method.toUpperCase(),
         }, dur);
       }
       if (logErrors) {
         newLogger.error('Http request failed', {
           status: error.status,
           url: loggableUrl || url,
-          method,
+          method: method.toUpperCase(),
           dur,
         });
       }
