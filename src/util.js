@@ -1,5 +1,6 @@
 import winston from 'winston';
 import { servicesWithOptions, OriginalCallPropertyKey } from '@gasbuddy/configured-swagger-client';
+import { superagentFunctor } from './superagentHelper';
 import Service from './Service';
 
 /**
@@ -117,4 +118,24 @@ disableCorrelation: true in the endpoint configuration.
       return this;
     };
   }
+}
+
+export function syntheticRequest(service, correlationid) {
+  const req = {
+    app: service.app,
+    gb: Object.create(Object.getPrototypeOf(service)),
+    headers: {
+      correlationid,
+    },
+  };
+  const services = serviceProxy(req);
+  const logger = service.logger.loggerWithDefaults({ c: req.headers.correlationid });
+  Object.assign(req.gb, service, {
+    services,
+    logger,
+    throwError: throwError.bind(this, service.name),
+    wrapError(...args) { return service.wrapError(...args); },
+    requestWithContext: superagentFunctor(service, req, logger),
+  });
+  return req;
 }

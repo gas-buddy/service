@@ -8,7 +8,7 @@ import minimist from 'minimist';
 import 'source-map-support/register';
 import Service from './Service';
 import Server from './Server';
-import { serviceProxy } from './util';
+import { syntheticRequest } from './util';
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ['built', 'repl', 'nobind'],
@@ -111,16 +111,8 @@ if (argv.repl) {
 
   service.on('configured', () => {
     // Build a synthetic req to make calls easier
-    const req = {
-      app: service.app,
-      gb: Object.create(Object.getPrototypeOf(service)),
-      headers: {
-        correlationid: argv.correlationid || `${service.name}-repl-${Date.now()}`,
-      },
-    };
-    const services = serviceProxy(req);
-    const logger = service.logger.loggerWithDefaults({ c: req.headers.correlationid });
-    Object.assign(req.gb, service, { services, logger });
+    const correlationid = argv.correlationid || `${service.name}-repl-${Date.now()}`;
+    const req = syntheticRequest(service, correlationid);
     rl.context.req = req;
   });
 

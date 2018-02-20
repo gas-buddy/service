@@ -1,6 +1,6 @@
 import path from 'path';
 import Service from './Service';
-import { serviceProxy } from './util';
+import { syntheticRequest } from './util';
 
 /**
  * Make it easier to write batch jobs by reusing service config without
@@ -36,16 +36,7 @@ export async function runWithService(asyncFn, options) {
 
   return service.configure(opts.srcRoot)
     .then(() => {
-      const req = {
-        app: service.app,
-        gb: Object.create(Object.getPrototypeOf(service)),
-        headers: {
-          correlationid: opts.correlationid || `runWithService-${Date.now()}`,
-        },
-      };
-      const services = serviceProxy(req);
-      const logger = service.logger.loggerWithDefaults({ c: req.headers.correlationid });
-      Object.assign(req.gb, service, { services, logger });
+      const req = syntheticRequest(service, opts.correlationid || `runWithService-${Date.now()}`);
       return asyncFn(service, req);
     })
     .then(() => service.destroy())
