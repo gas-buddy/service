@@ -44,7 +44,9 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' 
   dirname = path.join(process.cwd(), 'build');
 } else {
   // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  require('babel-register');
+  const ignore = require('babel-preset-gasbuddy/ignore');
+  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
+  require('babel-register')({ ignore });
 }
 
 try {
