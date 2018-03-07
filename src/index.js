@@ -6,6 +6,7 @@ export { serviceProxy, addCorrelationWarning } from './util';
 export { metricsShim } from './metricsShim';
 export { MetadataServer } from './metadata';
 export { runWithService } from './runWithService';
+export { default as NetworkedRepl } from './networkedRepl';
 
 export {
   loggerFactory,

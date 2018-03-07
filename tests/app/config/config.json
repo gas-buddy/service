@@ -21,6 +21,10 @@
         }
       }
     },
+    "repl": {
+      "enabled": true,
+      "module": "require:../../src/index#NetworkedRepl"
+    },
     "metadata": {
       "module": "require:../../src/index#MetadataServer"
     },
