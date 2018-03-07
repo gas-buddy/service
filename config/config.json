@@ -1,5 +1,10 @@
 {
   "connections": {
+    "repl": {
+      "enabled": "env:NETWORK_REPL|b",
+      "module": "require:@gasbuddy/service#NetworkedRepl",
+      "port": 3002
+    },
     "logger": {
       "module": "require:@gasbuddy/configured-winston",
       "addTimestamp": true,

@@ -5,6 +5,22 @@ import Service from './Service';
 import { superagentFunctor } from './superagentHelper';
 import { serviceProxy, winstonError, throwError } from './util';
 
+function childContextCreator(service, req, propName) {
+  return (suffix) => {
+    const newId = `${req.headers.correlationid}#${suffix}`;
+    const newReq = Object.assign({}, req);
+    newReq.headers = Object.assign({}, req.headers, { correlationid: newId });
+    const newLogger = req[propName].logger.loggerWithDefaults({ c: newId });
+    newReq[propName] = Object.assign({}, req[propName], {
+      logger: newLogger,
+      services: serviceProxy(newReq),
+      requestWithContext: superagentFunctor(service, newReq, newLogger),
+      childCorrelationContext: childContextCreator(service, newReq, propName),
+    });
+    return newReq;
+  };
+}
+
 /**
  * Middleware to attach the "service" object to the request and add various request-specific
  * features to it such as logging and inter-service correlation
@@ -67,6 +83,10 @@ export default function requestFactory(options) {
        * A superagent request with automatic metrics and tracking
        */
       requestWithContext: superagentFunctor(service, req, logger),
+      /**
+       * Create a secondary "request like object" with a correlationid suffix
+       */
+      childCorrelationContext: childContextCreator(service, req, propName),
     });
     next();
   };

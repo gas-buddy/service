@@ -3,6 +3,10 @@
     "logger": {
       "level": "debug"
     },
+    "repl": {
+      "enabled": true,
+      "port": 0
+    },
     "metrics": {
       "port": 0
     },
