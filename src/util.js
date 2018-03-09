@@ -120,6 +120,22 @@ disableCorrelation: true in the endpoint configuration.
   }
 }
 
+export function childContextCreator(service, req, propName) {
+  return (suffix) => {
+    const newId = `${req.headers.correlationid}#${suffix}`;
+    const newReq = Object.assign({}, req);
+    newReq.headers = Object.assign({}, req.headers, { correlationid: newId });
+    const newLogger = req[propName].logger.loggerWithDefaults({ c: newId });
+    newReq[propName] = Object.assign({}, req[propName], {
+      logger: newLogger,
+      services: serviceProxy(newReq),
+      requestWithContext: superagentFunctor(service, newReq, newLogger),
+      childCorrelationContext: childContextCreator(service, newReq, propName),
+    });
+    return newReq;
+  };
+}
+
 export function syntheticRequest(service, correlationid) {
   const req = {
     app: service.app,
@@ -136,6 +152,7 @@ export function syntheticRequest(service, correlationid) {
     throwError: throwError.bind(this, service.name),
     wrapError(...args) { return service.wrapError(...args); },
     requestWithContext: superagentFunctor(service, req, logger),
+    childCorrelationContext: childContextCreator(service, req, 'gb'),
   });
   return req;
 }
