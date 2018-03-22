@@ -3,6 +3,15 @@ import { servicesWithOptions, OriginalCallPropertyKey } from '@gasbuddy/configur
 import { superagentFunctor } from './superagentHelper';
 import Service from './Service';
 
+const objMessage = `
+
+*********************************************
+DO NOT USE .obj anymore, as underlying
+swagger-client has moved to .body.
+*********************************************
+
+`;
+
 /**
  * Turn most inputs into real errors.
  */
@@ -72,30 +81,43 @@ export function serviceProxy(req) {
   const defaultTimeout = svc.config.get('connections:services:defaultTimeout');
 
   return servicesWithOptions(services, {
-    requestInterceptor() {
-      this.headers.correlationid = this.headers.correlationid || req.headers.correlationid;
+    requestInterceptor(request) {
+      request.headers.correlationid = request.headers.correlationid || req.headers.correlationid;
       if (req.gb && req.gb.logger && typeof req.gb.logger.loggerWithNewSpan === 'function') {
         const newLogger = req.gb.logger.loggerWithNewSpan();
-        this.headers.span = newLogger.spanId;
+        request.headers.span = newLogger.spanId;
       }
       if (defaultTimeout) {
-        this.timeout = this.timeout || defaultTimeout;
+        request.timeout = this.timeout || defaultTimeout;
       }
-      svc.emit(Service.Event.BeforeServiceCall, this);
-      return this;
+      svc.emit(Service.Event.BeforeServiceCall, request);
+      return request;
     },
-    responseInterceptor(originalRequest) {
-      svc.emit(Service.Event.AfterServiceCall, this, originalRequest);
+    responseInterceptor(response) {
+      svc.emit(Service.Event.AfterServiceCall, response, this);
+      if (response.body) {
+        if (['development', 'test', ''].includes(process.env.NODE_ENV || '')) {
+          Object.defineProperty(response, 'obj', {
+            get() {
+              // eslint-disable-next-line no-console
+              console.error(objMessage);
+              throw new Error('Out of date swagger response handling');
+            },
+          });
+        } else {
+          response.obj = response.body;
+        }
+      }
       // Swagger errObj's are crap. So we change them to not crap.
-      if (this.errObj && originalRequest[OriginalCallPropertyKey]) {
-        Object.assign(originalRequest[OriginalCallPropertyKey], {
+      if (this.errObj && this[OriginalCallPropertyKey]) {
+        Object.assign(this[OriginalCallPropertyKey], {
           message: this.errObj.message,
           status: this.errObj.status,
           response: this.errObj.response,
         });
-        this.errObj = originalRequest[OriginalCallPropertyKey];
+        this.errObj = this[OriginalCallPropertyKey];
       }
-      return this;
+      return response;
     },
   });
 }

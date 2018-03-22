@@ -113,3 +113,11 @@ This means you can just `await service.foobar` in your hydrated object's start m
 5.6.0
 =====
 * Expose requestWithContext to front superagent with metrics, error logging, and correlation id/span id support
+
+6.0.0
+=====
+* Update to the latest swagger-client (3.x) via configured-swagger-client. This has several breaking changes which we've tried
+to ameliorate as best as possible given the ubiquity of service calls. See [MIGRATION](https://github.com/swagger-api/swagger-js/blob/master/docs/MIGRATION_2_X.md) for more.
+    * obj is no longer present on swagger responses, body is the result of an operation. We've put an exception-throwing property in dev/test, but just echo obj to body in non-(dev|test).
+    * requestInterceptor takes a request argument and responseInterceptor takes a response argument, whereas it used to be "this". In requestInterceptor, it is still "this" as well as the first arg, but responseInterceptor must be updated if you use it.
+    * security infrastructure has changed though it shouldn't affect upstream usage
