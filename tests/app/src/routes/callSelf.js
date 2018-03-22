@@ -2,8 +2,8 @@ export default function (router) {
   router.get('/', async (req, res) => {
     const response = await req.gb.services.Self.apis.default
       .get_hello_world({}, {
-        requestInterceptor() {
-          this.url = this.url.replace(':8000', `:${req.query.port}`);
+        requestInterceptor(request) {
+          request.url = request.url.replace(':8000', `:${req.query.port}`);
         },
       });
     res.json(response.body);
