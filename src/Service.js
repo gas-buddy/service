@@ -1,4 +1,5 @@
 import fs from 'fs';
+import URL from 'url';
 import path from 'path';
 import assert from 'assert';
 import confit from 'confit';
@@ -7,6 +8,7 @@ import winston from 'winston';
 import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
 import { hydrate, dehydrate } from '@gasbuddy/hydration';
+import { CallPathPropertyKey } from '@gasbuddy/configured-swagger-client';
 import { drain } from './drain';
 import shortstops from './shortstops';
 import { winstonError } from './util';
@@ -28,6 +30,7 @@ async function pathExists(f) {
 const CONNECTIONS = Symbol('Property key for objects that need shutdown');
 const CONNECTIONS_TREE = Symbol('Structured values for the result of hydration');
 const SERVICE = Symbol('The Service class attached to an app');
+const SERVICE_TIMER = Symbol('Timing service calls');
 const environments = ['production', 'staging', 'test', 'development'];
 
 export default class Service extends EventEmitter {
@@ -115,6 +118,39 @@ export default class Service extends EventEmitter {
       if (this.config.get('trustProxy') !== undefined) {
         this.app.set('trust proxy', this.config.get('trustProxy'));
       }
+
+      // Setup metrics tracking on Swagger endpoints
+      const serviceMetrics = {};
+
+      this.on(Service.Event.BeforeServiceCall, (req) => {
+        if (!this.metrics) {
+          return;
+        }
+        const [, opName] = req[CallPathPropertyKey];
+        const { host } = URL.parse(req.url, false);
+        const keyname = `service_${host.replace(/[-.]/g, '_')}_${opName || 'unknown'}`;
+        let histo = serviceMetrics[keyname];
+        try {
+          if (!histo) {
+            histo = new this.metrics.Histogram(
+              keyname,
+              `Calls to the ${host} service method ${opName}`,
+              ['status', 'source']);
+            serviceMetrics[keyname] = histo;
+          }
+          req[SERVICE_TIMER] = histo.startTimer({ source: this.name });
+        } catch (error) {
+          winston.error('Failed to create service metric', {
+            message: error.message,
+            stack: error.stack,
+          });
+        }
+      });
+      this.on(Service.Event.AfterServiceCall, (res, req) => {
+        if (req[SERVICE_TIMER]) {
+          req[SERVICE_TIMER]({ status: res.status });
+        }
+      });
 
       // And add meddleware to express. The GasBuddy version of this
       // originally-PayPal module handles promises. Maybe the PayPal one
