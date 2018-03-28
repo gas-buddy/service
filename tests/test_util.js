@@ -5,7 +5,6 @@ tap.test('error wrapping', (t) => {
   const errorString = 'Hello world';
   const errors = [
     new Error(errorString),
-    { errObj: new Error(errorString) },
     errorString,
   ];
 

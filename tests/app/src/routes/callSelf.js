@@ -1,3 +1,13 @@
+async function thisShouldBeTopOfStack(req) {
+  const { body, status } = await req.gb.services.Self.apis.default
+    .get_throw({}, {
+      requestInterceptor(request) {
+        request.url = request.url.replace(':8000', `:${req.query.port}`);
+      },
+    });
+  return { body, status };
+}
+
 export default function (router) {
   router.get('/', async (req, res) => {
     const response = await req.gb.services.Self.apis.default
@@ -20,5 +30,9 @@ export default function (router) {
     } catch (error) {
       res.json({ status: error.status });
     }
+  });
+
+  router.get('/swaggerthrow', async (req, res) => {
+    res.json(await thisShouldBeTopOfStack(req));
   });
 }

@@ -3,6 +3,14 @@ info:
   version: "1.0"
   title: "Hello World API"
 paths:
+  /throw:
+    get:
+      description: Throw an error
+      responses:
+        200:
+          description: Returns the greeting.
+          schema:
+            type: string
   /hello/world:
     get:
       description: Returns a greeting to the user!
