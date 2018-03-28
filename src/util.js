@@ -39,13 +39,10 @@ function normalizeError(error) {
  * Also avoids non-serializable errors.
  */
 export function winstonError(error) {
-  const errorData = error;
-  if (error.errObj) {
-    errorData.message = error.statusText || error.errObj.message;
-    errorData.stack = error.errObj.stack;
+  if (error.response && error.response[OriginalCallPropertyKey]) {
+    return normalizeError(error.response[OriginalCallPropertyKey]);
   }
-
-  return normalizeError(errorData);
+  return normalizeError(error);
 }
 
 /**
@@ -108,14 +105,14 @@ export function serviceProxy(req) {
           response.obj = response.body;
         }
       }
-      // Swagger errObj's are crap. So we change them to not crap.
-      if (this.errObj && this[OriginalCallPropertyKey]) {
+      if (!response.ok && this[OriginalCallPropertyKey]) {
+        // We store the call-site error on the response for better logs
         Object.assign(this[OriginalCallPropertyKey], {
-          message: this.errObj.message,
-          status: this.errObj.status,
-          response: this.errObj.response,
+          message: response.statusText,
+          status: response.status,
+          response,
         });
-        this.errObj = this[OriginalCallPropertyKey];
+        response[OriginalCallPropertyKey] = this[OriginalCallPropertyKey];
       }
       return response;
     },

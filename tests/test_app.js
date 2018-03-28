@@ -145,6 +145,10 @@ tap.test('server startup', async (t) => {
   t.strictEquals(failBody.status, 404, 'Should get a 404 from catch');
   t.strictEquals(failStatus, 200, 'Should get a 200');
 
+  const { status: throwStatus } = await request(s.service.app)
+    .get(`/callSelf/swaggerthrow?port=${httpPort}`);
+  t.strictEquals(throwStatus, 500, 'Should get a 404 from catch');
+
   const ctr = new (s.service.metrics.Counter)('test_metric', 'test_metric_help');
   t.ok(ctr, 'Should make a new Counter metric');
   ctr.inc(99);
