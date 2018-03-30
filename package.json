@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -60,7 +60,7 @@
   "dependencies": {
     "@gasbuddy/composert": "^1.0.0",
     "@gasbuddy/configured-prometheus-client": "^1.4.2",
-    "@gasbuddy/configured-swagger-client": "^3.2.0",
+    "@gasbuddy/configured-swagger-client": "^3.2.1",
     "@gasbuddy/configured-swaggerize-express": "^2.0.1",
     "@gasbuddy/configured-winston": "^2.0.0",
     "@gasbuddy/configured-winston-logstash": "^2.0.0",
