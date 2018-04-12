@@ -161,7 +161,7 @@ disableCorrelation: true in the endpoint configuration.
 }
 
 export function addSwaggerLoggingMarker(clientInfo) {
-  if (clientInfo.endpoint && clientInfo.endpoint.log) {
+  if (process.env.LOG_SWAGGER_CALLS || (clientInfo.endpoint && clientInfo.endpoint.log)) {
     clientInfo.client[ShouldLogSwaggerCalls] = true;
   }
 }
