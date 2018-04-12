@@ -41,11 +41,13 @@
         "self": {
           "port": 8000,
           "protocol": "http",
-          "hostname": "localhost"
+          "hostname": "localhost",
+          "log": true
         }
       },
       "options": {
-        "preProcessor": "require:../../src/index#addCorrelationWarning"
+        "preProcessor": "require:../../src/index#addCorrelationWarning",
+        "postProcessor": "require:../../src/index#addSwaggerLoggingMarker"
       }
     },
     "trustedCertificates": {

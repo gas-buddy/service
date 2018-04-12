@@ -37,7 +37,8 @@
       "endpoints": {},
       "options": {
         "basedir": "path:.",
-        "preProcessor": "require:@gasbuddy/service#addCorrelationWarning"
+        "preProcessor": "require:@gasbuddy/service#addCorrelationWarning",
+        "postProcessor": "require:@gasbuddy/service#addSwaggerLoggingMarker"
       }
     }
   },
