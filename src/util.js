@@ -1,7 +1,9 @@
 import winston from 'winston';
-import { servicesWithOptions, OriginalCallPropertyKey } from '@gasbuddy/configured-swagger-client';
+import { servicesWithOptions, OriginalCallPropertyKey, CallPathPropertyKey } from '@gasbuddy/configured-swagger-client';
 import { superagentFunctor } from './superagentHelper';
 import Service from './Service';
+
+const ShouldLogSwaggerCalls = Symbol('Whether to log swagger calls to a service');
 
 const objMessage = `
 
@@ -83,6 +85,18 @@ export function serviceProxy(req) {
       if (req.gb && req.gb.logger && typeof req.gb.logger.loggerWithNewSpan === 'function') {
         const newLogger = req.gb.logger.loggerWithNewSpan();
         request.headers.span = newLogger.spanId;
+        if (request[CallPathPropertyKey] && request[CallPathPropertyKey].length && req.gb) {
+          const name = request[CallPathPropertyKey][0];
+          const cfg = req.gb.services[name] && req.gb.services[name][ShouldLogSwaggerCalls];
+          if (cfg) {
+            req.gb.logger.info('call', {
+              url: request.url,
+              m: request.method,
+              childSp: newLogger.spanId,
+            });
+            request[ShouldLogSwaggerCalls] = true;
+          }
+        }
       }
       if (defaultTimeout) {
         request.timeout = this.timeout || defaultTimeout;
@@ -92,6 +106,13 @@ export function serviceProxy(req) {
     },
     responseInterceptor(response) {
       svc.emit(Service.Event.AfterServiceCall, response, this);
+      if (this[ShouldLogSwaggerCalls]) {
+        req.gb.logger.info('back', {
+          childSp: this.headers.span,
+          s: response.status,
+          l: response.headers['content-length'] || 0,
+        });
+      }
       if (response.body) {
         if (['development', 'test', ''].includes(process.env.NODE_ENV || '')) {
           Object.defineProperty(response, 'obj', {
@@ -136,6 +157,12 @@ disableCorrelation: true in the endpoint configuration.
       );
       return this;
     };
+  }
+}
+
+export function addSwaggerLoggingMarker(clientInfo) {
+  if (clientInfo.endpoint && clientInfo.endpoint.log) {
+    clientInfo.client[ShouldLogSwaggerCalls] = true;
   }
 }
 
