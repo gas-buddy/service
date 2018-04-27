@@ -131,6 +131,8 @@ export function serviceProxy(req) {
         Object.assign(this[OriginalCallPropertyKey], {
           message: response.statusText,
           status: response.status,
+          url: this.url,
+          method: this.method,
           response,
         });
         response[OriginalCallPropertyKey] = this[OriginalCallPropertyKey];
