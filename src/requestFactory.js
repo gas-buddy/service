@@ -27,9 +27,17 @@ export default function requestFactory(options) {
       return;
     }
 
+    let corError;
     if (!req.headers.correlationid) {
       // Make up a correlation id if one was not passed
       req.headers.correlationid = objectID().toString('base64');
+      if (!res.headersSent) {
+        try {
+          res.setHeader('correlationid', req.headers.correlationid);
+        } catch (error) {
+          corError = error;
+        }
+      }
     }
 
     const logDefaults = { c: req.headers.correlationid };
@@ -41,6 +49,10 @@ export default function requestFactory(options) {
     let logger = service.logger.loggerWithDefaults(logDefaults, logOpts);
     if (!req.headers.span) {
       logger = logger.loggerWithNewSpan();
+    }
+
+    if (corError) {
+      logger.error('Unable to return correlationId', service.wrapError(corError));
     }
 
     req[propName] = Object.assign({}, service.hydratedObjects, {
