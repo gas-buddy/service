@@ -156,13 +156,14 @@ export function finalHandlerFactory(options) {
         // Check to see if it's a nested error and send
         // consumable errors upstream
         let loggable = error;
-        if (error.body && error.body.domain && error.body.code && error.body.message) {
+        const body = error.response ? (error.response.body || error.body) : error.body;
+        if (body && body.domain && body.code && body.message) {
           loggable = {
             status: error.status,
-            message: error.body.message,
-            domain: error.body.domain,
-            code: error.body.code,
-            display_message: error.body.display_message,
+            message: body.message,
+            domain: body.domain,
+            code: body.code,
+            display_message: body.display_message,
           };
         }
         res.status(loggable.status || 500).send({
