@@ -1,6 +1,35 @@
+import _ from 'lodash';
+import queryString from 'query-string';
 import request from 'superagent';
 
 let superagentHistogram;
+
+function safeStringify(obj) {
+  if (_.isString(obj)) {
+    return obj;
+  }
+  try {
+    return JSON.stringify(obj);
+  } catch (e) {
+    return `${obj}`;
+  }
+}
+
+function superagentLogger(logger) {
+  return (rq) => {
+    rq.on('response', (response) => {
+      const method = rq.method.toUpperCase();
+      const query = _.isEmpty(rq.qs) ? '' : `?${queryString.stringify(rq.qs)}`;
+      const url = `${rq.url}${query}`;
+      const headers = _.reduce(rq.header, (acc, val, name) => `${acc}-H '${name}: ${val}' `, '');
+      // eslint-disable-next-line no-underscore-dangle
+      const body = rq._data ? `-d '${safeStringify(rq._data)} '` : '';
+      const curl = `curl -i -X ${method} ${headers}${body}'${url}'`;
+      const responseBody = response.body ? `${safeStringify(response.body)}` : response.text;
+      logger.info(`Superagent request:\n${curl}\nResponse ${response.status}:\n${responseBody}`);
+    });
+  };
+}
 
 export function superagentFunctor(service, req, logger) {
   return function superagentWithLog(method, url, {
@@ -61,6 +90,9 @@ export function superagentFunctor(service, req, logger) {
         });
       }
     });
+    if (process.env.SUPERAGENT_LOGS) {
+      return newRequest.use(superagentLogger(newLogger));
+    }
     return newRequest;
   };
 }
