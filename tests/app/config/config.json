@@ -74,6 +74,11 @@
         "name": "path:../../src/index"
       }
     },
+    "responseLogger": {
+      "module": {
+        "name": "path:../../src/index"
+      }
+    },
     "finalHandler": {
       "module": {
         "name": "path:../../src/index"

@@ -5,9 +5,15 @@ import Service from './Service';
 import { winstonError } from './util';
 
 const SHOULD_LOG_BODY = Symbol('Whether to log the request body for all requests');
+const SHOULD_LOG_RESPONSE_BODY = Symbol('Whether to log the response body for all requests');
 
 export function requestBodyLogger(req, res, next) {
   req[SHOULD_LOG_BODY] = true;
+  next();
+}
+
+export function responseBodyLogger(req, res, next) {
+  req[SHOULD_LOG_RESPONSE_BODY] = true;
   next();
 }
 
@@ -58,6 +64,22 @@ export function logger(req, res, next) {
 
   winston.info('pre', getBasicInfo(req));
 
+  const responseBodyChunks = [];
+  if (req[SHOULD_LOG_RESPONSE_BODY]) {
+    // res is a read-only stream, so the only way to intercept response
+    // data is to monkey-patch.
+    const oldWrite = res.write;
+    const oldEnd = res.end;
+    res.write = (chunk, ...args) => {
+      responseBodyChunks.push(chunk);
+      oldWrite.apply(res, [chunk, ...args]);
+    };
+    res.end = (chunk, ...args) => {
+      if (chunk) { responseBodyChunks.push(chunk); }
+      oldEnd.apply(res, [chunk, ...args]);
+    };
+  }
+
   onFinished(res, (error) => {
     const hrdur = process.hrtime(start);
     const dur = hrdur[0] + (hrdur[1] / 1000000000);
@@ -100,7 +122,10 @@ export function logger(req, res, next) {
         rqInfo.b = req.body;
       }
     }
-
+    if (req[SHOULD_LOG_RESPONSE_BODY]) {
+      const bodyString = Buffer.concat(responseBodyChunks).toString('utf8');
+      if (bodyString) { rqInfo.resBody = bodyString; }
+    }
     winston.info('req', rqInfo);
   });
   return next();
@@ -112,6 +137,10 @@ export function loggerFactory() {
 
 export function bodyLoggerFactory() {
   return requestBodyLogger;
+}
+
+export function responseLoggerFactory() {
+  return responseBodyLogger;
 }
 
 export function finalHandlerFactory(options) {

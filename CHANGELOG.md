@@ -131,3 +131,7 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 6.4.0
 =====
 * Add `SUPERAGENT_LOGS` environment variable that will cause `requestWithContext` to log full requests (as curl commands) and responses of superagent traffic.
+
+6.5.0
+=====
+* Add `LOG_INCOMING_REQUEST_BODIES` and `LOG_OUTGOING_RESPONSE_BODIES` environment variables that will cause bodies to be logged.
