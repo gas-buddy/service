@@ -132,18 +132,37 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
+  const oldSuperagentLogs = process.env.SUPERAGENT_LOGS;
+  const oldInfo = winston.info;
+
+  delete process.env.SUPERAGENT_LOGS;
+  winston.info = (...args) => {
+    t.ok(!/curl/.test(args[0]), `Should not log superagent curls without env var set.: ${args[0]}`);
+    oldInfo(...args);
+  };
   const { body: superBody, status: superStatus } = await request(s.service.app)
     .get(`/callSelf/superagent?port=${httpPort}&ep=simple`)
     .set('CorrelationId', 'FAKE_CORRELATION_ID');
   t.strictEquals(superBody.body.hello, 'world', 'Should return the expected body');
   t.strictEquals(superBody.headers['custom-header'], 'hello-world', 'Should receive header');
   t.strictEquals(superStatus, 200, 'Should get a 200');
+  winston.info = oldInfo;
+  if (oldSuperagentLogs) { process.env.SUPERAGENT_LOGS = oldSuperagentLogs; }
 
+  process.env.SUPERAGENT_LOGS = true;
+  let foundCurl = false;
+  winston.info = (...args) => {
+    foundCurl = foundCurl || /curl/.test(args[0]);
+    oldInfo(...args);
+  };
   const { body: failBody, status: failStatus } = await request(s.service.app)
     .get(`/callSelf/superagent?port=${httpPort}&ep=simple-fail`)
     .set('CorrelationId', 'FAKE_CORRELATION_ID');
   t.strictEquals(failBody.status, 404, 'Should get a 404 from catch');
   t.strictEquals(failStatus, 200, 'Should get a 200');
+  t.ok(foundCurl, 'Should log superagent curls with env var set');
+  winston.info = oldInfo;
+  if (!oldSuperagentLogs) { delete process.env.SUPERAGENT_LOGS; }
 
   const { status: throwStatus } = await request(s.service.app)
     .get(`/callSelf/swaggerthrow?port=${httpPort}`);

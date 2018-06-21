@@ -127,3 +127,7 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 6.2.0
 =====
 * Change the way swagger errors and intercepted and decorated for more useful logs (restoring useful previous behavior)
+
+6.4.0
+=====
+* Add `SUPERAGENT_LOGS` environment variable that will cause `requestWithContext` to log full requests (as curl commands) and responses of superagent traffic.
