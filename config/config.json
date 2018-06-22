@@ -66,12 +66,20 @@
       }
     },
     "bodyLogger": {
-      "enabled": false,
+      "enabled": "env:LOG_INCOMING_REQUEST_BODIES|b",
       "module": {
         "name": "@gasbuddy/service",
         "method": "bodyLoggerFactory"
       },
       "priority": 30
+    },
+    "responseLogger": {
+      "enabled": "env:LOG_OUTGOING_RESPONSE_BODIES|b",
+      "module": {
+        "name": "@gasbuddy/service",
+        "method": "responseLoggerFactory"
+      },
+      "priority": 31
     },
     "requestLogger": {
       "module": {

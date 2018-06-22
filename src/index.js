@@ -11,5 +11,6 @@ export { default as NetworkedRepl } from './networkedRepl';
 export {
   loggerFactory,
   bodyLoggerFactory,
+  responseLoggerFactory,
   finalHandlerFactory,
 } from './log';
