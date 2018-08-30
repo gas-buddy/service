@@ -15,6 +15,17 @@ function safeStringify(obj) {
   }
 }
 
+function formify(obj) {
+  if (_.isString(obj)) {
+    return `-F '${obj}' `;
+  }
+  try {
+    return _.map(obj, (val, key) => `-F '${key}=${safeStringify(val)}' `).join('');
+  } catch (e) {
+    return `${obj}`;
+  }
+}
+
 function superagentLogger(logger) {
   return (rq) => {
     rq.on('response', (response) => {
@@ -22,8 +33,16 @@ function superagentLogger(logger) {
       const query = _.isEmpty(rq.qs) ? '' : `?${queryString.stringify(rq.qs)}`;
       const url = `${rq.url}${query}`;
       const headers = _.reduce(rq.header, (acc, val, name) => `${acc}-H '${name}: ${val}' `, '');
-      // eslint-disable-next-line no-underscore-dangle
-      const body = rq._data ? `-d '${safeStringify(rq._data)} '` : '';
+      const contentType = _.find(rq.header, (val, name) => name.toLowerCase() === 'content-type');
+      const isForm = contentType && contentType.toLowerCase() === 'application/x-www-form-urlencoded';
+      let body = '';
+      /* eslint-disable no-underscore-dangle */
+      if (rq._data && isForm) {
+        body = formify(rq._data);
+      } else if (rq._data) {
+        body = `-d '${safeStringify(rq._data)}' `;
+      }
+      /* eslint-enable no-underscore-dangle */
       const curl = `curl -i -X ${method} ${headers}${body}'${url}'`;
       const responseBody = response.body ? `${safeStringify(response.body)}` : response.text;
       logger.info(`Superagent request:\n${curl}\nResponse ${response.status}:\n${responseBody}`);
