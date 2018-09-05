@@ -51,7 +51,8 @@
     "attachRequest": {
       "module": {
         "name": "@gasbuddy/service",
-        "method": "requestFactory"
+        "method": "requestFactory",
+        "echoCorrelationId": "servicetype:!serv"
       },
       "priority": 1
     },
