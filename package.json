@@ -68,7 +68,7 @@
     "@gasbuddy/hydration": "^1.2.2",
     "@gasbuddy/kms-crypto": "^1.2.1",
     "@gasbuddy/meddleware": "^1.0.0",
-    "bluebird": "^3.5.1",
+    "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
     "bson-objectid": "^1.2.3",
     "confit": "^2.3.0",
@@ -79,20 +79,20 @@
     "on-finished": "^2.3.0",
     "on-headers": "^1.0.1",
     "query-string": "^6.1.0",
-    "request-ip": "^2.0.2",
+    "request-ip": "^2.1.1",
     "shortstop-dns": "^1.0.0",
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
-    "source-map-support": "^0.5.6",
+    "source-map-support": "^0.5.9",
     "superagent": "^3.8.3",
-    "winston": "^2.4.2"
+    "winston": "^2.4.4"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
     "babel-preset-gasbuddy": "^3.3.3",
-    "cross-env": "^5.1.5",
+    "cross-env": "^5.2.0",
     "eslint-config-gasbuddy": "^4.1.0",
-    "supertest": "^3.1.0",
+    "supertest": "^3.2.0",
     "tap": "^11.1.5"
   }
 }

@@ -12,6 +12,7 @@ import { serviceProxy, winstonError, throwError, childContextCreator } from './u
 export default function requestFactory(options) {
   // The name of the property to which we should write the "app local" variables
   const propName = (options ? options.property : 'gb') || 'gb';
+  const echoCorrelationId = options && options.echoCorrelationId;
 
   expressPromisePatch((req, e) => {
     const logger = (req[propName] && req[propName].logger) ? req[propName].logger : winston;
@@ -29,14 +30,25 @@ export default function requestFactory(options) {
 
     let corError;
     if (!req.headers.correlationid) {
-      // Make up a correlation id if one was not passed
-      req.headers.correlationid = objectID().toString('base64');
+      if (req.headers['x-request-id']) {
+        req.headers.correlationid = req.headers['x-request-id'];
+      } else {
+        // Make up a correlation id if one was not passed
+        req.headers.correlationid = objectID().toString('base64');
+      }
       if (!res.headersSent) {
         try {
           res.setHeader('correlationid', req.headers.correlationid);
         } catch (error) {
           corError = error;
         }
+      }
+    }
+    if (echoCorrelationId && !res.headersSent) {
+      try {
+        res.setHeader('correlationid', req.headers.correlationid);
+      } catch (error) {
+        corError = error;
       }
     }
 
