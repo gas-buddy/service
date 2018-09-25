@@ -71,6 +71,19 @@ winston.info(`Starting ${name} from ${dirname}`);
 let service;
 let server;
 
+process.on('unhandledRejection', (err) => {
+  try {
+    if (service && service.wrapError) {
+      winston.error('Unhandled Rejection', service.wrapError(err));
+    } else {
+      winston.error('Unhandled Rejection', JSON.stringify(err));
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Unhandled Rejection', JSON.stringify(err));
+  }
+});
+
 if (argv.nobind) {
   service = new ServiceClass(name);
   service.configure(dirname).catch((err) => {
