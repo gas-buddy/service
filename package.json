@@ -66,7 +66,7 @@
     "@gasbuddy/configured-winston-logstash": "^2.0.0",
     "@gasbuddy/express-promise-patch": "^1.0.3",
     "@gasbuddy/hydration": "^1.2.2",
-    "@gasbuddy/kms-crypto": "^1.2.1",
+    "@gasbuddy/kms-crypto": "^3.0.0",
     "@gasbuddy/meddleware": "^1.0.0",
     "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
