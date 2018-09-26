@@ -96,6 +96,8 @@ export default function requestFactory(options) {
        */
       childCorrelationContext: childContextCreator(service, req, propName),
     });
+    // Let interested parties examine and add to the annotated request
+    service.emit('request', req);
     next();
   };
 }
