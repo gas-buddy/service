@@ -1,10 +1,9 @@
 import http from 'http';
 import https from 'https';
-import winston from 'winston';
 import onFinished from 'on-finished';
 import onHeaders from 'on-headers';
 import Service from './Service';
-import { winstonError } from './util';
+import { loggableError } from './util';
 
 function portOrNull(v) {
   if (v === 0) {
@@ -57,7 +56,7 @@ export default class Server {
     function listenHandler() {
       const { port } = this.address();
       const isTls = this instanceof https.Server;
-      winston.info(`${self.service.name} listening over ${isTls ? 'TLS' : 'HTTP'}`, { port });
+      self.service.logger.info(`${self.service.name} listening over ${isTls ? 'TLS' : 'HTTP'}`, { port });
     }
 
     this.servers = [];
@@ -94,7 +93,7 @@ export default class Server {
       }
       this.service.emit('listening', this.servers);
     } catch (error) {
-      winston.error(`${this.service.name} failed to start`, winstonError(error));
+      this.service.logger.error(`${this.service.name} failed to start`, loggableError(error));
       throw error;
     }
   }

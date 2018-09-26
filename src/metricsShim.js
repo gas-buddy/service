@@ -1,5 +1,4 @@
 import assert from 'assert';
-import winston from 'winston';
 
 const CALL_TIMER = Symbol('Timing generic calls');
 const MY_TIMER = Symbol('Internal timer for logging long running operations');
@@ -35,7 +34,7 @@ export class metricsShim {
         }
         gauge.set(count);
       } catch (error) {
-        winston.error('Failed to create count gauge', {
+        context.logger.error('Failed to create count gauge', {
           message: error.message,
           stack: error.stack,
         });
@@ -81,7 +80,7 @@ export class metricsShim {
           callInfo[MY_TIMER] = process.hrtime();
         }
       } catch (error) {
-        winston.error('Failed to create call metric', {
+        context.logger.error('Failed to create call metric', {
           message: error.message,
           stack: error.stack,
         });
@@ -95,7 +94,7 @@ export class metricsShim {
         const elapsed = process.hrtime(callInfo[MY_TIMER]);
         const dur = (elapsed[0] * 1000) + (elapsed[1] / 1000000);
         if (dur > config.logAboveMs) {
-          winston.warn('Long running operation', {
+          context.logger.warn('Long running operation', {
             key: `${config.metricPrefix || ''}${callInfo.operationName}`,
             elapsed,
           });
@@ -110,7 +109,7 @@ export class metricsShim {
         const elapsed = process.hrtime(callInfo[MY_TIMER]);
         const dur = (elapsed[0] * 1000) + (elapsed[1] / 1000000);
         if (dur > config.logAboveMs) {
-          winston.warn('Long running operation failed', {
+          context.logger.warn('Long running operation failed', {
             key: `${config.metricPrefix || ''}${callInfo.operationName}`,
             elapsed,
           });

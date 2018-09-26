@@ -1,8 +1,7 @@
-import winston from 'winston';
 import requestIp from 'request-ip';
 import onFinished from 'on-finished';
 import Service from './Service';
-import { winstonError } from './util';
+import { loggableError } from './util';
 
 const SHOULD_LOG_BODY = Symbol('Whether to log the request body for all requests');
 const SHOULD_LOG_RESPONSE_BODY = Symbol('Whether to log the response body for all requests');
@@ -44,7 +43,7 @@ function getBasicInfo(req) {
 
 // Inspired by morgan
 // https://github.com/expressjs/morgan/blob/master/index.js
-// But logs direct to winston with json fields
+// But logs direct to pino with json fields
 
 export function logger(req, res, next) {
   const svc = Service.get(req);
@@ -62,7 +61,7 @@ export function logger(req, res, next) {
 
   const start = process.hrtime();
 
-  winston.info('pre', getBasicInfo(req));
+  svc.logger.info('pre', getBasicInfo(req));
 
   const responseBodyChunks = [];
   if (req[SHOULD_LOG_RESPONSE_BODY]) {
@@ -113,7 +112,7 @@ export function logger(req, res, next) {
       rqInfo.st = error.stack;
     }
     if (req[SHOULD_LOG_BODY]) {
-      // winston flattens JSON, so I guess we need to wrap it. Hrmph.
+      // pino flattens JSON, so I guess we need to wrap it. Hrmph.
       if (Buffer.isBuffer(req.body)) {
         rqInfo.b = req.body.toString('base64');
       } else if (typeof logBody !== 'string') {
@@ -126,7 +125,7 @@ export function logger(req, res, next) {
       const bodyString = Buffer.concat(responseBodyChunks).toString('utf8');
       if (bodyString) { rqInfo.resBody = bodyString; }
     }
-    winston.info('req', rqInfo);
+    svc.logger.info('req', rqInfo);
   });
   return next();
 }
@@ -153,7 +152,7 @@ export function finalHandlerFactory(options) {
     // catch all here.
     //
     // function finalHandler(req, res) {
-    //   const reqLogger = (req.gb && req.gb.logger) || winston;
+    //   const reqLogger = (req.gb && req.gb.logger) || console;
     //   const reqProps = {
     //     reqMethod: req.method,
     //     reqUrl: req.url,
@@ -172,14 +171,14 @@ export function finalHandlerFactory(options) {
         return;
       }
 
-      const reqLogger = (req.gb && req.gb.logger) || winston;
+      const reqLogger = (req.gb && req.gb.logger) || console;
       const reqProps = {
         reqMethod: req.method,
         reqUrl: req.url,
       };
 
       Object.assign(error, reqProps);
-      reqLogger.error('Handler exception', winstonError(error));
+      reqLogger.error('Handler exception', loggableError(error));
 
       if (shouldRenderResponse) {
         // Check to see if it's a nested error and send

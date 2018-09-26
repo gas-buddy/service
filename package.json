@@ -1,7 +1,7 @@
 {
   "name": "@gasbuddy/service",
   "version": "6.8.0",
-  "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.",
+  "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
     "test": "tap --node-arg=-r --node-arg=babel-register tests/test_*.js",
@@ -27,7 +27,6 @@
     "gasbuddy",
     "service",
     "swagger",
-    "winston",
     "express",
     "confit",
     "babel",
@@ -59,11 +58,10 @@
   },
   "dependencies": {
     "@gasbuddy/composert": "^1.0.0",
+    "@gasbuddy/configured-pino": "^1.0.0",
     "@gasbuddy/configured-prometheus-client": "^1.4.2",
     "@gasbuddy/configured-swagger-client": "^3.2.2",
     "@gasbuddy/configured-swaggerize-express": "^2.0.1",
-    "@gasbuddy/configured-winston": "^2.1.1",
-    "@gasbuddy/configured-winston-logstash": "^2.0.0",
     "@gasbuddy/express-promise-patch": "^1.0.3",
     "@gasbuddy/hydration": "^1.2.2",
     "@gasbuddy/kms-crypto": "^1.2.1",
@@ -84,8 +82,7 @@
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
     "source-map-support": "^0.5.9",
-    "superagent": "^3.8.3",
-    "winston": "^2.4.4"
+    "superagent": "^3.8.3"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

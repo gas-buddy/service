@@ -1,12 +1,7 @@
 import tap from 'tap';
 import path from 'path';
-import winston from 'winston';
 import request from 'supertest';
 import * as service from '../src/index';
-
-if (process.env.NODE_ENV === 'test') {
-  winston.remove(winston.transports.Console);
-}
 
 const sourcedir = path.join(__dirname, 'app', 'src');
 
@@ -27,7 +22,7 @@ tap.test('service startup', async (t) => {
   t.strictEquals(s.config.get('envswitchoff'), false, 'Default false');
   t.strictEquals(s.config.get('envswitchon'), true, 'Default true');
 
-  const oldError = winston.error;
+  const oldError = s.logger.error;
 
   tap.test('test simple request', async (tt) => {
     const res = await request(s.app).post('/simple').send({ ok: true });
@@ -38,7 +33,7 @@ tap.test('service startup', async (t) => {
   tap.test('test sync error', async (tt) => {
     tt.plan(4);
 
-    winston.error = (...args) => {
+    s.logger.error = (...args) => {
       tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].message, 'Thrown synchronously', 'message should match');
       tt.ok(args[1].stack, 'Error should have a stack');
@@ -51,7 +46,7 @@ tap.test('service startup', async (t) => {
   tap.test('test async error', async (tt) => {
     tt.plan(4);
 
-    winston.error = (...args) => {
+    s.logger.error = (...args) => {
       tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].message, 'Thrown in a promise', 'message should match');
       tt.ok(args[1].stack, 'Error should have a stack');
@@ -64,7 +59,7 @@ tap.test('service startup', async (t) => {
   tap.test('test helper error', async (tt) => {
     tt.plan(9);
 
-    winston.error = (...args) => {
+    s.logger.error = (...args) => {
       tt.strictEquals(args[0], 'Handler exception', 'error should be logged');
       tt.strictEquals(args[1].code, 'helpererror', 'code should match');
       tt.strictEquals(args[1].status, 599, 'status should match');
@@ -79,20 +74,7 @@ tap.test('service startup', async (t) => {
     tt.strictEquals(res.status, 599, 'Should get 599 error');
   });
 
-  // TODO: Reintroduce explicit 404 handling at the right place.
-  // tap.test('test 404', async (tt) => {
-  //   tt.plan(2);
-
-  //   winston.error = (...args) => {
-  //     tt.strictEquals(args[0], 'No handler for request. Returning 404',
-  //                     'error should be logged');
-  //   };
-
-  //   const res = await request(s.app).get('/error/404');
-  //   tt.strictEquals(res.status, 404, 'Should get 404 error');
-  // });
-
-  winston.error = oldError;
+  s.logger.error = oldError;
 
   await s.destroy();
   t.ok(true, 'app should stop');
@@ -133,12 +115,12 @@ tap.test('server startup', async (t) => {
   }
 
   const oldSuperagentLogs = process.env.SUPERAGENT_LOGS;
-  const oldInfo = winston.info;
+  const oldInfo = s.service.logger.info;
 
   delete process.env.SUPERAGENT_LOGS;
-  winston.info = (...args) => {
+  s.service.logger.info = (...args) => {
     t.ok(!/curl/.test(args[0]), `Should not log superagent curls without env var set.: ${args[0]}`);
-    oldInfo(...args);
+    oldInfo.apply(s.service.logger, args);
   };
   const { body: superBody, status: superStatus } = await request(s.service.app)
     .get(`/callSelf/superagent?port=${httpPort}&ep=simple`)
@@ -146,14 +128,14 @@ tap.test('server startup', async (t) => {
   t.strictEquals(superBody.body.hello, 'world', 'Should return the expected body');
   t.strictEquals(superBody.headers['custom-header'], 'hello-world', 'Should receive header');
   t.strictEquals(superStatus, 200, 'Should get a 200');
-  winston.info = oldInfo;
+  s.service.logger.info = oldInfo;
   if (oldSuperagentLogs) { process.env.SUPERAGENT_LOGS = oldSuperagentLogs; }
 
   process.env.SUPERAGENT_LOGS = true;
   let foundCurl = false;
-  winston.info = (...args) => {
+  s.service.logger.info = (...args) => {
     foundCurl = foundCurl || /curl/.test(args[0]);
-    oldInfo(...args);
+    oldInfo.apply(s.service.logger, args);
   };
   const { body: failBody, status: failStatus } = await request(s.service.app)
     .get(`/callSelf/superagent?port=${httpPort}&ep=simple-fail`)
@@ -161,7 +143,7 @@ tap.test('server startup', async (t) => {
   t.strictEquals(failBody.status, 404, 'Should get a 404 from catch');
   t.strictEquals(failStatus, 200, 'Should get a 200');
   t.ok(foundCurl, 'Should log superagent curls with env var set');
-  winston.info = oldInfo;
+  s.service.logger.info = oldInfo;
   if (!oldSuperagentLogs) { delete process.env.SUPERAGENT_LOGS; }
 
   const { status: throwStatus } = await request(s.service.app)

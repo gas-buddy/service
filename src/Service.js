@@ -4,14 +4,14 @@ import path from 'path';
 import assert from 'assert';
 import confit from 'confit';
 import express from 'express';
-import winston from 'winston';
 import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
+import Logger from '@gasbuddy/configured-pino';
 import { hydrate, dehydrate } from '@gasbuddy/hydration';
 import { CallPathPropertyKey } from '@gasbuddy/configured-swagger-client';
 import { drain } from './drain';
 import shortstops from './shortstops';
-import { winstonError } from './util';
+import { loggableError } from './util';
 
 async function pathExists(f) {
   return new Promise((accept, reject) => {
@@ -27,6 +27,8 @@ async function pathExists(f) {
   });
 }
 
+const DISCONNECTED_LOGGER = Symbol('Initial configured logging interface');
+const BASE_LOGGER = Symbol('Raw logging interface');
 const CONNECTIONS = Symbol('Property key for objects that need shutdown');
 const CONNECTIONS_TREE = Symbol('Structured values for the result of hydration');
 const SERVICE = Symbol('The Service class attached to an app');
@@ -36,6 +38,8 @@ const environments = ['production', 'staging', 'test', 'development'];
 export default class Service extends EventEmitter {
   constructor(options) {
     super();
+    this[DISCONNECTED_LOGGER] = new Logger();
+    this[BASE_LOGGER] = this[DISCONNECTED_LOGGER].start();
     if (typeof options === 'string') {
       this.options = { name: options };
     } else {
@@ -68,7 +72,7 @@ export default class Service extends EventEmitter {
 
   // eslint-disable-next-line class-methods-use-this
   wrapError(error) {
-    return winstonError(error);
+    return loggableError(error);
   }
 
   /**
@@ -107,11 +111,11 @@ export default class Service extends EventEmitter {
     // Ok, now hydrate the "connections" key
     try {
       const appObjects = await hydrate({
-        logger: winston,
+        logger: this[BASE_LOGGER],
         service: this,
         name: this.name,
       }, this.config.get('connections'), this);
-      winston.info('Hydration completed');
+      this[BASE_LOGGER].info('Hydration completed');
       this[CONNECTIONS] = appObjects.allObjects;
       this[CONNECTIONS_TREE] = Object.assign({}, this[CONNECTIONS_TREE], appObjects.tree);
 
@@ -140,7 +144,7 @@ export default class Service extends EventEmitter {
           }
           req[SERVICE_TIMER] = histo.startTimer({ source: this.name });
         } catch (error) {
-          winston.error('Failed to create service metric', {
+          (req.gb.logger || this[BASE_LOGGER]).error('Failed to create service metric', {
             message: error.message,
             stack: error.stack,
           });
@@ -156,7 +160,7 @@ export default class Service extends EventEmitter {
       // originally-PayPal module handles promises. Maybe the PayPal one
       // will someday.
       const middlewareFunction = await meddleware(this.config.get('meddleware'));
-      winston.info('Meddleware loaded');
+      this[BASE_LOGGER].info('Meddleware loaded');
       this.app.use(middlewareFunction);
       this.configured = true;
       this.emit('configured');
@@ -166,7 +170,7 @@ export default class Service extends EventEmitter {
       }
     } catch (error) {
       // eslint-disable-next-line no-console
-      winston.error('@gasbuddy/service hydration failed', this.wrapError(error));
+      this[BASE_LOGGER].error('@gasbuddy/service hydration failed', this.wrapError(error));
       throw error;
     }
   }
@@ -204,11 +208,11 @@ export default class Service extends EventEmitter {
    * Close down all connections
    */
   async destroy() {
-    winston.info('Beginning application shutdown');
+    this[BASE_LOGGER].info('Beginning application shutdown');
     await dehydrate({
       service: this,
       name: this.name,
-      logger: winston,
+      logger: this[BASE_LOGGER],
     }, this[CONNECTIONS]);
     delete this[CONNECTIONS];
     delete this[CONNECTIONS_TREE];
