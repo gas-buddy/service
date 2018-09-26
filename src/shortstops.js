@@ -4,6 +4,7 @@ import shortstop from 'shortstop-handlers';
 import shortstopYaml from 'shortstop-yaml';
 import shortstopDns from 'shortstop-dns';
 import { decryptorInContext, textDecryptorInContext } from '@gasbuddy/kms-crypto';
+import { setLogger } from '@gasbuddy/kms-crypto/build/logger';
 
 /**
  * Default shortstop handlers for GasBuddy service configuration
@@ -62,6 +63,7 @@ export default function shortstops(service, sourcedir) {
    */
   const basedir = path.join(sourcedir, '..');
 
+  setLogger(service.logger);
   /**
    * Most services have secrets. Kubernetes doesn't do a
    * great job controlling secrets, so we prefer a Key
