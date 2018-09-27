@@ -1,4 +1,3 @@
-import winston from 'winston';
 import { servicesWithOptions, OriginalCallPropertyKey, CallPathPropertyKey } from '@gasbuddy/configured-swagger-client';
 import { superagentFunctor } from './superagentHelper';
 import Service from './Service';
@@ -40,7 +39,7 @@ function normalizeError(error) {
  * Swagger client returns a wrapped error. Unwrap it.
  * Also avoids non-serializable errors.
  */
-export function winstonError(error) {
+export function loggableError(error) {
   if (error.response && error.response[OriginalCallPropertyKey]) {
     return normalizeError(error.response[OriginalCallPropertyKey]);
   }
@@ -156,7 +155,8 @@ export function serviceProxy(req) {
 export function addCorrelationWarning(clientInfo, endpointConfig) {
   if (!endpointConfig || endpointConfig.disableCorrelation !== true) {
     clientInfo.config.requestInterceptor = function requestInterceptor() {
-      winston.warn(`
+      // eslint-disable-next-line no-console
+      console.error(`
 ********************************************************************
 Service call is missing requestInterceptor for logging. Please call
 the service via req.gb.services, or disable logging by setting

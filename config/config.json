@@ -6,21 +6,12 @@
       "port": 3002
     },
     "logger": {
-      "module": "require:@gasbuddy/configured-winston",
+      "module": "require:@gasbuddy/configured-pino",
       "addTimestamp": true,
       "addCounter": true,
+      "useLevelLabels": true,
       "meta": {
         "host": "env:HOSTNAME"
-      },
-      "transports": {
-        "logstash": {
-          "module": "require:@gasbuddy/configured-winston-logstash",
-          "config": {
-            "host": "logstash",
-            "port": 9999,
-            "label": "servicename:${name}"
-          }
-        }
       }
     },
     "metadata": {

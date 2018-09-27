@@ -3,9 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import util from 'util';
 import repl from 'repl';
-import winston from 'winston';
 import minimist from 'minimist';
 import 'source-map-support/register';
+import Log from '@gasbuddy/configured-pino';
 import Service from './Service';
 import Server from './Server';
 import { syntheticRequest } from './util';
@@ -25,6 +25,9 @@ if (argv.module) {
     ServiceClass = serviceModule;
   }
 }
+
+const BaseLogger = new Log();
+const logger = Log.start();
 
 const ServerClass = ServiceClass.Server || Server;
 
@@ -56,7 +59,7 @@ try {
       const match = envVar.match(/(?:\S+\s+)?\s*([^=]+)\s*=(.*)\s*/);
       if (match) {
         if (!process.env[match[1]]) {
-          winston.info(`Read ${match[1]} environment variable from .env`);
+          logger.info(`Read ${match[1]} environment variable from .env`);
           process.env[match[1]] = match[2];
         }
       }
@@ -66,7 +69,7 @@ try {
   // Nothing to do
 }
 
-winston.info(`Starting ${name} from ${dirname}`);
+logger.info(`Starting ${name} from ${dirname}`);
 
 let service;
 let server;
@@ -74,9 +77,9 @@ let server;
 process.on('unhandledRejection', (err) => {
   try {
     if (service && service.wrapError) {
-      winston.error('Unhandled Rejection', service.wrapError(err));
+      logger.error('Unhandled Rejection', service.wrapError(err));
     } else {
-      winston.error('Unhandled Rejection', JSON.stringify(err));
+      logger.error('Unhandled Rejection', JSON.stringify(err));
     }
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -87,9 +90,14 @@ process.on('unhandledRejection', (err) => {
 if (argv.nobind) {
   service = new ServiceClass(name);
   service.configure(dirname).catch((err) => {
-    winston.error('Configuration failed', service.wrapError(err));
+    logger.error('Configuration failed', service.wrapError(err));
+  }).then(() => {
+    // Done with this disconnected logger
+    BaseLogger.stop();
   });
 } else {
+  // Done with this disconnected logger
+  BaseLogger.stop();
   server = new ServerClass(name);
   service = server.service;
 

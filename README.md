@@ -3,7 +3,7 @@
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/gas-buddy/service.svg)](https://greenkeeper.io/)
 
-An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, winston, express, confit, ES7 and tap.
+An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.
 
 Basically, this module is in charge of instantiating a bunch of
 application dependencies like:

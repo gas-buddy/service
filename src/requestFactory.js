@@ -1,9 +1,8 @@
 import objectID from 'bson-objectid';
-import winston from 'winston';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
 import { superagentFunctor } from './superagentHelper';
-import { serviceProxy, winstonError, throwError, childContextCreator } from './util';
+import { serviceProxy, loggableError, throwError, childContextCreator } from './util';
 
 /**
  * Middleware to attach the "service" object to the request and add various request-specific
@@ -15,8 +14,8 @@ export default function requestFactory(options) {
   const echoCorrelationId = options && options.echoCorrelationId;
 
   expressPromisePatch((req, e) => {
-    const logger = (req[propName] && req[propName].logger) ? req[propName].logger : winston;
-    logger.error('express error', winstonError(e));
+    const logger = (req[propName] && req[propName].logger) ? req[propName].logger : console;
+    logger.error('express error', loggableError(e));
   });
 
   return function requestMiddleware(req, res, next) {
@@ -74,7 +73,7 @@ export default function requestFactory(options) {
        */
       logger,
       /**
-       * Wrap different forms of errors into something useful for winston
+       * Wrap different forms of errors into something useful for logging
        */
       wrapError(...args) { return service.wrapError(...args); },
       /**

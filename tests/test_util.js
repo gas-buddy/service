@@ -1,5 +1,5 @@
 import tap from 'tap';
-import { winstonError } from '../src/util';
+import { loggableError } from '../src/util';
 
 tap.test('error wrapping', (t) => {
   const errorString = 'Hello world';
@@ -9,8 +9,8 @@ tap.test('error wrapping', (t) => {
   ];
 
   for (const e of errors) {
-    t.ok(winstonError(e).stack, 'Should have a stack');
-    t.strictEquals(winstonError(e).message, errorString, 'Message should match');
+    t.ok(loggableError(e).stack, 'Should have a stack');
+    t.strictEquals(loggableError(e).message, errorString, 'Message should match');
   }
 
   t.end();
