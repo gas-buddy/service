@@ -38,7 +38,9 @@ const environments = ['production', 'staging', 'test', 'development'];
 export default class Service extends EventEmitter {
   constructor(options) {
     super();
-    this[DISCONNECTED_LOGGER] = new Logger();
+    const prettyPrint = !process.env.NO_PRETTY_LOGS ||
+      ((process.env.NODE_ENV || 'development') === 'development');
+    this[DISCONNECTED_LOGGER] = new Logger({}, { prettyPrint });
     this[BASE_LOGGER] = this[DISCONNECTED_LOGGER].start();
     if (typeof options === 'string') {
       this.options = { name: options };

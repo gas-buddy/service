@@ -26,7 +26,9 @@ if (argv.module) {
   }
 }
 
-const BaseLogger = new Log();
+const prettyPrint = !process.env.NO_PRETTY_LOGS ||
+  ((process.env.NODE_ENV || 'development') === 'development');
+const BaseLogger = new Log({}, { prettyPrint });
 const logger = BaseLogger.start();
 
 const ServerClass = ServiceClass.Server || Server;
