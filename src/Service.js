@@ -38,10 +38,6 @@ const environments = ['production', 'staging', 'test', 'development'];
 export default class Service extends EventEmitter {
   constructor(options) {
     super();
-    const prettyPrint = !process.env.NO_PRETTY_LOGS ||
-      ((process.env.NODE_ENV || 'development') === 'development');
-    this[DISCONNECTED_LOGGER] = new Logger({}, { prettyPrint });
-    this[BASE_LOGGER] = this[DISCONNECTED_LOGGER].start();
     if (typeof options === 'string') {
       this.options = { name: options };
     } else {
@@ -109,6 +105,9 @@ export default class Service extends EventEmitter {
     }));
     this.app.config = this.config;
     this.emit('configurationLoaded', this.config);
+
+    this[DISCONNECTED_LOGGER] = new Logger({}, this.config.get('connections:logger'));
+    this[BASE_LOGGER] = this[DISCONNECTED_LOGGER].start();
 
     // Ok, now hydrate the "connections" key
     try {
