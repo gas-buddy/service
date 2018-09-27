@@ -135,3 +135,7 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 6.5.0
 =====
 * Add `LOG_INCOMING_REQUEST_BODIES` and `LOG_OUTGOING_RESPONSE_BODIES` environment variables that will cause bodies to be logged.
+
+7.0.0
+=====
+* Move to pino logging framework instead of winston - simpler configuration, better performance, simpler model
