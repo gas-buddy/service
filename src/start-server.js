@@ -31,7 +31,7 @@ const prettyPrint = !process.env.NO_PRETTY_LOGS ||
 const BaseLogger = new Log({}, {
   prettyPrint,
   useLevelLabels: true,
-  meta: { host: process.env.HOSTNAME },
+  meta: { },
 });
 const logger = BaseLogger.start();
 
