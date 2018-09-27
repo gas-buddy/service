@@ -27,7 +27,7 @@ if (argv.module) {
 }
 
 const BaseLogger = new Log();
-const logger = Log.start();
+const logger = BaseLogger.start();
 
 const ServerClass = ServiceClass.Server || Server;
 

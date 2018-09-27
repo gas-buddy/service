@@ -1,7 +1,8 @@
 {
   "connections": {
     "logger": {
-      "level": "debug"
+      "level": "debug",
+      "prettyPrint": true
     },
     "repl": {
       "enabled": true,
