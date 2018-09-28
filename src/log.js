@@ -25,7 +25,6 @@ function getBasicInfo(req) {
   const preInfo = {
     url,
     m: req.method,
-    ts: Date.now(),
   };
   if (req.headers && req.headers.correlationid) {
     preInfo.c = req.headers.correlationid;

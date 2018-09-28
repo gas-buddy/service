@@ -7,7 +7,6 @@
     },
     "logger": {
       "module": "require:@gasbuddy/configured-pino",
-      "addTimestamp": true,
       "addCounter": true,
       "useLevelLabels": true,
       "meta": {
