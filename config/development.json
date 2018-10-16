@@ -2,7 +2,7 @@
   "connections": {
     "logger": {
       "level": "debug",
-      "prettyPrint": true
+      "prettyPrint": "env_switch:!NO_PRETTY_LOGS"
     },
     "repl": {
       "enabled": true,
