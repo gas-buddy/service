@@ -139,3 +139,7 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 7.0.0
 =====
 * Move to pino logging framework instead of winston - simpler configuration, better performance, simpler model
+
+7.3.0
+=====
+* Allow enabling `SUPERAGENT_LOGS` via config.

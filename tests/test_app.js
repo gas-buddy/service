@@ -114,10 +114,10 @@ tap.test('server startup', async (t) => {
     t.fail(error);
   }
 
-  const oldSuperagentLogs = process.env.SUPERAGENT_LOGS;
+  const oldSuperagentLogs = s.service.config.get('log_superagent_requests');
   const oldInfo = s.service.logger.info;
 
-  delete process.env.SUPERAGENT_LOGS;
+  s.service.config.set('log_superagent_requests', false);
   s.service.logger.info = (...args) => {
     t.ok(!/curl/.test(args[0]), `Should not log superagent curls without env var set.: ${args[0]}`);
     oldInfo.apply(s.service.logger, args);
@@ -129,9 +129,9 @@ tap.test('server startup', async (t) => {
   t.strictEquals(superBody.headers['custom-header'], 'hello-world', 'Should receive header');
   t.strictEquals(superStatus, 200, 'Should get a 200');
   s.service.logger.info = oldInfo;
-  if (oldSuperagentLogs) { process.env.SUPERAGENT_LOGS = oldSuperagentLogs; }
+  s.service.config.set('log_superagent_requests', oldSuperagentLogs);
 
-  process.env.SUPERAGENT_LOGS = true;
+  s.service.config.set('log_superagent_requests', true);
   let foundCurl = false;
   s.service.logger.info = (...args) => {
     foundCurl = foundCurl || /curl/.test(args[0]);
@@ -144,7 +144,7 @@ tap.test('server startup', async (t) => {
   t.strictEquals(failStatus, 200, 'Should get a 200');
   t.ok(foundCurl, 'Should log superagent curls with env var set');
   s.service.logger.info = oldInfo;
-  if (!oldSuperagentLogs) { delete process.env.SUPERAGENT_LOGS; }
+  s.service.config.set('log_superagent_requests', oldSuperagentLogs);
 
   const { status: throwStatus } = await request(s.service.app)
     .get(`/callSelf/swaggerthrow?port=${httpPort}`);
