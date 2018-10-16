@@ -1,4 +1,5 @@
 {
+  "log_superagent_requests": "env_switch:SUPERAGENT_LOGS",
   "connections": {
     "repl": {
       "enabled": "env:NETWORK_REPL|b",

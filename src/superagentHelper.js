@@ -51,6 +51,7 @@ function superagentLogger(logger) {
 }
 
 export function superagentFunctor(service, req, logger) {
+  const shouldLogRequests = service.config.get('log_superagent_requests');
   return function superagentWithLog(method, url, {
     logErrors = true,
     addCorrelation = true,
@@ -109,7 +110,7 @@ export function superagentFunctor(service, req, logger) {
         });
       }
     });
-    if (process.env.SUPERAGENT_LOGS) {
+    if (shouldLogRequests) {
       return newRequest.use(superagentLogger(newLogger));
     }
     return newRequest;
