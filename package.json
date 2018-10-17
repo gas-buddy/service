@@ -89,7 +89,7 @@
     "babel-cli": "^6.4.5",
     "babel-preset-gasbuddy": "^3.3.3",
     "cross-env": "^5.2.0",
-    "eslint-config-gasbuddy": "^4.1.0",
+    "eslint-config-gasbuddy": "^5.0.0",
     "supertest": "^3.3.0",
     "tap": "^11.1.5"
   }
