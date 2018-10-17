@@ -51,7 +51,8 @@ export function logger(req, res, next) {
       metricsHistogram = new svc.metrics.Histogram(
         'service_requests',
         'HTTP/S metrics for @gasbuddy/service instances',
-        ['status', 'method', 'path', 'service']);
+        ['status', 'method', 'path', 'service'],
+      );
     }
     if (hostname === undefined) {
       hostname = svc.config.get('connections:logger:meta:host') || null;

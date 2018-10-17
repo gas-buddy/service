@@ -140,7 +140,8 @@ export default class Service extends EventEmitter {
             histo = new this.metrics.Histogram(
               keyname,
               `Calls to the ${host} service method ${opName}`,
-              ['status', 'source']);
+              ['status', 'source'],
+            );
             serviceMetrics[keyname] = histo;
           }
           req[SERVICE_TIMER] = histo.startTimer({ source: this.name });
@@ -274,7 +275,7 @@ export default class Service extends EventEmitter {
       return req;
     }
 
-    let app = req.app;
+    let { app } = req;
     while (app && !app[SERVICE]) {
       app = app.parent;
     }

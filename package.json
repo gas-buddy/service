@@ -1,10 +1,10 @@
 {
   "name": "@gasbuddy/service",
-  "version": "7.3.0",
+  "version": "8.0.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
-    "test": "tap --node-arg=-r --node-arg=babel-register tests/test_*.js",
+    "test": "tap --node-arg=-r --node-arg=@babel/register tests/test_*.js",
     "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js && nyc check-coverage && nyc report --reporter=text",
     "ci-test": "cross-env NODE_ENV=test nyc tap -Rtap tests/test_*.js | tee .tap_output | tap -Rspec -",
     "ci-cover": "nyc check-coverage",
@@ -48,7 +48,7 @@
       "src"
     ],
     "require": [
-      "babel-register"
+      "@babel/register"
     ],
     "sourceMap": false,
     "instrument": false,
@@ -57,7 +57,7 @@
     ]
   },
   "dependencies": {
-    "@gasbuddy/composert": "^1.0.0",
+    "@babel/register": "^7.0.0",
     "@gasbuddy/configured-pino": "^1.0.1",
     "@gasbuddy/configured-prometheus-client": "^1.4.2",
     "@gasbuddy/configured-swagger-client": "^3.3.0",
@@ -86,11 +86,11 @@
     "superagent": "^3.8.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.4.5",
-    "babel-preset-gasbuddy": "^3.3.3",
+    "@babel/cli": "^7.1.2",
+    "babel-preset-gasbuddy": "^4.1.0",
     "cross-env": "^5.2.0",
-    "eslint-config-gasbuddy": "^4.1.0",
+    "eslint-config-gasbuddy": "^5.0.2",
     "supertest": "^3.3.0",
-    "tap": "^11.1.5"
+    "tap": "^12.0.1"
   }
 }

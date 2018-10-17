@@ -50,7 +50,7 @@ export default class Server {
   }
 
   async create(sourcedir) {
-    const app = this.service.app;
+    const { app } = this.service;
     const self = this;
 
     function listenHandler() {

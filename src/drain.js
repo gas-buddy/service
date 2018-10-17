@@ -25,7 +25,8 @@ export function drain(service, timeout) {
           attached.map((s) => {
             s.logger.info('Server is shutting down after SIGTERM');
             return s.destroy();
-          }))
+          }),
+        )
           .then(() => process.exit(0))
           .catch(() => process.exit(-1));
       }, timeout * 1000).unref();
