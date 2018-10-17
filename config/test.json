@@ -1,7 +1,10 @@
 {
+  "LOG_TO_FILE": "test_output.log",
   "connections": {
     "logger": {
-      "extreme": "test_output.log"
+      "prettyPrint": "env_switch:!NO_PRETTY_LOGS",
+      "extreme": "config:LOG_TO_FILE",
+      "addCounter": false
     }
   }
 }
