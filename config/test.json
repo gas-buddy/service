@@ -1,7 +1,8 @@
 {
   "connections": {
     "logger": {
-      "extreme": "test_output.log"
+      "extreme": "test_output.log",
+      "addCounter": false
     }
   }
 }
