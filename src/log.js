@@ -70,11 +70,11 @@ export function logger(req, res, next) {
     const oldWrite = res.write;
     const oldEnd = res.end;
     res.write = (chunk, ...args) => {
-      responseBodyChunks.push(chunk);
+      responseBodyChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
       oldWrite.apply(res, [chunk, ...args]);
     };
     res.end = (chunk, ...args) => {
-      if (chunk) { responseBodyChunks.push(chunk); }
+      if (chunk) { responseBodyChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)); }
       oldEnd.apply(res, [chunk, ...args]);
     };
   }

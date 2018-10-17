@@ -61,6 +61,7 @@
       }
     },
     "responseLogger": {
+      "enabled": true,
       "module": {
         "name": "path:../../src/index"
       }
