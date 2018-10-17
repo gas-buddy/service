@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
-    "babel-preset-gasbuddy": "^3.3.3",
+    "babel-preset-gasbuddy": "^4.0.0",
     "cross-env": "^5.2.0",
     "eslint-config-gasbuddy": "^4.1.0",
     "supertest": "^3.3.0",
