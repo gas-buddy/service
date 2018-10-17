@@ -107,7 +107,7 @@ tap.test('server startup', async (t) => {
       .get(`/callSelf?port=${httpPort}`)
       .set('CorrelationId', 'FAKE_CORRELATION_ID');
     t.strictEquals(res.status, 200, 'should be status 200');
-    t.strictEquals(res.body.span, '1.1', 'Span tracking should work');
+    t.strictEquals(res.body.sp, '1.1', 'Span tracking should work');
     t.ok(before, 'BeforeServiceCall event should be emitted');
     t.ok(after, 'AfterServiceCall event should be emitted');
   } catch (error) {

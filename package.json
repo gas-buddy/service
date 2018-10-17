@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@babel/register": "^7.0.0",
-    "@gasbuddy/configured-pino": "^2.0.0",
+    "@gasbuddy/configured-pino": "^2.0.1",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
     "@gasbuddy/configured-swagger-client": "^4.0.0",
     "@gasbuddy/configured-swaggerize-express": "^2.0.1",

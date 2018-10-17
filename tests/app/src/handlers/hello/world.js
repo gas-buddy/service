@@ -5,6 +5,6 @@ export function get(req, res) {
   const child = req.gb.childCorrelationContext('FOOBAR');
   assert(child.headers.correlationid === 'FAKE_CORRELATION_ID#FOOBAR');
   res.json({
-    span: req.headers.span,
+    sp: req.headers.span,
   });
 }

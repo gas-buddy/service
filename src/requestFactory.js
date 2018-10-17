@@ -54,7 +54,7 @@ export default function requestFactory(options) {
     const logDefaults = { c: req.headers.correlationid };
     let logOpts;
     if (req.headers.span) {
-      logDefaults.span = req.headers.span;
+      logDefaults.sp = req.headers.span;
       logOpts = { spanId: req.headers.span };
     }
     let logger = service.logger.loggerWithDefaults(logDefaults, logOpts);
