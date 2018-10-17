@@ -64,7 +64,7 @@ export function throwError(serviceName, codeOrError = 'nocode', message = 'nomes
   error.domain = error.domain || domain;
 
   if (finalOpts) {
-    const displayMessage = finalOpts.displayMessage;
+    const { displayMessage } = finalOpts;
     if (displayMessage) {
       error.displayMessage = (displayMessage === !!displayMessage) ? error.message : displayMessage;
     }
@@ -163,11 +163,10 @@ the service via req.gb.services, or disable logging by setting
 disableCorrelation: true in the endpoint configuration.
 ********************************************************************
 `,
-        {
-          method: this.method,
-          url: this.url,
-        },
-      );
+      {
+        method: this.method,
+        url: this.url,
+      });
       return this;
     };
   }

@@ -26,8 +26,8 @@ if (argv.module) {
   }
 }
 
-const prettyPrint = !process.env.NO_PRETTY_LOGS ||
-  ((process.env.NODE_ENV || 'development') === 'development');
+const prettyPrint = !process.env.NO_PRETTY_LOGS
+  || ((process.env.NODE_ENV || 'development') === 'development');
 const BaseLogger = new Log({}, {
   prettyPrint,
   useLevelLabels: true,
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' 
   // eslint-disable-next-line global-require, import/no-extraneous-dependencies
   const ignore = require('babel-preset-gasbuddy/ignore');
   // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  require('babel-register')({ ignore });
+  require('@babel/register')({ ignore });
 }
 
 try {
@@ -66,7 +66,8 @@ try {
       if (match) {
         if (!process.env[match[1]]) {
           logger.info(`Read ${match[1]} environment variable from .env`);
-          process.env[match[1]] = match[2];
+          const [, key, value] = match;
+          process.env[key] = value;
         }
       }
     }
@@ -105,7 +106,7 @@ if (argv.nobind) {
   // Done with this disconnected logger
   BaseLogger.stop();
   server = new ServerClass(name);
-  service = server.service;
+  ({ service } = server);
 
   server
     .create(dirname)

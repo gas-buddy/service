@@ -41,12 +41,6 @@
         "preProcessor": "require:../../src/index#addCorrelationWarning",
         "postProcessor": "require:../../src/index#addSwaggerLoggingMarker"
       }
-    },
-    "trustedCertificates": {
-      "module": [
-        "require:../../src/index#trustCertificates",
-        "path:./config/root-certs.pem"
-      ]
     }
   },
   "meddleware": {
