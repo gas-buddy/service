@@ -93,7 +93,12 @@ export default class Server {
       }
       this.service.emit('listening', this.servers);
     } catch (error) {
-      this.service.logger.error(`${this.service.name} failed to start`, loggableError(error));
+      if (this?.service?.logger?.error) {
+        this.service.logger.error(`${this.service.name} failed to start`, loggableError(error));
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(`${this.service.name} failed to start, and failed to configure the logger: ${error}`);
+      }
       throw error;
     }
   }
