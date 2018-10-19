@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
-    "babel-preset-gasbuddy": "^4.1.0",
+    "babel-preset-gasbuddy": "^4.1.2",
     "cross-env": "^5.2.0",
     "eslint-config-gasbuddy": "^5.0.2",
     "supertest": "^3.3.0",
