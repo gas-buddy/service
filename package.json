@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "8.0.3",
+  "version": "8.0.4",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -64,7 +64,7 @@
     "@gasbuddy/configured-swaggerize-express": "^2.0.1",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.0.0",
-    "@gasbuddy/kms-crypto": "^3.0.1",
+    "@gasbuddy/kms-crypto": "^4.0.1",
     "@gasbuddy/meddleware": "^2.0.0",
     "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
