@@ -55,6 +55,12 @@
         "name": "path:../../src/index"
       }
     },
+    "rawBodySaver": {
+      "enabled": true,
+      "module": {
+        "factory": "require:../../src/index#saveRawBodyFactory"
+      }
+    },
     "requestLogger": {
       "module": {
         "name": "path:../../src/index"

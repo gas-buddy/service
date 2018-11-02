@@ -79,6 +79,16 @@
       },
       "priority": 40
     },
+    "rawBodySaver": {
+      // Typically, you set the "route" key of this
+      // to an array of routes for which you want rawBody saving
+      // because it's not great to save it all the time...
+      "enabled": false,
+      "priority": 49,
+      "module": {
+        "factory": "require:@gasbuddy/service#saveRawBodyFactory"
+      }
+    },
     "json": {
       "enabled": true,
       "priority": 50,

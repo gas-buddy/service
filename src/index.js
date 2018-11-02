@@ -1,3 +1,5 @@
+import bodyParser from 'body-parser';
+
 export { default as Service } from './Service';
 export { default as Server } from './Server';
 export { default as requestFactory } from './requestFactory';
@@ -13,3 +15,11 @@ export {
   responseLoggerFactory,
   finalHandlerFactory,
 } from './log';
+
+export function saveRawBodyFactory() {
+  return bodyParser.json({
+    verify(req, res, buf) {
+      req.rawBody = buf;
+    },
+  });
+}
