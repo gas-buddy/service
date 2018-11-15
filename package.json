@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "8.1.0",
+  "version": "8.1.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {

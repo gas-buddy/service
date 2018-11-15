@@ -11,7 +11,7 @@ import Server from './Server';
 import { syntheticRequest } from './util';
 
 const argv = minimist(process.argv.slice(2), {
-  boolean: ['built', 'repl', 'nobind'],
+  boolean: ['built', 'repl', 'nobind', 'babel'],
 });
 
 let ServiceClass = Service;
@@ -49,7 +49,7 @@ global.Promise = require('bluebird');
 // More opinion... Your src should be in src pre-transpile and build after
 let dirname = path.join(process.cwd(), 'src');
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' || argv.built) {
+if (!argv.babel && (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' || argv.built)) {
   dirname = path.join(process.cwd(), 'build');
 } else {
   // eslint-disable-next-line global-require, import/no-extraneous-dependencies
