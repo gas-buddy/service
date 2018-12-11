@@ -143,3 +143,11 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 7.3.0
 =====
 * Allow enabling `SUPERAGENT_LOGS` via config.
+
+8.0.0
+=====
+* Updated babel-preset and affiliated modules
+
+9.0.0
+=====
+* Updated babel-preset which removes the "gbTranspile" checks for non-compiled module inclusion (mostly for Webpack)

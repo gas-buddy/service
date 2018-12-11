@@ -52,10 +52,8 @@ let dirname = path.join(process.cwd(), 'src');
 if (!argv.babel && (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' || argv.built)) {
   dirname = path.join(process.cwd(), 'build');
 } else {
-  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  const ignore = require('babel-preset-gasbuddy/ignore');
-  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  require('@babel/register')({ ignore });
+  // eslint-disable-next-line global-require
+  require('@babel/register')();
 }
 
 try {
