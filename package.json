@@ -61,7 +61,7 @@
     "@gasbuddy/configured-pino": "^2.0.2",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
     "@gasbuddy/configured-swagger-client": "^4.0.0",
-    "@gasbuddy/configured-swaggerize-express": "^2.0.1",
+    "@gasbuddy/configured-swaggerize-express": "^3.0.1",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.0.0",
     "@gasbuddy/kms-crypto": "^4.0.1",
