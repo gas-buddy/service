@@ -117,7 +117,10 @@ export class metricsShim {
       }
     });
     if (this.instance.start) {
-      this.start = (...args) => this.instance.start(...args);
+      this.start = async (ctx, ...args) => {
+        await ctx.service.metrics;
+        return this.instance.start(ctx, ...args);
+      };
     }
     if (this.instance.stop) {
       this.stop = (...args) => this.instance.stop(...args);
