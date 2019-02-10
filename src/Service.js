@@ -4,6 +4,7 @@ import path from 'path';
 import assert from 'assert';
 import confit from 'confit';
 import express from 'express';
+import enrouten from 'express-enrouten';
 import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
 import Logger from '@gasbuddy/configured-pino';
@@ -36,6 +37,10 @@ const SERVICE_TIMER = Symbol('Timing service calls');
 const environments = ['production', 'staging', 'test', 'development'];
 
 export default class Service extends EventEmitter {
+  static express = express
+
+  static enrouten = enrouten
+
   constructor(options) {
     super();
     if (typeof options === 'string') {
