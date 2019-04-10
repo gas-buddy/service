@@ -151,3 +151,10 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 9.0.0
 =====
 * Updated babel-preset which removes the "gbTranspile" checks for non-compiled module inclusion (mostly for Webpack)
+
+9.1.0
+=====
+* REPL now supports `--nosubs` to disable RabbitMQ subscriptions via @gasbuddy/configured-rabbitmq-client
+* REPL now stores history
+* The *result* of the last completed Promise returned to the REPL is no available as `$`
+* Updated superagent to v5 and updated other dependencies (no expected impact)

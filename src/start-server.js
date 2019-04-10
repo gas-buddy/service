@@ -10,9 +10,22 @@ import Service from './Service';
 import Server from './Server';
 import { syntheticRequest } from './util';
 
+const HISTORY_FILE = '.node_repl_history.log';
+
 const argv = minimist(process.argv.slice(2), {
-  boolean: ['built', 'repl', 'nobind', 'babel'],
+  boolean: ['built', 'repl', 'nobind', 'babel', 'nosubs'],
 });
+
+if (argv.nosubs) {
+  // A little helper for a common issue which is wanting to run a service
+  // without any queue processing
+  process.env.DISABLE_RABBITMQ_SUBSCRIPTIONS = 'true';
+}
+
+if (argv.repl) {
+  // REPL shouldn't buffer logs
+  process.env.NO_LOG_BUFFERING = 'true';
+}
 
 let ServiceClass = Service;
 
@@ -117,15 +130,28 @@ if (argv.nobind) {
 
 if (argv.repl) {
   let promiseCounter = 1;
+  let displayedHistoryError = false;
   const rl = repl.start({
     prompt: '> ',
     writer(v) {
+      try {
+        fs.appendFileSync(HISTORY_FILE, rl.lines.join('\n'));
+      } catch (e) {
+        if (!displayedHistoryError) {
+          displayedHistoryError = true;
+          // eslint-disable-next-line no-console
+          console.error('History could not be saved', e);
+        }
+      }
       if (v && typeof v.then === 'function' && typeof v.catch === 'function') {
         const me = promiseCounter;
         promiseCounter += 1;
         v
-          // eslint-disable-next-line no-console
-          .then(r => console.log(`\nPromise #${me} returns`, util.inspect(r)))
+          .then((r) => {
+            // eslint-disable-next-line no-console
+            console.log(`\nPromise #${me} returns`, util.inspect(r));
+            rl.context['$'] = r;
+          })
           // eslint-disable-next-line no-console
           .catch(e => console.error(`\nPromise #${me} error`, util.inspect(e)));
         return `{ Returned Promise #${me} }`;
@@ -133,6 +159,19 @@ if (argv.repl) {
       return util.inspect(v);
     },
   });
+  try {
+    // load command history from a file
+    fs.readFileSync(HISTORY_FILE, 'utf8')
+      .split('\n')
+      .reverse()
+      .filter(line => line.trim())
+      .forEach(line => rl.history.push(line));
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      // eslint-disable-next-line no-console
+      console.error('History unavailable', e);
+    }
+  }
   rl.on('exit', () => {
     service.destroy();
   });
