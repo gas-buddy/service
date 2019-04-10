@@ -150,7 +150,7 @@ if (argv.repl) {
           .then((r) => {
             // eslint-disable-next-line no-console
             console.log(`\nPromise #${me} returns`, util.inspect(r));
-            rl.context['$'] = r;
+            rl.context.$ = r;
           })
           // eslint-disable-next-line no-console
           .catch(e => console.error(`\nPromise #${me} error`, util.inspect(e)));
