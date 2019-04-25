@@ -135,7 +135,7 @@ if (argv.repl) {
     prompt: '> ',
     writer(v) {
       try {
-        fs.appendFileSync(HISTORY_FILE, rl.lines.join('\n'));
+        fs.appendFileSync(HISTORY_FILE, `${rl.lines.join('\n')}\n`);
       } catch (e) {
         if (!displayedHistoryError) {
           displayedHistoryError = true;
