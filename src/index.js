@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 export { default as Service } from './Service';
 export { default as Server } from './Server';
 export { default as requestFactory } from './requestFactory';
-export { serviceProxy, addCorrelationWarning, addSwaggerLoggingMarker, syntheticRequest } from './util';
+export { syntheticRequest } from './util';
 export { metricsShim } from './metricsShim';
 export { MetadataServer } from './metadata';
 export { runWithService } from './runWithService';

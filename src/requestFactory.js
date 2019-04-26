@@ -2,7 +2,7 @@ import objectID from 'bson-objectid';
 import expressPromisePatch from '@gasbuddy/express-promise-patch';
 import Service from './Service';
 import { superagentFunctor } from './superagentHelper';
-import { serviceProxy, loggableError, throwError, childContextCreator } from './util';
+import { loggableError, throwError, childContextCreator } from './util';
 
 /**
  * Middleware to attach the "service" object to the request and add various request-specific
@@ -80,12 +80,6 @@ export default function requestFactory(options) {
        * Throw a well formed error to be caught and sent in finalHandler
        */
       throwError: throwError.bind(this, service.name),
-      /**
-       * A requestInterceptor for swagger calls that adds correlation id.
-       * This means the services property is "special" which is not great.
-       * But did I say this was an opinionated library? I did.
-       */
-      services: serviceProxy(req),
       /**
        * A superagent request with automatic metrics and tracking
        */

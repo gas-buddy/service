@@ -20,16 +20,11 @@
     "metrics": {
       "module": "require:@gasbuddy/configured-prometheus-client"
     },
-    "services": {
+    "serviceFactory": {
       "module": "require:@gasbuddy/configured-swagger-client",
       "defaultTimeout": 20000,
-      "specs": {},
-      "endpoints": {},
-      "options": {
-        "basedir": "path:.",
-        "preProcessor": "require:@gasbuddy/service#addCorrelationWarning",
-        "postProcessor": "require:@gasbuddy/service#addSwaggerLoggingMarker"
-      }
+      "clients": {},
+      "endpoints": {}
     }
   },
   "swaggerApi": {

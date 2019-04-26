@@ -1,21 +1,23 @@
+import SelfApi from '../../api/index';
+
 async function thisShouldBeTopOfStack(req) {
-  const { body, status } = await req.gb.services.Self.apis.default
-    .get_throw({}, {
-      requestInterceptor(request) {
-        request.url = request.url.replace(':8000', `:${req.query.port}`);
-      },
-    });
+  const selfApi = new SelfApi(req.gb.serviceFactory);
+  const { body, status } = await selfApi.get_throw({}, {
+    requestInterceptor(request) {
+      request.url = request.url.replace(':8000', `:${req.query.port}`);
+    },
+  });
   return { body, status };
 }
 
 export default function (router) {
   router.get('/', async (req, res) => {
-    const response = await req.gb.services.Self.apis.default
-      .get_hello_world({}, {
-        requestInterceptor(request) {
-          request.url = request.url.replace(':8000', `:${req.query.port}`);
-        },
-      });
+    const selfApi = new SelfApi(req.gb.serviceFactory);
+    const response = await selfApi.get_hello_world(null, {
+      requestInterceptor(request) {
+        request.url = request.url.replace(':8000', `:${req.query.port}`);
+      },
+    });
     res.json(response.body);
   });
 
