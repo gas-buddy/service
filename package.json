@@ -4,11 +4,8 @@
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
-    "test": "tap --node-arg=-r --node-arg=@babel/register tests/test_*.js",
-    "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js && nyc check-coverage && nyc report --reporter=text",
-    "ci-test": "cross-env NODE_ENV=test nyc tap -Rtap tests/test_*.js | tee .tap_output | tap -Rspec -",
-    "ci-cover": "nyc check-coverage",
-    "ci-coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test": "tap --node-arg=-r --node-arg=@babel/register --no-coverage tests/test_*.js",
+    "ci-test": "tap tests/test_*.js",
     "lint": "eslint .",
     "prepublishOnly": "npm run build",
     "build": "babel src/ --out-dir build/"
@@ -50,8 +47,7 @@
     "require": [
       "@babel/register"
     ],
-    "sourceMap": false,
-    "instrument": false,
+    "sourceMap": true,
     "reporter": [
       "lcov"
     ]
