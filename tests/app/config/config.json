@@ -25,21 +25,17 @@
       "baseModule": "require:./fakeMetrics",
       "metricDescription": "A fake metric"
     },
-    "services": {
-      "specs": {
-        "self": "path:./api/hello-world.yaml"
+    "serviceFactory": {
+      "clients": {
+        "self-api": "require:./api/index.js#default"
       },
       "endpoints": {
-        "self": {
+        "self-api": {
           "port": 8000,
           "protocol": "http",
           "hostname": "localhost",
           "log": true
         }
-      },
-      "options": {
-        "preProcessor": "require:../../src/index#addCorrelationWarning",
-        "postProcessor": "require:../../src/index#addSwaggerLoggingMarker"
       }
     }
   },

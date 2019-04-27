@@ -91,15 +91,13 @@ tap.test('server startup', async (t) => {
   try {
     let before;
     let after;
-    s.service.once(service.Service.Event.BeforeServiceCall, (req) => {
-      t.strictEquals(req.url, `http://localhost:${httpPort}/hello/world`,
-        'Should have a request url');
+    s.service.serviceFactory.events.once('start', (req) => {
+      t.strictEquals(req.request.url, 'http://localhost:8000/hello/world', 'Should have a request url');
       req.kilroyWasHere = true;
       before = true;
     });
-    s.service.once(service.Service.Event.AfterServiceCall, (res, req) => {
-      t.strictEquals(req.url, `http://localhost:${httpPort}/hello/world`, 'Should have a request url');
-      t.strictEquals(res.url, `http://localhost:${httpPort}/hello/world`, 'Should have a request url');
+    s.service.serviceFactory.events.once('finish', (req) => {
+      t.strictEquals(req.request.url, `http://localhost:${httpPort}/hello/world`, 'Should have a request url that was transformed');
       t.ok(req.kilroyWasHere, 'Should be the same request');
       after = true;
     });
@@ -108,8 +106,8 @@ tap.test('server startup', async (t) => {
       .set('CorrelationId', 'FAKE_CORRELATION_ID');
     t.strictEquals(res.status, 200, 'should be status 200');
     t.strictEquals(res.body.sp, '1.1', 'Span tracking should work');
-    t.ok(before, 'BeforeServiceCall event should be emitted');
-    t.ok(after, 'AfterServiceCall event should be emitted');
+    t.ok(before, 'start event should be emitted');
+    t.ok(after, 'finish event should be emitted');
   } catch (error) {
     t.fail(error);
   }

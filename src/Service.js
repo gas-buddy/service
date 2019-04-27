@@ -1,5 +1,4 @@
 import fs from 'fs';
-import URL from 'url';
 import path from 'path';
 import assert from 'assert';
 import confit from 'confit';
@@ -9,7 +8,6 @@ import { EventEmitter } from 'events';
 import meddleware from '@gasbuddy/meddleware';
 import Logger from '@gasbuddy/configured-pino';
 import { hydrate, dehydrate } from '@gasbuddy/hydration';
-import { CallPathPropertyKey } from '@gasbuddy/configured-swagger-client';
 import { drain } from './drain';
 import shortstops from './shortstops';
 import { loggableError } from './util';
@@ -131,20 +129,18 @@ export default class Service extends EventEmitter {
 
       // Setup metrics tracking on Swagger endpoints
       const serviceMetrics = {};
-
-      this.on(Service.Event.BeforeServiceCall, (req) => {
+      appObjects.tree.serviceFactory.events.on('start', (req) => {
         if (!this.metrics) {
           return;
         }
-        const [, opName] = req[CallPathPropertyKey];
-        const { host } = URL.parse(req.url, false);
-        const keyname = `service_${host.replace(/[-.]/g, '_')}_${opName || 'unknown'}`;
+        const { client, operationName } = req;
+        const keyname = `service_${client.name}_${operationName.replace(/[-.]/g, '_')}`;
         let histo = serviceMetrics[keyname];
         try {
           if (!histo) {
             histo = new this.metrics.Histogram(
               keyname,
-              `Calls to the ${host} service method ${opName}`,
+              `Calls to the ${client.name} service method ${operationName}`,
               ['status', 'source'],
             );
             serviceMetrics[keyname] = histo;
@@ -157,11 +153,15 @@ export default class Service extends EventEmitter {
           });
         }
       });
-      this.on(Service.Event.AfterServiceCall, (res, req) => {
+
+      const final = (req) => {
         if (req[SERVICE_TIMER]) {
-          req[SERVICE_TIMER]({ status: res.status });
+          req[SERVICE_TIMER]({ status: req.status });
         }
-      });
+      };
+
+      appObjects.tree.serviceFactory.events.on('finish', final);
+      appObjects.tree.serviceFactory.events.on('error', final);
 
       // And add meddleware to express. The GasBuddy version of this
       // originally-PayPal module handles promises. Maybe the PayPal one
@@ -287,8 +287,3 @@ export default class Service extends EventEmitter {
     return app ? app[SERVICE] : null;
   }
 }
-
-Service.Event = {
-  BeforeServiceCall: 'service.request.before',
-  AfterServiceCall: 'service.request.after',
-};

@@ -12,18 +12,10 @@ build:
       name: test with coverage
       code: |
         npm run --silent ci-test
-        npm run --silent ci-cover
 
     - script:
       name: build
       code: npm run build
-
-  after-steps:
-    - script:
-      name: Post to coveralls
-      code: |
-        npm install --silent coveralls
-        npm run --silent ci-coveralls
 
 deploy:
   steps:

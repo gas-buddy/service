@@ -1,14 +1,11 @@
 {
   "name": "@gasbuddy/service",
-  "version": "9.1.1",
+  "version": "10.0.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
-    "test": "tap --node-arg=-r --node-arg=@babel/register tests/test_*.js",
-    "cover": "cross-env BABEL_ENV=test nyc tap tests/test_*.js && nyc check-coverage && nyc report --reporter=text",
-    "ci-test": "cross-env NODE_ENV=test nyc tap -Rtap tests/test_*.js | tee .tap_output | tap -Rspec -",
-    "ci-cover": "nyc check-coverage",
-    "ci-coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test": "tap --node-arg=-r --node-arg=@babel/register --no-coverage tests/test_*.js",
+    "ci-test": "tap tests/test_*.js",
     "lint": "eslint .",
     "prepublishOnly": "npm run build",
     "build": "babel src/ --out-dir build/"
@@ -50,24 +47,23 @@
     "require": [
       "@babel/register"
     ],
-    "sourceMap": false,
-    "instrument": false,
+    "sourceMap": true,
     "reporter": [
       "lcov"
     ]
   },
   "dependencies": {
-    "@babel/register": "^7.4.0",
+    "@babel/register": "^7.4.4",
     "@gasbuddy/configured-pino": "^2.0.2",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
-    "@gasbuddy/configured-swagger-client": "^4.0.0",
+    "@gasbuddy/configured-swagger-client": "^5.2.0",
     "@gasbuddy/configured-swaggerize-express": "^3.0.1",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.1.0",
-    "@gasbuddy/kms-crypto": "^4.0.1",
+    "@gasbuddy/kms-crypto": "^4.1.0",
     "@gasbuddy/meddleware": "^2.0.0",
     "bluebird": "^3.5.4",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "bson-objectid": "^1.2.3",
     "confit": "^2.3.0",
     "express": "^4.16.3",
@@ -86,11 +82,12 @@
     "superagent": "^5.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.3",
+    "@babel/cli": "^7.4.4",
     "babel-preset-gasbuddy": "^5.4.0",
     "cross-env": "^5.2.0",
-    "eslint-config-gasbuddy": "^5.1.0",
+    "eslint-config-gasbuddy": "^5.2.1",
+    "rest-api-support": "^1.0.1",
     "supertest": "^4.0.2",
-    "tap": "^12.6.1"
+    "tap": "^13.0.3"
   }
 }
