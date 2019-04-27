@@ -1,5 +1,8 @@
+// eslint-disable camelcase
 // eslint-disable-next-line no-unused-vars
 import { parameterBuilder, fetchHelper, eventSourceHelper } from 'rest-api-support';
+
+const CONFIG_FUNCTION = Symbol.for('small-swagger-codegen::configurationGenerator');
 
 /**
  *
@@ -8,9 +11,9 @@ import { parameterBuilder, fetchHelper, eventSourceHelper } from 'rest-api-suppo
  */
 export default class SelfApi {
   constructor(configOrGenerator) {
-    let config = configOrGenerator;
-    if (typeof configOrGenerator === 'function') {
-      config = configOrGenerator(SelfApi);
+    let config = (configOrGenerator && configOrGenerator[CONFIG_FUNCTION]) || configOrGenerator;
+    if (typeof config === 'function') {
+      config = config(SelfApi);
     }
     const {
       baseUrl = '',

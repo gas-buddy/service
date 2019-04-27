@@ -28,7 +28,9 @@ function normalizeError(error) {
  */
 export function loggableError(error) {
   if (error.originalStack) {
-    return normalizeError(error.originalStack);
+    const originalError = normalizeError(error.originalStack);
+    originalError.message = error.message;
+    return originalError;
   }
   return normalizeError(error);
 }

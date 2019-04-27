@@ -1,7 +1,7 @@
 import SelfApi from '../../api/index';
 
 async function thisShouldBeTopOfStack(req) {
-  const selfApi = new SelfApi(req.gb.serviceFactory);
+  const selfApi = new SelfApi(req);
   const { body, status } = await selfApi.get_throw({}, {
     requestInterceptor(request) {
       request.url = request.url.replace(':8000', `:${req.query.port}`);
@@ -12,7 +12,7 @@ async function thisShouldBeTopOfStack(req) {
 
 export default function (router) {
   router.get('/', async (req, res) => {
-    const selfApi = new SelfApi(req.gb.serviceFactory);
+    const selfApi = new SelfApi(req);
     const response = await selfApi.get_hello_world(null, {
       requestInterceptor(request) {
         request.url = request.url.replace(':8000', `:${req.query.port}`);
