@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -56,7 +56,7 @@
     "@babel/register": "^7.4.4",
     "@gasbuddy/configured-pino": "^2.0.2",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
-    "@gasbuddy/configured-swagger-client": "^5.2.0",
+    "@gasbuddy/configured-swagger-client": "^5.2.1",
     "@gasbuddy/configured-swaggerize-express": "^3.0.1",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.1.0",
@@ -72,14 +72,14 @@
     "minimist": "^1.2.0",
     "on-finished": "^2.3.0",
     "on-headers": "^1.0.2",
-    "pino-pretty": "^2.6.0",
-    "query-string": "^6.4.2",
+    "pino-pretty": "^3.0.0",
+    "query-string": "^6.5.0",
     "request-ip": "^2.1.3",
     "shortstop-dns": "^1.1.0",
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
     "source-map-support": "^0.5.12",
-    "superagent": "^5.0.2"
+    "superagent": "^5.0.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -88,6 +88,6 @@
     "eslint-config-gasbuddy": "^5.2.1",
     "rest-api-support": "^1.0.1",
     "supertest": "^4.0.2",
-    "tap": "^13.0.3"
+    "tap": "^13.1.1"
   }
 }
