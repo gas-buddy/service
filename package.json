@@ -88,6 +88,6 @@
     "eslint-config-gasbuddy": "^5.2.1",
     "rest-api-support": "^1.0.1",
     "supertest": "^4.0.2",
-    "tap": "^13.1.1"
+    "tap": "^14.1.7"
   }
 }
