@@ -109,7 +109,8 @@ export default class Service extends EventEmitter {
     this.app.config = this.config;
     this.emit('configurationLoaded', this.config);
 
-    this[DISCONNECTED_LOGGER] = new Logger({}, this.config.get('connections:logger'));
+    // The disconnected logger cannot be in extreme mode because there is nobody to flush it.
+    this[DISCONNECTED_LOGGER] = new Logger({}, { ...this.config.get('connections:logger'), extreme: false });
     this[BASE_LOGGER] = this[DISCONNECTED_LOGGER].start();
 
     // Ok, now hydrate the "connections" key

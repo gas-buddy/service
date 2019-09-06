@@ -142,6 +142,16 @@ export function responseLoggerFactory() {
   return responseBodyLogger;
 }
 
+function levelForError(error) {
+  if (error?.level && ['error', 'warn', 'info', 'debug'].includes(error.level)) {
+    return error.level;
+  }
+  if (error?.status && error.status >= 400 && error.status < 500) {
+    return 'info';
+  }
+  return 'error';
+}
+
 export function finalHandlerFactory(options) {
   const { shouldRenderResponse = true } = options || {};
 
@@ -178,7 +188,7 @@ export function finalHandlerFactory(options) {
       };
 
       Object.assign(error, reqProps);
-      reqLogger.error('Handler exception', loggableError(error));
+      reqLogger[levelForError(error)]('Handler exception', loggableError(error));
 
       if (shouldRenderResponse) {
         // Check to see if it's a nested error and send

@@ -158,3 +158,8 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 * REPL now stores history
 * The *result* of the last completed Promise returned to the REPL is no available as `$`
 * Updated superagent to v5 and updated other dependencies (no expected impact)
+
+10.1.0
+======
+* Be smarter about log level for an error
+* Make sure the base logger is NOT in extreme mode to avoid swallowing startup messages where there is no real volume to cause a flush
