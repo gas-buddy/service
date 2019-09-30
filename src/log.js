@@ -196,7 +196,7 @@ export function finalHandlerFactory(options) {
         let loggable = error;
         const body = error.response ? (error.response.body || error.body) : error.body;
         if (error.timeout) {
-          body.display_message = "Request timed out"
+          body.display_message = 'Request timed out';
         }
         if (body && body.domain && body.code && body.message) {
           loggable = {
