@@ -1,6 +1,14 @@
 import assert from 'assert';
 import express from 'express';
+import request from 'superagent';
 import { exec } from 'child_process';
+import { syntheticRequest } from './util';
+
+const JobStatus = {
+  Processing: 'processing',
+  Complete: 'success',
+  Fail: 'failed',
+};
 
 /**
  * An http server that exposes metadata about the app including health information
@@ -59,6 +67,84 @@ export class MetadataServer {
       }
       const rz = await component.metadata(req.query);
       res.json(rz);
+    });
+
+    this.app.post('/job', async (req, res) => {
+      const { job_name: name, callback_url: url } = req.body;
+      const job = this.service.jobs[name];
+      if (!job) {
+        res.sendStatus(404);
+        return;
+      }
+      if (typeof job !== 'function') {
+        res.sendStatus(405);
+        return;
+      }
+      const synth = syntheticRequest(this.service, req.headers.correlationid || `job-${name}-${Date.now()}`);
+      const { maxExecutionSeconds = 60 * 60, interruptable = false, heartbeatIntervalSeconds = 10 } = job;
+      let status = JobStatus.Processing;
+      let lastProgress = 0;
+      const start = Date.now();
+      const callbackFailed = (error) => {
+        synth.gb.logger.error('Failed to notify job server', this.service.wrapError(error, { name, url }));
+      };
+      const interval = setInterval(() => {
+        if (Date.now() - start > maxExecutionSeconds * 1000) {
+          status = JobStatus.Fail;
+          // Tell the URL we failed.
+          request.post(url).send({
+            progress: lastProgress,
+            status,
+            error: {
+              code: 'Timeout',
+              message: `Job timed out after ${(Date.now() - start) / 1000} seconds`,
+            },
+          }).catch(callbackFailed);
+        } else {
+          request.post(url).send({
+            progress: lastProgress,
+            status,
+          }).catch(() => {});
+        }
+      }, heartbeatIntervalSeconds * 1000);
+      if (interruptable) {
+        interval.unref();
+      }
+      try {
+        synth.gb.logger.info('Starting job', { name });
+        job(synth, req.body, (progress) => {
+          lastProgress = progress;
+        }).then((result) => {
+          clearInterval(interval);
+          if (status === JobStatus.Processing) {
+            status = JobStatus.Complete;
+            request.post(url).send({
+              progress: lastProgress,
+              status,
+              result,
+            }).catch(callbackFailed);
+          } else {
+            synth.gb.logger.warn('Failed to record job completion before timeout', { name, url });
+          }
+        }).catch((error) => {
+          clearInterval(interval);
+          if (status === JobStatus.Processing) {
+            status = JobStatus.Fail;
+            synth.gb.logger.error('Job failed', context.wrapError(error, { name }));
+            request.post(url).send({
+              progress: lastProgress,
+              status,
+              error: context.wrapError(error),
+            }).catch(callbackFailed);
+          } else {
+            synth.gb.logger.warn('Failed to record job failure before timeout', context.wrapError(error, { name, url }));
+          }
+        });
+        res.json({ accepted: true });
+      } catch (error) {
+        synth.gb.logger.error('Job could not be accepted', context.wrapError(error, { name: req.params.name }));
+        res.status(500).json(context.wrapError(error));
+      }
     });
 
     this.server = this.app.listen(this.port, () => {
