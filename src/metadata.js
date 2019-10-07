@@ -83,28 +83,23 @@ export class MetadataServer {
       const synth = syntheticRequest(this.service, req.headers.correlationid || `job-${name}-${Date.now()}`);
       const { maxExecutionSeconds = 60 * 60, interruptable = false, heartbeatIntervalSeconds = 10 } = job;
       let status = JobStatus.Processing;
-      let lastProgress = 0;
+      let progress = 0;
       const start = Date.now();
-      const callbackFailed = (error) => {
+      const ping = (obj = {}) => request.post(url).retry(3).send({ status, progress, ...obj }).catch((error) => {
         synth.gb.logger.error('Failed to notify job server', this.service.wrapError(error, { name, url }));
-      };
+      });
       const interval = setInterval(() => {
         if (Date.now() - start > maxExecutionSeconds * 1000) {
           status = JobStatus.Fail;
           // Tell the URL we failed.
-          request.post(url).send({
-            progress: lastProgress,
-            status,
+          ping({
             error: {
               code: 'Timeout',
               message: `Job timed out after ${(Date.now() - start) / 1000} seconds`,
             },
-          }).catch(callbackFailed);
+          });
         } else {
-          request.post(url).send({
-            progress: lastProgress,
-            status,
-          }).catch(() => {});
+          ping();
         }
       }, heartbeatIntervalSeconds * 1000);
       if (interruptable) {
@@ -112,17 +107,13 @@ export class MetadataServer {
       }
       try {
         synth.gb.logger.info('Starting job', { name });
-        job(synth, req.body, (progress) => {
-          lastProgress = progress;
+        job(synth, req.body, (newProgress) => {
+          progress = newProgress;
         }).then((result) => {
           clearInterval(interval);
           if (status === JobStatus.Processing) {
             status = JobStatus.Complete;
-            request.post(url).send({
-              progress: lastProgress,
-              status,
-              result,
-            }).catch(callbackFailed);
+            ping({ result });
           } else {
             synth.gb.logger.warn('Failed to record job completion before timeout', { name, url });
           }
@@ -131,11 +122,7 @@ export class MetadataServer {
           if (status === JobStatus.Processing) {
             status = JobStatus.Fail;
             synth.gb.logger.error('Job failed', context.wrapError(error, { name }));
-            request.post(url).send({
-              progress: lastProgress,
-              status,
-              error: context.wrapError(error),
-            }).catch(callbackFailed);
+            ping({ error: context.wrapError(error) });
           } else {
             synth.gb.logger.warn('Failed to record job failure before timeout', context.wrapError(error, { name, url }));
           }
