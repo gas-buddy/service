@@ -71,7 +71,7 @@ export class MetadataServer {
     });
 
     this.app.post('/job', async (req, res) => {
-      const { job_name: name, callback_url: url, ttl_seconds: ttl } = req.body;
+      const { job_name: name, callback_url: url, ttl_seconds: ttl, heartbeat_interval_seconds: heartbeatIntervalSeconds } = req.body;
       const job = this.service.jobs[name];
       if (!job) {
         res.sendStatus(404);
@@ -84,7 +84,8 @@ export class MetadataServer {
       const synth = syntheticRequest(this.service, req.headers.correlationid || `job-${name}-${Date.now()}`);
       const ee = new EventEmitter();
       synth.on = ee.on.bind(ee);
-      const { interruptable = false, heartbeatIntervalSeconds = 30 } = job;
+      // Controls whether the service will shutdown even if this interval is still firing.
+      const { interruptable = false } = job;
       let status = JobStatus.Processing;
       let progress = 0;
       const start = Date.now();
@@ -93,6 +94,7 @@ export class MetadataServer {
       });
       const interval = setInterval(() => {
         if (Date.now() - start > ttl * 1000) {
+          clearInterval(interval);
           status = JobStatus.Fail;
           // Tell the URL we failed.
           ping({
