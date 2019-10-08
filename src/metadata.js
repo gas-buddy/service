@@ -1,6 +1,7 @@
 import assert from 'assert';
 import express from 'express';
 import request from 'superagent';
+import { EventEmitter } from 'events';
 import { exec } from 'child_process';
 import { syntheticRequest } from './util';
 
@@ -70,7 +71,7 @@ export class MetadataServer {
     });
 
     this.app.post('/job', async (req, res) => {
-      const { job_name: name, callback_url: url } = req.body;
+      const { job_name: name, callback_url: url, ttl_seconds: ttl } = req.body;
       const job = this.service.jobs[name];
       if (!job) {
         res.sendStatus(404);
@@ -81,7 +82,9 @@ export class MetadataServer {
         return;
       }
       const synth = syntheticRequest(this.service, req.headers.correlationid || `job-${name}-${Date.now()}`);
-      const { maxExecutionSeconds = 60 * 60, interruptable = false, heartbeatIntervalSeconds = 10 } = job;
+      const ee = new EventEmitter();
+      synth.on = ee.on.bind(ee);
+      const { interruptable = false, heartbeatIntervalSeconds = 30 } = job;
       let status = JobStatus.Processing;
       let progress = 0;
       const start = Date.now();
@@ -89,7 +92,7 @@ export class MetadataServer {
         synth.gb.logger.error('Failed to notify job server', this.service.wrapError(error, { name, url }));
       });
       const interval = setInterval(() => {
-        if (Date.now() - start > maxExecutionSeconds * 1000) {
+        if (Date.now() - start > ttl * 1000) {
           status = JobStatus.Fail;
           // Tell the URL we failed.
           ping({
@@ -98,6 +101,7 @@ export class MetadataServer {
               message: `Job timed out after ${(Date.now() - start) / 1000} seconds`,
             },
           });
+          try { ee.emit('close'); } catch (e) { /* Nothing to do */ }
         } else {
           ping();
         }

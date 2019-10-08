@@ -255,7 +255,8 @@ export default class Service extends EventEmitter {
    * Add a job that can be executed by submitting requests to the metadata jobs endpoint.
    * The functor will receive a "virtual req" context, the arguments passed during submission
    * and a progress function that can be called with a value between 0 and 100 to update the
-   * job runner with progress
+   * job runner with progress. Note the synthetic request supports on('close', fn) to be notified
+   * of timeouts or other situations in which the job should terminate because it has already failed
    */
   addJob(name, functor, options) {
     this.jobs = this.jobs || {};
