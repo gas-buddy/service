@@ -186,4 +186,6 @@ if (argv.repl) {
   rl.context.server = server;
   rl.context.service = service;
   rl.context.repl = rl;
+  // eslint-disable-next-line no-console
+  rl.context.dump = o => console.log(JSON.stringify(o, null, '\t'));
 }
