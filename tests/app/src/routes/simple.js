@@ -11,4 +11,8 @@ export default function (router) {
       res.status(500).send('fail');
     }
   });
+
+  router.post('/job', (req, res) => {
+    res.json({});
+  });
 }

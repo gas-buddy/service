@@ -95,7 +95,7 @@ let server;
 process.on('unhandledRejection', (err) => {
   try {
     if (service && service.wrapError) {
-      logger.error('Unhandled Rejection', service.wrapError(err));
+      (service.baseLogger || service.logger || logger).error('Unhandled Rejection', service.wrapError(err));
     } else {
       logger.error('Unhandled Rejection', JSON.stringify(err));
     }

@@ -3,6 +3,7 @@ import express from 'express';
 import request from 'superagent';
 import { EventEmitter } from 'events';
 import { exec } from 'child_process';
+import bodyParser from 'body-parser';
 import { syntheticRequest } from './util';
 
 const JobStatus = {
@@ -23,6 +24,7 @@ export class MetadataServer {
 
   start(context) {
     this.app = express();
+    this.app.use(bodyParser.json());
 
     this.app.get('/health', async (req, res) => {
       try {
@@ -71,7 +73,7 @@ export class MetadataServer {
     });
 
     this.app.post('/job', async (req, res) => {
-      const { job_name: name, callback_url: url, ttl_seconds: ttl, heartbeat_interval_seconds: heartbeatIntervalSeconds } = req.body;
+      const { job_name: name, callback_url: url, ttl_seconds: ttl = 3600, heartbeat_interval_seconds: heartbeatIntervalSeconds = 60 } = req.body;
       const job = this.service.jobs[name];
       if (!job) {
         res.sendStatus(404);

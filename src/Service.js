@@ -71,6 +71,10 @@ export default class Service extends EventEmitter {
     return this[CONNECTIONS_TREE];
   }
 
+  get baseLogger() {
+    return this[BASE_LOGGER];
+  }
+
   // eslint-disable-next-line class-methods-use-this
   wrapError(error, additionalMetadata) {
     const e = loggableError(error);
