@@ -95,7 +95,7 @@ let server;
 process.on('unhandledRejection', (err) => {
   try {
     if (service && service.wrapError) {
-      logger.error('Unhandled Rejection', service.wrapError(err));
+      (service.baseLogger || service.logger || logger).error('Unhandled Rejection', service.wrapError(err));
     } else {
       logger.error('Unhandled Rejection', JSON.stringify(err));
     }
@@ -186,4 +186,6 @@ if (argv.repl) {
   rl.context.server = server;
   rl.context.service = service;
   rl.context.repl = rl;
+  // eslint-disable-next-line no-console
+  rl.context.dump = o => console.log(JSON.stringify(o, null, '\t'));
 }

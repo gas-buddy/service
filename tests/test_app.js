@@ -182,6 +182,22 @@ tap.test('server startup', async (t) => {
     .get('/modules?depth=1');
   t.strictEquals(mdmodules.status, 200, 'Should get 200 module check');
 
+  let jobAccept;
+  const jobPromise = new Promise((accept) => { jobAccept = accept; });
+  s.service.addJob('test-job', async (req, args, callback) => {
+    callback(50);
+    await new Promise(accept => setTimeout(accept, 10));
+    t.ok(true, 'Should receive job and update progress');
+    jobAccept(true);
+  });
+  await request(s.service.metadata.app)
+    .post('/job')
+    .send({
+      callback_url: `http://localhost:${httpPort}/simple/job`,
+      job_name: 'test-job',
+    });
+  t.ok(await jobPromise, 'Should complete queued job');
+
   await s.destroy();
   t.ok(true, 'servers should stop');
 });

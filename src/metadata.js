@@ -1,6 +1,16 @@
 import assert from 'assert';
 import express from 'express';
+import request from 'superagent';
+import { EventEmitter } from 'events';
 import { exec } from 'child_process';
+import bodyParser from 'body-parser';
+import { syntheticRequest } from './util';
+
+const JobStatus = {
+  Processing: 'processing',
+  Complete: 'success',
+  Fail: 'failed',
+};
 
 /**
  * An http server that exposes metadata about the app including health information
@@ -14,6 +24,7 @@ export class MetadataServer {
 
   start(context) {
     this.app = express();
+    this.app.use(bodyParser.json());
 
     this.app.get('/health', async (req, res) => {
       try {
@@ -59,6 +70,76 @@ export class MetadataServer {
       }
       const rz = await component.metadata(req.query);
       res.json(rz);
+    });
+
+    this.app.post('/job', async (req, res) => {
+      const { job_name: name, callback_url: url, ttl_seconds: ttl = 3600, heartbeat_interval_seconds: heartbeatIntervalSeconds = 60 } = req.body;
+      const job = this.service.jobs[name];
+      if (!job) {
+        res.sendStatus(404);
+        return;
+      }
+      if (typeof job !== 'function') {
+        res.sendStatus(405);
+        return;
+      }
+      const synth = syntheticRequest(this.service, req.headers.correlationid || `job-${name}-${Date.now()}`);
+      const ee = new EventEmitter();
+      synth.on = ee.on.bind(ee);
+      // Controls whether the service will shutdown even if this interval is still firing.
+      const { interruptable = false } = job;
+      let status = JobStatus.Processing;
+      let progress = 0;
+      const start = Date.now();
+      const ping = (obj = {}) => request.post(url).retry(3).send({ status, progress, ...obj }).catch((error) => {
+        synth.gb.logger.error('Failed to notify job server', this.service.wrapError(error, { name, url }));
+      });
+      const interval = setInterval(() => {
+        if (Date.now() - start > ttl * 1000) {
+          clearInterval(interval);
+          status = JobStatus.Fail;
+          // Tell the URL we failed.
+          ping({
+            error: {
+              code: 'Timeout',
+              message: `Job timed out after ${(Date.now() - start) / 1000} seconds`,
+            },
+          });
+          try { ee.emit('close'); } catch (e) { /* Nothing to do */ }
+        } else {
+          ping();
+        }
+      }, heartbeatIntervalSeconds * 1000);
+      if (interruptable) {
+        interval.unref();
+      }
+      try {
+        synth.gb.logger.info('Starting job', { name });
+        job(synth, req.body, (newProgress) => {
+          progress = newProgress;
+        }).then((result) => {
+          clearInterval(interval);
+          if (status === JobStatus.Processing) {
+            status = JobStatus.Complete;
+            ping({ result });
+          } else {
+            synth.gb.logger.warn('Failed to record job completion before timeout', { name, url });
+          }
+        }).catch((error) => {
+          clearInterval(interval);
+          if (status === JobStatus.Processing) {
+            status = JobStatus.Fail;
+            synth.gb.logger.error('Job failed', context.wrapError(error, { name }));
+            ping({ error: context.wrapError(error) });
+          } else {
+            synth.gb.logger.warn('Failed to record job failure before timeout', context.wrapError(error, { name, url }));
+          }
+        });
+        res.json({ accepted: true });
+      } catch (error) {
+        synth.gb.logger.error('Job could not be accepted', context.wrapError(error, { name: req.params.name }));
+        res.status(500).json(context.wrapError(error));
+      }
     });
 
     this.server = this.app.listen(this.port, () => {
