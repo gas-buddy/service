@@ -178,10 +178,6 @@ tap.test('server startup', async (t) => {
     .get('/health');
   t.strictEquals(mdhealth.status, 200, 'Should get 200 health check');
 
-  const mdmodules = await request(s.service.metadata.app)
-    .get('/modules?depth=1');
-  t.strictEquals(mdmodules.status, 200, 'Should get 200 module check');
-
   let jobAccept;
   const jobPromise = new Promise((accept) => { jobAccept = accept; });
   s.service.addJob('test-job', async (req, args, callback) => {
