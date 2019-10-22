@@ -172,8 +172,8 @@ if (argv.repl) {
       console.error('History unavailable', e);
     }
   }
-  rl.on('exit', () => {
-    service.destroy();
+  rl.on('exit', async () => {
+    (server || service).destroy();
   });
 
   service.on('configured', () => {
