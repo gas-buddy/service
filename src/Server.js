@@ -39,12 +39,19 @@ export default class Server {
       this.service = new Service(nameOrOptions);
     }
     this.service.once('drain', () => {
+      let serverCount = this.servers.length;
       this.servers.forEach((s) => {
         s.on('request', (req, res) => {
           onHeaders(res, addConnectionClose);
           onFinished(res, destroySocket);
         });
-        s.close();
+        s.close(() => {
+          serverCount -= 1;
+          if (serverCount === 0) {
+            this.service.logger.info('All servers closed, shutting down service.');
+            this.service.destroy();
+          }
+        });
       });
     });
   }

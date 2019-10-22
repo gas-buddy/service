@@ -32,6 +32,7 @@ const CONNECTIONS = Symbol('Property key for objects that need shutdown');
 const CONNECTIONS_TREE = Symbol('Structured values for the result of hydration');
 const SERVICE = Symbol('The Service class attached to an app');
 const SERVICE_TIMER = Symbol('Timing service calls');
+const DESTROY_CALLED = Symbol('Whether destroy has been called');
 const environments = ['production', 'staging', 'test', 'development'];
 
 export default class Service extends EventEmitter {
@@ -224,6 +225,10 @@ export default class Service extends EventEmitter {
    * Close down all connections
    */
   async destroy() {
+    if (this[DESTROY_CALLED]) {
+      return;
+    }
+    this[DESTROY_CALLED] = true;
     this[BASE_LOGGER].info('Beginning application shutdown');
     await dehydrate({
       service: this,
