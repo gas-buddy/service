@@ -209,7 +209,7 @@ export default class Service extends EventEmitter {
       throw new Error('Server is shutting down');
     }
     return {
-      healthy: true,
+      healthy: this.configured,
     };
   }
 
