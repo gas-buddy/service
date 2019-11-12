@@ -208,8 +208,11 @@ export default class Service extends EventEmitter {
     if (this.shuttingDown) {
       throw new Error('Server is shutting down');
     }
+    if (!this.configured) {
+      throw new Error('Server is not yet configured');
+    }
     return {
-      healthy: this.configured,
+      healthy: true,
     };
   }
 
