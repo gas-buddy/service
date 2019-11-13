@@ -181,6 +181,9 @@ if (argv.repl) {
     const correlationid = argv.correlationid || `${service.name}-repl-${Date.now()}`;
     const req = syntheticRequest(service, correlationid);
     rl.context.req = req;
+    if (typeof service.prepareRepl === 'function') {
+      service.prepareRepl(rl);
+    }
   });
 
   rl.context.server = server;
