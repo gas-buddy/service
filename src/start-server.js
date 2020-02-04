@@ -20,6 +20,7 @@ if (argv.nosubs) {
   // A little helper for a common issue which is wanting to run a service
   // without any queue processing
   process.env.DISABLE_RABBITMQ_SUBSCRIPTIONS = 'true';
+  process.env.DISABLE_SQS_SUBSCRIPTIONS = 'true';
 }
 
 if (argv.repl) {
