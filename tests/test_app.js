@@ -24,6 +24,26 @@ tap.test('service startup', async (t) => {
 
   const oldError = s.logger.error;
 
+  tap.test('test invalid JSON body logging', async (tt) => {
+    const oldFn = s.logger.info;
+    let gotExceptionWithBadBody = false;
+    let gotMessageWithBody = false;
+    s.logger.info = (msg, meta) => {
+      gotExceptionWithBadBody = gotExceptionWithBadBody || meta.body?.includes('omfg do not log this');
+      gotMessageWithBody = gotMessageWithBody || meta.body?.includes('redacted');
+    };
+    try {
+      const res = await request(s.app).post('/simple')
+        .set('Content-Type', 'application/json')
+        .send('{omfg do not log this}');
+      tt.strictEquals(res.status, 400, 'should be status 400');
+      tt.ok(gotMessageWithBody, 'Should get a message with a body property');
+      tt.notOk(gotExceptionWithBadBody, 'Should not get an exception with sensitive data in it');
+    } finally {
+      s.logger.info = oldFn;
+    }
+  });
+
   tap.test('test simple request', async (tt) => {
     const res = await request(s.app).post('/simple').send({ ok: true });
     tt.strictEquals(res.status, 200, 'should be status 200');

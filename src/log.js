@@ -188,6 +188,9 @@ export function finalHandlerFactory(options) {
       };
 
       Object.assign(error, reqProps);
+      if (error.body && error.status === 400) {
+        error.body = '[redacted]';
+      }
       reqLogger[levelForError(error)]('Handler exception', loggableError(error));
 
       if (shouldRenderResponse) {
