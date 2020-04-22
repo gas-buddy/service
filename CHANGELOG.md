@@ -163,3 +163,8 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 ======
 * Be smarter about log level for an error
 * Make sure the base logger is NOT in extreme mode to avoid swallowing startup messages where there is no real volume to cause a flush
+
+10.6.0
+======
+* Get updated pino with some modified options (though hopefully hidden by @gasbuddy/configured-pino)
+* Get updated rest-api-support and configured-swagger-client with support for per service and per request timeouts

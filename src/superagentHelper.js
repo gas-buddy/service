@@ -70,7 +70,8 @@ export function superagentFunctor(service, req, logger) {
 
     const newLogger = logger.loggerWithNewSpan();
     const newRequest = request[method.toLowerCase()](url);
-    if (addCorrelation && req && req.headers) {
+
+    if (addCorrelation && req?.headers) {
       newRequest.set('correlationid', req.headers.correlationid);
       newRequest.set('span', newLogger.spanId);
     }
