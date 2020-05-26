@@ -26,9 +26,15 @@ export default class NetworkedRepl {
             promiseCounter += 1;
             v
               // eslint-disable-next-line no-console
-              .then(r => socket.write(`\nPromise #${me} returns`, util.inspect(r)))
+              .then((r) => {
+                socket.write(`\nPromise #${me} returns\n${util.inspect(r)}\n`);
+                rl.context.$ = r;
+              })
               // eslint-disable-next-line no-console
-              .catch(e => socket.write(`\nPromise #${me} error`, util.inspect(e)));
+              .catch((e) => {
+                socket.write(`\nPromise #${me} error\n${util.inspect(e)}\n`);
+                rl.context.$error = e;
+              });
             return `{ Returned Promise #${me} }`;
           }
           return util.inspect(v);

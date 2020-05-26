@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "10.6.0",
+  "version": "10.6.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, ES7 and tap.",
   "main": "build/index.js",
   "scripts": {
@@ -58,7 +58,7 @@
     "@gasbuddy/configured-pino": "^2.3.1",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
     "@gasbuddy/configured-swagger-client": "^5.4.1",
-    "@gasbuddy/configured-swaggerize-express": "^3.0.2",
+    "@gasbuddy/configured-swaggerize-express": "^3.1.0",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.2.0",
     "@gasbuddy/kms-crypto": "^4.3.0",
@@ -79,7 +79,7 @@
     "shortstop-dns": "^1.1.0",
     "shortstop-handlers": "^1.0.0",
     "shortstop-yaml": "^1.0.0",
-    "source-map-support": "^0.5.18",
+    "source-map-support": "^0.5.19",
     "superagent": "^5.2.2"
   },
   "devDependencies": {

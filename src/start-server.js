@@ -153,8 +153,11 @@ if (argv.repl) {
             console.log(`\nPromise #${me} returns`, util.inspect(r));
             rl.context.$ = r;
           })
-          // eslint-disable-next-line no-console
-          .catch(e => console.error(`\nPromise #${me} error`, util.inspect(e)));
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.error(`\nPromise #${me} error`, util.inspect(e));
+            rl.context.$error = e;
+          });
         return `{ Returned Promise #${me} }`;
       }
       return util.inspect(v);
