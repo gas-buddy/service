@@ -6,6 +6,7 @@ import repl from 'repl';
 import minimist from 'minimist';
 import 'source-map-support/register';
 import Log from '@gasbuddy/configured-pino';
+import dotenv from 'dotenv';
 import Service from './Service';
 import Server from './Server';
 import { syntheticRequest } from './util';
@@ -70,23 +71,7 @@ if (!argv.babel && (process.env.NODE_ENV === 'production' || process.env.NODE_EN
   require('@babel/register')();
 }
 
-try {
-  const env = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf8');
-  if (env) {
-    for (const envVar of env.split('\n')) {
-      const match = envVar.match(/(?:\S+\s+)?\s*([^=]+)\s*=(.*)\s*/);
-      if (match) {
-        if (!process.env[match[1]]) {
-          logger.info(`Read ${match[1]} environment variable from .env`);
-          const [, key, value] = match;
-          process.env[key] = value;
-        }
-      }
-    }
-  }
-} catch (error) {
-  // Nothing to do
-}
+dotenv.config();
 
 logger.info(`Starting ${name} from ${dirname}`);
 
