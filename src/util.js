@@ -5,7 +5,7 @@ import { superagentFunctor } from './superagentHelper';
  */
 function normalizeError(error) {
   const isError = error instanceof Error;
-
+  delete error.time;
   if (isError) {
     return error;
   }
