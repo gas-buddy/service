@@ -65,8 +65,8 @@ export function logger(req, res, next) {
   const start = process.hrtime();
 
   const preInfo = getBasicInfo(req);
-  if (req.headers?.referer) {
-    preInfo.ref = req.headers.referer;
+  if (typeof req.get === 'function' && req.get('referer')) {
+    preInfo.ref = req.get('referer');
   }
   svc.logger.info('pre', preInfo);
 
