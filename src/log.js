@@ -26,10 +26,16 @@ function getBasicInfo(req) {
     url,
     m: req.method,
   };
-  if (req.headers && req.headers.correlationid) {
+  if (req.headers?.correlationid) {
     preInfo.c = req.headers.correlationid;
   }
-  if (req.headers && req.headers.span) {
+  if (req.headers?.referer) {
+    preInfo.ref = req.headers.referer;
+  }
+  if (req.session?.id) {
+    preInfo.sid = req.session.id;
+  }
+  if (req.headers?.span) {
     preInfo.sp = req.headers.span;
   } else if (req.gb && req.gb.logger && req.gb.logger.spanId) {
     preInfo.sp = req.gb.logger.spanId;
