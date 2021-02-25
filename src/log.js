@@ -29,9 +29,6 @@ function getBasicInfo(req) {
   if (req.headers?.correlationid) {
     preInfo.c = req.headers.correlationid;
   }
-  if (req.headers?.referer) {
-    preInfo.ref = req.headers.referer;
-  }
   if (req.session?.id) {
     preInfo.sid = req.session.id;
   }
@@ -67,7 +64,11 @@ export function logger(req, res, next) {
 
   const start = process.hrtime();
 
-  svc.logger.info('pre', getBasicInfo(req));
+  const preInfo = getBasicInfo(req);
+  if (req.headers?.referer) {
+    preInfo.ref = req.headers.referer;
+  }
+  svc.logger.info('pre', preInfo);
 
   const responseBodyChunks = [];
   if (req[SHOULD_LOG_RESPONSE_BODY]) {
