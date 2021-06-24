@@ -74,7 +74,7 @@
     "minimist": "^1.2.5",
     "on-finished": "^2.3.0",
     "on-headers": "^1.0.2",
-    "pino-pretty": "^4.2.1",
+    "pino-pretty": "^5.1.0",
     "query-string": "^6.13.2",
     "request-ip": "^2.1.3",
     "shortstop-dns": "^1.1.0",
