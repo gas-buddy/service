@@ -57,7 +57,7 @@
     "@babel/register": "^7.11.5",
     "@gasbuddy/configured-pino": "^2.3.1",
     "@gasbuddy/configured-prometheus-client": "^2.0.0",
-    "@gasbuddy/configured-swagger-client": "^5.5.0",
+    "@gasbuddy/configured-swagger-client": "^5.5.2",
     "@gasbuddy/configured-swaggerize-express": "^3.1.1",
     "@gasbuddy/express-promise-patch": "^1.0.4",
     "@gasbuddy/hydration": "^2.2.0",
