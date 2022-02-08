@@ -3,7 +3,8 @@
   "connections": {
     "logger": {
       "prettyPrint": "env_switch:!NO_PRETTY_LOGS",
-      "extreme": "config:LOG_TO_FILE",
+      "file": "config:LOG_TO_FILE",
+      "extreme": false,
       "addCounter": false
     }
   }
