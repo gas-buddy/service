@@ -19,9 +19,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, lint, build, and test
       run: |
-        npm install
-        npm run lint
-        npm run build
-        npm test
+        yarn install --frozen-lockfile
+        yarn lint
+        yarn build
+        yarn test
       env:
         CI: true
