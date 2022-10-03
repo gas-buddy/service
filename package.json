@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.0.2",
+  "version": "11.0.3",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -59,13 +59,11 @@
     "abort-controller": "^3.0.0",
     "confit": "^3.0.0",
     "dotenv": "^16.0.3",
-    "eventsource": "^1.0.7",
+    "eventsource": "^1.1.2",
     "express": "next",
     "express-openapi-validator": "^4.13.8",
-    "form-data": "^4.0.0",
     "glob": "^8.0.3",
     "minimist": "^1.2.6",
-    "node-fetch": "^2.0.0",
     "pino": "^8.6.1",
     "read-pkg-up": "^7.0.1",
     "rest-api-support": "^1.13.3",
@@ -82,13 +80,13 @@
     "@types/minimist": "^1.2.2",
     "@types/node": "^18.8.0",
     "@types/supertest": "^2.0.12",
-    "eslint": "^8.2.0",
+    "eslint": "^8.24.0",
     "eslint-config-gasbuddy": "^7.0.2",
     "jest": "^29.1.2",
     "supertest": "^6.2.4",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.4.4"
+    "typescript": "^4.8.4"
   },
   "packageManager": "yarn@3.2.3"
 }

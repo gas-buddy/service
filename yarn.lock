@@ -485,9 +485,9 @@ __metadata:
     abort-controller: ^3.0.0
     confit: ^3.0.0
     dotenv: ^16.0.3
-    eslint: ^8.2.0
+    eslint: ^8.24.0
     eslint-config-gasbuddy: ^7.0.2
-    eventsource: ^1.0.7
+    eventsource: ^1.1.2
     express: next
     express-openapi-validator: ^4.13.8
     form-data: ^4.0.0
@@ -504,7 +504,7 @@ __metadata:
     supertest: ^6.2.4
     ts-jest: ^29.0.3
     ts-node: ^10.9.1
-    typescript: ^4.4.4
+    typescript: ^4.8.4
   bin:
     start-service: ./build/bin/start-service.js
   languageName: unknown
@@ -3253,7 +3253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.2.0":
+"eslint@npm:^8.2.0, eslint@npm:^8.24.0":
   version: 8.24.0
   resolution: "eslint@npm:8.24.0"
   dependencies:
@@ -3383,7 +3383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventsource@npm:^1.0.7":
+"eventsource@npm:^1.1.2":
   version: 1.1.2
   resolution: "eventsource@npm:1.1.2"
   checksum: fe8f2ac3c70b1b63ee3cef5c0a28680cb00b5747bfda1d9835695fab3ed602be41c5c799b1fc997b34b02633573fead25b12b036bdf5212f23a6aa9f59212e9b
@@ -7063,7 +7063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.4.4":
+"typescript@npm:^4.8.4":
   version: 4.8.4
   resolution: "typescript@npm:4.8.4"
   bin:
@@ -7073,7 +7073,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
   version: 4.8.4
   resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=a1c5e5"
   bin:
