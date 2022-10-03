@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: Fake Service
+  version: 1.0.0
+paths:
+  /hello:
+    get:
+      description: Get a greeting
+      parameters:
+        - name: greeting
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: We responded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  greeting:
+                    type: string

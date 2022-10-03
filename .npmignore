@@ -1,6 +1,5 @@
 .idea
 node_modules
-.wercker
 coverage
 .nyc_output
 .tap_output

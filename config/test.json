@@ -1,11 +1,5 @@
 {
-  "LOG_TO_FILE": "test_output.log",
-  "connections": {
-    "logger": {
-      "prettyPrint": "env_switch:!NO_PRETTY_LOGS",
-      "file": "config:LOG_TO_FILE",
-      "extreme": false,
-      "addCounter": false
-    }
+  "logging": {
+    "level": "warn"
   }
 }

@@ -2,8 +2,16 @@ test_output.log
 .idea
 node_modules
 build
-.wercker
 coverage
 .nyc_output
 *.log
 .tap_output
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.node_repl_history

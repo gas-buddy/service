@@ -1,138 +1,20 @@
 {
-  "log_superagent_requests": "env_switch:SUPERAGENT_LOGS",
-  "connections": {
-    "repl": {
-      "enabled": "env:NETWORK_REPL|b",
-      "module": "require:@gasbuddy/service#NetworkedRepl",
-      "port": 3002
-    },
-    "logger": {
-      "module": "require:@gasbuddy/configured-pino",
-      "addCounter": true,
-      "useLevelLabels": true,
-      "meta": {
-      }
-    },
-    "metadata": {
-      "module": "require:@gasbuddy/service#MetadataServer",
-      "port": 3001
-    },
-    "metrics": {
-      "module": "require:@gasbuddy/configured-prometheus-client"
-    },
-    "serviceFactory": {
-      "module": "require:@gasbuddy/configured-swagger-client",
-      "defaultTimeout": 20000,
-      "clients": {},
-      "endpoints": {}
+  "logging": {
+    "level": "info",
+    "logHttpRequests": "env_switch:LOG_HTTP_REQUESTS"
+  },
+  "routing": {
+    "openapi": true,
+    "routes": "routes",
+    "errors": {
+      "renderErrors": true,
+      "unnest": "servicetype:serv"
     }
   },
-  "swaggerApi": {
-    "spec": "config:apiSpec",
-    "handlers": "sourcepath:handlers",
-    "security": {}
+  "bodyParsers": {
+    "json": true,
+    "form": false
   },
-  "meddleware": {
-    "attachRequest": {
-      "module": {
-        "name": "@gasbuddy/service",
-        "method": "requestFactory",
-        "echoCorrelationId": "servicetype:!serv"
-      },
-      "priority": 1
-    },
-    "static": {
-      "priority": 20,
-      "enabled": "servicetype:web",
-      "module": {
-        "name": "serve-static",
-        "arguments": [
-          "path:./static"
-        ]
-      }
-    },
-    "bodyLogger": {
-      "enabled": "env:LOG_INCOMING_REQUEST_BODIES|b",
-      "module": {
-        "name": "@gasbuddy/service",
-        "method": "bodyLoggerFactory"
-      },
-      "priority": 30
-    },
-    "responseLogger": {
-      "enabled": "env:LOG_OUTGOING_RESPONSE_BODIES|b",
-      "module": {
-        "name": "@gasbuddy/service",
-        "method": "responseLoggerFactory"
-      },
-      "priority": 31
-    },
-    "requestLogger": {
-      "module": {
-        "name": "@gasbuddy/service",
-        "method": "loggerFactory"
-      },
-      "priority": 40
-    },
-    "rawBodySaver": {
-      // Typically, you set the "route" key of this
-      // to an array of routes for which you want rawBody saving
-      // because it's not great to save it all the time...
-      "enabled": false,
-      "priority": 49,
-      "module": {
-        "factory": "require:@gasbuddy/service#saveRawBodyFactory"
-      }
-    },
-    "json": {
-      "enabled": true,
-      "priority": 50,
-      "module": {
-        "name": "body-parser",
-        "method": "json"
-      }
-    },
-    "form": {
-      "priority": 50,
-      "enabled": "servicetype:web",
-      "module": {
-        "name": "body-parser",
-        "method": "urlencoded",
-        "arguments": [
-          {
-            "extended": true
-          }
-        ]
-      }
-    },
-    "swaggerApi": {
-      "enabled": "servicetype:serv,api",
-      "priority": 90,
-      "module": {
-        "factory": "require:@gasbuddy/configured-swaggerize-express#default",
-        "arguments": [
-          "config:swaggerApi"
-        ]
-      }
-    },
-    "webRoutes": {
-      "enabled": "servicetype:web",
-      "priority": 100,
-      "module": {
-        "name": "express-enrouten",
-        "arguments": [
-          {
-            "directory": "sourcepath:routes"
-          }
-        ]
-      }
-    },
-    "finalHandler": {
-      "priority": 999,
-      "module": {
-        "name": "@gasbuddy/service",
-        "method": "finalHandlerFactory"
-      }
-    }
-  }
+  "port": 8000,
+  "internalPort": 3001
 }
