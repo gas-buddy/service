@@ -35,7 +35,7 @@ export interface ConfigurationSchema extends Record<string, any> {
     json?: boolean;
     form?: boolean;
   },
-  metricsPort?: number,
+  internalPort?: number,
   port?: number,
   connections: Record<string, ServiceConfiguration>;
 }
