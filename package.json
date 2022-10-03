@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.json && yarn dlx chmodx build/bin/*",
     "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
     "clean": "npx rimraf ./build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn build"
   },
   "repository": {
     "type": "git",

@@ -15,3 +15,6 @@ coverage
 !.yarn/versions
 
 .node_repl_history
+
+# TypeScript incremental compilation cache
+*.tsbuildinfo
