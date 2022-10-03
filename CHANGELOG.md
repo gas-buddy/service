@@ -168,3 +168,11 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 ======
 * Get updated pino with some modified options (though hopefully hidden by @gasbuddy/configured-pino)
 * Get updated rest-api-support and configured-swagger-client with support for per service and per request timeouts
+
+11.0.0
+======
+* Complete rewrite in Typescript targeting Node 18 or greater
+* Uses res.locals and app.locals instead of req.gb.
+* Uses OpenTelemetry instead of bespoke logging/tracing/metric instrumentation
+* Pino seems to have flipped logging metadata arguments - what was logger.info('message', { ...stuff }) is now logger.info({ ...stuff }, 'message')
+* Switch to Jest from Tap

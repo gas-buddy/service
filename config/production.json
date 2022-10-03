@@ -1,9 +1,0 @@
-{
-  "gracefulShutdownTimeout": 20,
-  "connections": {
-    "logger": {
-      "extreme": "env_switch:!NO_LOG_BUFFERING",
-      "prettyPrint": "env_switch:PRETTY_LOGS"
-    }
-  }
-}

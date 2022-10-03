@@ -1,19 +1,11 @@
 {
+  "logging": {
+    "level": "debug"
+  },
+  "port": 0,
   "connections": {
-    "logger": {
-      "level": "debug",
-      "prettyPrint": "env_switch:!NO_PRETTY_LOGS",
-      "addCounter": false
-    },
-    "repl": {
-      "enabled": true,
-      "port": 0
-    },
-    "metrics": {
-      "port": 0
-    },
-    "metadata": {
-      "port": 0
+    "default": {
+      "proxy": "http://localhost:9990"
     }
   }
 }
