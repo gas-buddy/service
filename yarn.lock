@@ -480,18 +480,13 @@ __metadata:
     "@types/glob": ^8.0.0
     "@types/jest": ^29.1.1
     "@types/minimist": ^1.2.2
+    "@types/node": ^18.8.0
     "@types/supertest": ^2.0.12
-    "@typescript-eslint/eslint-plugin": ^5.3.1
-    "@typescript-eslint/parser": ^5.3.1
     abort-controller: ^3.0.0
     confit: ^3.0.0
     dotenv: ^16.0.3
     eslint: ^8.2.0
-    eslint-config-airbnb-base: ^15.0.0
-    eslint-config-airbnb-typescript: ^17.0.0
-    eslint-config-gasbuddy: ^7.0.0
-    eslint-plugin-import: ^2.25.3
-    eslint-plugin-prettier: ^4.0.0
+    eslint-config-gasbuddy: ^7.0.2
     eventsource: ^1.0.7
     express: next
     express-openapi-validator: ^4.13.8
@@ -501,7 +496,6 @@ __metadata:
     minimist: ^1.2.6
     node-fetch: ^2.0.0
     pino: ^8.6.1
-    prettier: ^2.5.1
     read-pkg-up: ^7.0.1
     rest-api-support: ^1.13.3
     shortstop-dns: ^1.1.0
@@ -1719,7 +1713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^18.8.0":
   version: 18.8.0
   resolution: "@types/node@npm:18.8.0"
   checksum: 3433cbc22e90fafb047f93b3ef05ba01a07f780a24ff1af393f435f807537b533fe9e8a816586825f4c5fd5336c3e80225571f44ec3b6479c463408c072773e7
@@ -3138,16 +3132,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-gasbuddy@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "eslint-config-gasbuddy@npm:7.0.0"
+"eslint-config-gasbuddy@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "eslint-config-gasbuddy@npm:7.0.2"
   dependencies:
+    "@typescript-eslint/eslint-plugin": ^5.3.1
+    "@typescript-eslint/parser": ^5.3.1
     eslint: ^8.2.0
     eslint-config-airbnb-base: ^15.0.0
     eslint-config-airbnb-typescript: ^17.0.0
     eslint-plugin-import: ^2.25.3
     eslint-plugin-prettier: ^4.0.0
-  checksum: 4f3c07842f1e89f3c3987069f3602a3486cc6182400412f28570d5f5e7ed64d72f5132ae2052ebfc47b2f90fe6d59f65aec2ee9b2aa71d10e12b3eec66f16b9b
+    prettier: ^2.5.1
+  checksum: 82fa580d182b9b4696e9c0037d4423fd28d4334cfa08aaafeffb3dc0efb75fa8877513a74286d146a6527243833415260c0f81974f5ff2a17ede004251715c4e
   languageName: node
   linkType: hard
 
