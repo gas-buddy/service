@@ -1,6 +1,8 @@
 @gasbuddy/service
 =================
 
+[![Node CI](https://github.com/gas-buddy/service/actions/workflows/nodejs.yml/badge.svg)](https://github.com/gas-buddy/service/actions/workflows/nodejs.yml)
+
 An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.
 
 This module creates an environment that makes it simpler to host a web service
