@@ -6,7 +6,7 @@ import { pino } from 'pino';
 
 import { createTerminus } from '@godaddy/terminus';
 
-import type { RequestHandler } from 'express';
+import type { RequestHandler, Response } from 'express';
 import { loadConfiguration } from '../config/index';
 import findPort from '../development/port-finder';
 import openApi from '../openapi';
@@ -79,7 +79,7 @@ export async function startApp({
   // so that the req can decide whether to save the raw request body or not.
   const attachServiceLocals: RequestHandler = (req, res, next) => {
     res.locals.logger = logger;
-    const maybePromise = serviceImpl.onRequest?.(req, res);
+    const maybePromise = serviceImpl.onRequest?.(req, res as Response<any, RequestLocals>);
     return maybePromise || next();
   };
   app.use(attachServiceLocals);

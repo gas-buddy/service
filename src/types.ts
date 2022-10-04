@@ -26,6 +26,7 @@ export interface RequestLocals extends Record<string, any> {
   // Set this to true during the request "attachment" and if there is a body,
   // it will be set to the buffer before API and route handlers run.
   rawBody?: Buffer | true;
+  logger: pino.BaseLogger,
 }
 
 export type ServiceExpress = Application<ServiceLocals>;
@@ -38,6 +39,10 @@ export interface Service {
 
   healthy?: () => boolean | Promise<boolean>;
 
+  // This runs as middleware right BEFORE the body parsers.
+  // If you want to run AFTER the body parsers, the current
+  // way to do that would be via /routes/index.ts and router.use()
+  // in that file.
   onRequest?(req: Request, res: Response<any, RequestLocals>): void | Promise<void>;
 }
 
