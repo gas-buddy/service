@@ -8,6 +8,7 @@ import type { NormalizedPackageJson } from 'read-pkg-up';
 import serviceRepl from '../development/repl';
 import { isDev } from '../env';
 import startWithTelemetry from '../telemetry/telemetry';
+import { ServiceStartOptions } from '../types';
 
 /**
  * built - forces the use of the build directory. Defaults to true in stage/prod, not in dev
@@ -68,9 +69,17 @@ getPackage().then(async (pkg) => {
     // This needs to be required for TS on-the-fly to work
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const impl = require(absoluteEntrypoint);
-    const app = await startApp({
-      name, rootDirectory, service: impl.default, codepath,
-    });
+    const opts: ServiceStartOptions = {
+      name,
+      rootDirectory,
+      service: impl.default,
+      codepath,
+    };
+    if (typeof impl.configure === 'function') {
+      // Give the service a chance to modify the startup options (mostly for config dirs)
+      impl.configure(opts);
+    }
+    const app = await startApp(opts);
     const server = argv.nobind ? undefined : await listen(app);
     if (argv.repl) {
       serviceRepl(app, () => {

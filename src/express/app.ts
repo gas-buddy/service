@@ -17,9 +17,7 @@ import {
 } from '../telemetry/requestLogger';
 import loadRoutes from './route-loader';
 
-import type {
-  RequestLocals, ServiceExpress, ServiceFactory, ServiceStartOptions,
-} from '../types';
+import type { RequestLocals, ServiceExpress, ServiceStartOptions } from '../types';
 import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
@@ -181,15 +179,4 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
 
   await listenPromise;
   return server;
-}
-
-export async function importServiceDefinition(entrypoint: string): Promise<ServiceFactory> {
-  const { default: service } = await import(entrypoint);
-  // We can't import things (express, pino, etc) before telemetry has gotten its
-  // hooks in. So that's why DelayLoadServiceStartOptions exists. I don't
-  // entirely know why the export is default.default and not just default
-  if (typeof service === 'function') {
-    return service as ServiceFactory;
-  }
-  return service.default as ServiceFactory;
 }

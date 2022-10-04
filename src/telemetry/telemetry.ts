@@ -4,7 +4,7 @@ import * as opentelemetry from '@opentelemetry/sdk-node';
 
 import { getAutoInstrumentations } from './instrumentations';
 
-import type { DelayLoadServiceStartOptions } from '../types';
+import type { DelayLoadServiceStartOptions, ServiceStartOptions } from '../types';
 
 // For troubleshooting, set the log level to DiagLogLevel.DEBUG
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
@@ -27,9 +27,15 @@ export default async function startWithTelemetry(options: DelayLoadServiceStartO
   });
   await sdk.start();
 
-  const { startApp, listen, importServiceDefinition } = await import('../express/app.js');
-  const service = await importServiceDefinition(options.service);
-  const app = await startApp({ ...options, service });
+  const { startApp, listen } = await import('../express/app.js');
+  // eslint-disable-next-line import/no-dynamic-require, global-require
+  const { default: service, configure } = require(options.service);
+  const startOptions: ServiceStartOptions = { ...options, service };
+  if (typeof configure === 'function') {
+    // Give the service a chance to modify the startup options (mostly for config dirs)
+    configure(startOptions);
+  }
+  const app = await startApp(startOptions);
   app.locals.logger.info('OpenTelemetry enabled');
 
   const server = await listen(app, async () => {
