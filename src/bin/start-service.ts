@@ -7,7 +7,7 @@ import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
 import serviceRepl from '../development/repl';
 import { isDev } from '../env';
-import startWithTelemetry from '../telemetry/telemetry';
+import { startWithTelemetry } from '../telemetry';
 import { ServiceStartOptions } from '../types';
 
 /**

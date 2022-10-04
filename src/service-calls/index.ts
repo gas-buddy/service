@@ -23,7 +23,7 @@ class CustomEventSource extends EventSource {
 /**
  * Return a factory that will make instances of an OpenAPI/Swagger client for each request
  */
-export default function createServiceInterface<ServiceType>(
+export function createServiceInterface<ServiceType>(
   service: ServiceExpress,
   name: string,
   Implementation: { new (c: FetchConfig): ServiceType },

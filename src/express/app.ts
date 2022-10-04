@@ -7,7 +7,7 @@ import { pino } from 'pino';
 import { createTerminus } from '@godaddy/terminus';
 
 import type { RequestHandler } from 'express';
-import { loadConfiguration } from '../config/config';
+import { loadConfiguration } from '../config/index';
 import findPort from '../development/port-finder';
 import openApi from '../openapi';
 import {

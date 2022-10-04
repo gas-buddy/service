@@ -90,3 +90,5 @@ export async function loadConfiguration({
     configFactory.create((err, config) => (err ? reject(err) : accept(config)));
   });
 }
+
+export * from './schema';

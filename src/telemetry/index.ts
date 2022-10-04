@@ -18,7 +18,7 @@ function getExporter() {
   return new opentelemetry.tracing.ConsoleSpanExporter();
 }
 
-export default async function startWithTelemetry(options: DelayLoadServiceStartOptions) {
+export async function startWithTelemetry(options: DelayLoadServiceStartOptions) {
   const sdk = new opentelemetry.NodeSDK({
     serviceName: options.name,
     autoDetectResources: true,

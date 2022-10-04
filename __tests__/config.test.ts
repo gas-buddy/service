@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadConfiguration } from '../src/config/config';
+import { loadConfiguration } from '../src/config';
 
 describe("configuration loader", () => {
   test("overrides and shortstops", async () => {
