@@ -31,9 +31,9 @@ export interface Service {
   name?: string;
 
   start(app: ServiceExpress): void | Promise<void>;
-  stop?: () => Promise<void>;
+  stop?: () => void | Promise<void>;
 
-  healthy?: () => Promise<boolean>;
+  healthy?: () => boolean | Promise<boolean>;
 
   onRequest?(req: Request, res: Response<any, RequestLocals>): void | Promise<void>;
 }
