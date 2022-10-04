@@ -29,12 +29,15 @@ export interface RequestLocals extends Record<string, any> {
   logger: pino.BaseLogger,
 }
 
-export type ServiceExpress = Application<ServiceLocals>;
+export type ServiceExpress<Locals extends ServiceLocals = ServiceLocals> = Application<Locals>;
 
-export interface Service {
+export interface Service<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> {
   name?: string;
 
-  start(app: ServiceExpress): void | Promise<void>;
+  start(app: ServiceExpress<SLocals>): void | Promise<void>;
   stop?: () => void | Promise<void>;
 
   healthy?: () => boolean | Promise<boolean>;
@@ -43,12 +46,18 @@ export interface Service {
   // If you want to run AFTER the body parsers, the current
   // way to do that would be via /routes/index.ts and router.use()
   // in that file.
-  onRequest?(req: Request, res: Response<any, RequestLocals>): void | Promise<void>;
+  onRequest?(req: Request, res: Response<any, RLocals>): void | Promise<void>;
 }
 
-export type ServiceFactory = () => Service;
+export type ServiceFactory<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> = () => Service<SLocals, RLocals>;
 
-export interface ServiceStartOptions {
+export interface ServiceStartOptions<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> {
   name: string;
   rootDirectory: string;
   // Defaults to "build", but can be set to "src" to run off non-built source
@@ -56,7 +65,7 @@ export interface ServiceStartOptions {
   // If you need multiple configuration directories, pass them here
   // in the desired order (later trumps earlier)
   configurationDirectories?: string[];
-  service: () => Service;
+  service: () => Service<SLocals, RLocals>;
 }
 
 export interface DelayLoadServiceStartOptions extends Omit<ServiceStartOptions, 'service'> {
