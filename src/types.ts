@@ -1,14 +1,17 @@
 import type pino from 'pino';
 import type { Server } from 'http';
-import type confit from 'confit';
 import type { Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
-
-export type ConfigStore = Parameters<Parameters<ReturnType<typeof confit>['create']>[0]>[1];
 
 export interface InternalLocals extends Record<string, any> {
   server?: Server;
   mainApp: ServiceExpress;
+}
+
+export interface ConfigStore {
+  // Confit supports more things (set, use), but that's not how we
+  // intend it to be used.
+  get(name: string): any;
 }
 
 export interface ServiceLocals extends Record<string, any> {
