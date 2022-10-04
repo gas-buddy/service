@@ -4,7 +4,12 @@ import * as opentelemetry from '@opentelemetry/sdk-node';
 
 import { getAutoInstrumentations } from './instrumentations';
 
-import type { DelayLoadServiceStartOptions, ServiceStartOptions } from '../types';
+import type {
+  DelayLoadServiceStartOptions,
+  RequestLocals,
+  ServiceLocals,
+  ServiceStartOptions,
+} from '../types';
 
 // For troubleshooting, set the log level to DiagLogLevel.DEBUG
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
@@ -18,7 +23,10 @@ function getExporter() {
   return new opentelemetry.tracing.ConsoleSpanExporter();
 }
 
-export async function startWithTelemetry(options: DelayLoadServiceStartOptions) {
+export async function startWithTelemetry<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+>(options: DelayLoadServiceStartOptions) {
   const sdk = new opentelemetry.NodeSDK({
     serviceName: options.name,
     autoDetectResources: true,
@@ -35,7 +43,7 @@ export async function startWithTelemetry(options: DelayLoadServiceStartOptions) 
     // Give the service a chance to modify the startup options (mostly for config dirs)
     configure(startOptions);
   }
-  const app = await startApp(startOptions);
+  const app = await startApp<SLocals, RLocals>(startOptions);
   app.locals.logger.info('OpenTelemetry enabled');
 
   const server = await listen(app, async () => {

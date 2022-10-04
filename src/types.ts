@@ -26,10 +26,13 @@ export interface RequestLocals extends Record<string, any> {
   // Set this to true during the request "attachment" and if there is a body,
   // it will be set to the buffer before API and route handlers run.
   rawBody?: Buffer | true;
-  logger: pino.BaseLogger,
+  logger: pino.BaseLogger;
 }
 
 export type ServiceExpress<Locals extends ServiceLocals = ServiceLocals> = Application<Locals>;
+export type RequestWithApp<Locals extends ServiceLocals = ServiceLocals> = Omit<Request, 'app'> & {
+  app: Application<Locals>;
+};
 
 export interface Service<
   SLocals extends ServiceLocals = ServiceLocals,
@@ -46,7 +49,7 @@ export interface Service<
   // If you want to run AFTER the body parsers, the current
   // way to do that would be via /routes/index.ts and router.use()
   // in that file.
-  onRequest?(req: Request, res: Response<any, RLocals>): void | Promise<void>;
+  onRequest?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
 }
 
 export type ServiceFactory<
@@ -88,12 +91,16 @@ export class ServiceError extends Error {
 
   public display_message?: string;
 
-  constructor(req: Request, message: string, spec: {
-    status?: number;
-    code?: string;
-    domain?: string;
-    display_message?: string;
-  }) {
+  constructor(
+    req: Request,
+    message: string,
+    spec: {
+      status?: number;
+      code?: string;
+      domain?: string;
+      display_message?: string;
+    },
+  ) {
     super(message);
     this.domain = (req.app as ServiceExpress).locals.name;
     Object.assign(this, spec);

@@ -17,18 +17,27 @@ import {
 } from '../telemetry/requestLogger';
 import loadRoutes from './route-loader';
 
-import type { RequestLocals, ServiceExpress, ServiceStartOptions } from '../types';
+import type {
+  RequestLocals,
+  RequestWithApp,
+  ServiceExpress,
+  ServiceLocals,
+  ServiceStartOptions,
+} from '../types';
 import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
 
-export async function startApp({
+export async function startApp<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+>({
   service,
   rootDirectory,
   codepath = 'build',
   configurationDirectories = [path.resolve(rootDirectory, './config')],
   name,
-}: ServiceStartOptions): Promise<ServiceExpress> {
+}: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
@@ -61,7 +70,7 @@ export async function startApp({
   logger.level = logging?.level || 'info';
 
   // Concentrate the Typescript ugliness...
-  const app = express() as unknown as ServiceExpress;
+  const app = express() as unknown as ServiceExpress<SLocals>;
   Object.assign(app.locals, {
     service: serviceImpl,
     logger,
@@ -79,7 +88,10 @@ export async function startApp({
   // so that the req can decide whether to save the raw request body or not.
   const attachServiceLocals: RequestHandler = (req, res, next) => {
     res.locals.logger = logger;
-    const maybePromise = serviceImpl.onRequest?.(req, res as Response<any, RequestLocals>);
+    const maybePromise = serviceImpl.onRequest?.(
+      req as RequestWithApp<SLocals>,
+      res as Response<any, RLocals>,
+    );
     return maybePromise || next();
   };
   app.use(attachServiceLocals);
