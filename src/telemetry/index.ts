@@ -35,7 +35,7 @@ export async function startWithTelemetry<
   });
   await sdk.start();
 
-  const { startApp, listen } = await import('../express/app.js');
+  const { startApp, listen } = await import('../express-app/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
   const { default: service } = require(options.service);
   const startOptions: ServiceStartOptions = { ...options, service };

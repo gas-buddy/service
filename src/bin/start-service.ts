@@ -65,7 +65,7 @@ getPackage().then(async (pkg) => {
 
   const absoluteEntrypoint = path.resolve(rootDirectory, entrypoint);
   if ((argv.repl || isDev()) && !argv.telemetry) {
-    const { startApp, listen } = await import('../express/app.js');
+    const { startApp, listen } = await import('../express-app/app.js');
     // This needs to be required for TS on-the-fly to work
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const impl = require(absoluteEntrypoint);

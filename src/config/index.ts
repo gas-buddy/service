@@ -4,7 +4,7 @@ import path from 'path';
 
 import shortstops from './shortstops';
 
-import type { ConfigStore } from '../types';
+import type { ConfigStore } from './types';
 
 // Order matters here.
 const ENVIRONMENTS = ['production', 'staging', 'test', 'development'];
@@ -92,3 +92,4 @@ export async function loadConfiguration({
 }
 
 export * from './schema';
+export * from './types';
