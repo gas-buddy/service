@@ -75,10 +75,6 @@ getPackage().then(async (pkg) => {
       service: impl.default,
       codepath,
     };
-    if (typeof impl.configure === 'function') {
-      // Give the service a chance to modify the startup options (mostly for config dirs)
-      impl.configure(opts);
-    }
     const app = await startApp(opts);
     const server = argv.nobind ? undefined : await listen(app);
     if (argv.repl) {

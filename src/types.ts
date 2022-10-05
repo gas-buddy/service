@@ -41,6 +41,9 @@ export interface Service<
 > {
   name?: string;
 
+  // Modify options used for application start
+  configure?: (options: ServiceOptions) => ServiceOptions;
+
   start(app: ServiceExpress<SLocals>): void | Promise<void>;
   stop?: () => void | Promise<void>;
 
@@ -71,19 +74,22 @@ export interface ServiceStartOptions<
   // Defaults to "build", but can be set to "src" to run off non-built source
   codepath?: 'build' | 'src';
 
-  // If you need multiple configuration directories, pass them here
-  // in the desired order (later trumps earlier)
-  configurationDirectories?: string[];
-
-  // Add or control OpenAPI options such as security handlers
-  openApiOptions?: Parameters<typeof middleware>[0];
-
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
 }
 
 export interface DelayLoadServiceStartOptions extends Omit<ServiceStartOptions, 'service'> {
   service: string;
+}
+
+// Handled by service.configure
+export interface ServiceOptions {
+  // If you need multiple configuration directories, pass them here
+  // in the desired order (later trumps earlier)
+  configurationDirectories: string[];
+
+  // Add or control OpenAPI options such as security handlers
+  openApiOptions?: Parameters<typeof middleware>[0];
 }
 
 /**

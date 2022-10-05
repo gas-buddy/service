@@ -37,12 +37,8 @@ export async function startWithTelemetry<
 
   const { startApp, listen } = await import('../express/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
-  const { default: service, configure } = require(options.service);
+  const { default: service } = require(options.service);
   const startOptions: ServiceStartOptions = { ...options, service };
-  if (typeof configure === 'function') {
-    // Give the service a chance to modify the startup options (mostly for config dirs)
-    configure(startOptions);
-  }
   const app = await startApp<SLocals, RLocals>(startOptions);
   app.locals.logger.info('OpenTelemetry enabled');
 

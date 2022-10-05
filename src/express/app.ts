@@ -22,6 +22,7 @@ import type {
   RequestWithApp,
   ServiceExpress,
   ServiceLocals,
+  ServiceOptions,
   ServiceStartOptions,
 } from '../types';
 import { ConfigurationSchema } from '../config/schema';
@@ -35,8 +36,6 @@ export async function startApp<
   service,
   rootDirectory,
   codepath = 'build',
-  configurationDirectories = [path.resolve(rootDirectory, './config')],
-  openApiOptions,
   name,
 }: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
@@ -61,9 +60,14 @@ export async function startApp<
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
 
+  const baseOptions: ServiceOptions = {
+    configurationDirectories: [path.resolve(rootDirectory, './config')],
+  };
+  const options = serviceImpl.configure?.(baseOptions) || baseOptions;
+
   const config = await loadConfiguration({
     name: service.name,
-    configurationDirectories,
+    configurationDirectories: options.configurationDirectories,
     rootDirectory,
   });
 
@@ -142,7 +146,7 @@ export async function startApp<
     );
   }
   if (routing?.openapi) {
-    app.use(openApi(app, rootDirectory, codepath, openApiOptions));
+    app.use(openApi(app, rootDirectory, codepath, options.openApiOptions));
   }
 
   // Putting this here allows more flexible middleware insertion
