@@ -92,7 +92,11 @@ export async function startApp<
       req as RequestWithApp<SLocals>,
       res as Response<any, RLocals>,
     );
-    return maybePromise || next();
+    if (maybePromise) {
+      maybePromise.then(next);
+    } else {
+      next();
+    }
   };
   app.use(attachServiceLocals);
 
