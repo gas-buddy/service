@@ -136,13 +136,13 @@ export interface ServiceRouter<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
 > {
-  all(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  get(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  post(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  put(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  delete(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  patch(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  options(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  head(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
-  use(handler: ServiceHandler<SLocals, RLocals>): void;
+  all(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  get(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  post(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  put(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  delete(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  patch(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  options(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  head(path: string, ...handlers: ServiceHandler<SLocals, RLocals>[]): void;
+  use(...handlers: ServiceHandler<SLocals, RLocals>[]): void;
 }

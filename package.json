@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.4.1",
+  "version": "11.4.2",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json && yarn dlx chmodx build/bin/*",
     "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
     "clean": "npx rimraf ./build",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "yarn eslint --cache --fix"
   },
   "keywords": [
     "gasbuddy",
@@ -84,7 +88,9 @@
     "@types/supertest": "^2.0.12",
     "eslint": "^8.24.0",
     "eslint-config-gasbuddy": "^7.0.2",
+    "husky": "^8.0.1",
     "jest": "^29.1.2",
+    "lint-staged": "^13.0.3",
     "supertest": "^6.2.4",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
