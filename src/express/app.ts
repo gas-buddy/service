@@ -36,6 +36,7 @@ export async function startApp<
   rootDirectory,
   codepath = 'build',
   configurationDirectories = [path.resolve(rootDirectory, './config')],
+  openApiOptions,
   name,
 }: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
@@ -117,6 +118,21 @@ export async function startApp<
     app.use(express.urlencoded());
   }
 
+  if (serviceImpl.authorize) {
+    const authorize: RequestHandler = (req, res, next) => {
+      const maybePromise = serviceImpl.authorize?.(
+        req as RequestWithApp<SLocals>,
+        res as Response<any, RLocals>,
+      );
+      if (maybePromise) {
+        maybePromise.then(next);
+      } else {
+        next();
+      }
+    };
+    app.use(authorize);
+  }
+
   const routing = config.get('routing') as ConfigurationSchema['routing'];
   if (routing?.routes) {
     await loadRoutes(
@@ -126,7 +142,7 @@ export async function startApp<
     );
   }
   if (routing?.openapi) {
-    app.use(openApi(app, rootDirectory, codepath));
+    app.use(openApi(app, rootDirectory, codepath, openApiOptions));
   }
 
   // Putting this here allows more flexible middleware insertion

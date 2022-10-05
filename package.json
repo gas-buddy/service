@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.3.2",
+  "version": "11.4.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -63,6 +63,7 @@
     "express": "next",
     "express-openapi-validator": "^4.13.8",
     "glob": "^8.0.3",
+    "lodash": "^4.17.21",
     "minimist": "^1.2.6",
     "pino": "^8.6.1",
     "read-pkg-up": "^7.0.1",
@@ -77,6 +78,7 @@
     "@types/express": "^4.17.14",
     "@types/glob": "^8.0.0",
     "@types/jest": "^29.1.1",
+    "@types/lodash": "^4.14.186",
     "@types/minimist": "^1.2.2",
     "@types/node": "^18.8.0",
     "@types/supertest": "^2.0.12",

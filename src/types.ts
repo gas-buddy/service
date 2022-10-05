@@ -2,6 +2,7 @@ import type pino from 'pino';
 import type { Server } from 'http';
 import type { Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
+import type { middleware } from 'express-openapi-validator';
 
 export interface InternalLocals extends Record<string, any> {
   server?: Server;
@@ -50,6 +51,9 @@ export interface Service<
   // way to do that would be via /routes/index.ts and router.use()
   // in that file.
   onRequest?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
+
+  // This runs after body parsing but before routing
+  authorize?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
 }
 
 export type ServiceFactory<
@@ -63,11 +67,18 @@ export interface ServiceStartOptions<
 > {
   name: string;
   rootDirectory: string;
+
   // Defaults to "build", but can be set to "src" to run off non-built source
   codepath?: 'build' | 'src';
+
   // If you need multiple configuration directories, pass them here
   // in the desired order (later trumps earlier)
   configurationDirectories?: string[];
+
+  // Add or control OpenAPI options such as security handlers
+  openApiOptions?: Parameters<typeof middleware>[0];
+
+  // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
 }
 
