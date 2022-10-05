@@ -1,6 +1,6 @@
 import type pino from 'pino';
 import type { Server } from 'http';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
 import type { middleware } from 'express-openapi-validator';
 
@@ -119,4 +119,30 @@ export class ServiceError extends Error {
     this.domain = (req.app as ServiceExpress).locals.name;
     Object.assign(this, spec);
   }
+}
+
+export type ServiceHandler<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> = (
+  req: RequestWithApp<SLocals>,
+  res: Response<any, RLocals>,
+  next: NextFunction,
+) => void | Promise<void>;
+
+// Make it easier to declare route files. This is not an exhaustive list
+// of supported router methods, but it has the most common ones.
+export interface ServiceRouter<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> {
+  all(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  get(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  post(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  put(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  delete(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  patch(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  options(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  head(path: string, handler: ServiceHandler<SLocals, RLocals>): void;
+  use(handler: ServiceHandler<SLocals, RLocals>): void;
 }
