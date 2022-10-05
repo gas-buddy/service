@@ -18,3 +18,4 @@ coverage
 
 # TypeScript incremental compilation cache
 *.tsbuildinfo
+.eslintcache
