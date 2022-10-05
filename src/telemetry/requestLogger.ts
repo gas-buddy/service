@@ -45,7 +45,9 @@ function finishLog(logger: BaseLogger, error: Error | undefined, req: Request, r
 
   if (error) {
     endLog.e = error.message;
-    endLog.st = error.stack;
+    if (!(error instanceof ServiceError) || error.log_stack) {
+      endLog.st = error.stack;
+    }
   }
 
   if (prefs.logRequests) {

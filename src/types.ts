@@ -91,6 +91,8 @@ export class ServiceError extends Error {
 
   public display_message?: string;
 
+  public log_stack?: boolean;
+
   constructor(
     req: Request,
     message: string,
@@ -99,6 +101,7 @@ export class ServiceError extends Error {
       code?: string;
       domain?: string;
       display_message?: string;
+      log_stack?: boolean;
     },
   ) {
     super(message);
