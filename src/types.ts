@@ -37,7 +37,7 @@ export interface Service<
   name?: string;
 
   // Modify options used for application start
-  configure?: (options: ServiceOptions) => ServiceOptions;
+  configure?: (startOptions: ServiceStartOptions, options: ServiceOptions) => ServiceOptions;
 
   start(app: ServiceExpress<SLocals>): void | Promise<void>;
   stop?: () => void | Promise<void>;

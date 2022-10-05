@@ -32,12 +32,13 @@ import startInternalApp from './internal-server';
 export async function startApp<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
->({
-  service,
-  rootDirectory,
-  codepath = 'build',
-  name,
-}: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
+>(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
+  const {
+    service,
+    rootDirectory,
+    codepath = 'build',
+    name,
+  } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
@@ -63,7 +64,7 @@ export async function startApp<
   const baseOptions: ServiceOptions = {
     configurationDirectories: [path.resolve(rootDirectory, './config')],
   };
-  const options = serviceImpl.configure?.(baseOptions) || baseOptions;
+  const options = serviceImpl.configure?.(startOptions, baseOptions) || baseOptions;
 
   const config = await loadConfiguration({
     name: service.name,
