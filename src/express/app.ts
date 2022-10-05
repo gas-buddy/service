@@ -125,10 +125,12 @@ export async function startApp<
     app.use(openApi(app, rootDirectory, codepath));
   }
 
+  // Putting this here allows more flexible middleware insertion
+  await serviceImpl.start(app);
+
   app.use(notFoundMiddleware(logger, routing?.errors?.renderErrors));
   app.use(errorHandlerMiddleware(logger, routing?.errors?.unnest, routing?.errors?.renderErrors));
 
-  await serviceImpl.start(app);
   return app;
 }
 
