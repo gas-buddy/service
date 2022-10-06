@@ -5,10 +5,10 @@ import path from 'path';
 import readPackageUp from 'read-pkg-up';
 
 import type { NormalizedPackageJson } from 'read-pkg-up';
-import serviceRepl from '@pkg/development/repl';
-import { isDev } from '@pkg/env';
-import { startWithTelemetry } from '@pkg/telemetry';
-import { ServiceStartOptions } from '@pkg/types';
+import serviceRepl from '../development/repl';
+import { isDev } from '../env';
+import { startWithTelemetry } from '../telemetry';
+import { ServiceStartOptions } from '../types';
 
 /**
  * built - forces the use of the build directory. Defaults to true in stage/prod, not in dev

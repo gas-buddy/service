@@ -1,6 +1,6 @@
 import repl from 'repl';
 import path from 'path';
-import { ServiceExpress } from '@pkg/types';
+import { ServiceExpress } from '../types';
 
 export default function serviceRepl(app: ServiceExpress, onExit: () => void) {
   const rl = repl.start({

@@ -1,4 +1,4 @@
-import type { Service } from '@pkg/types';
+import type { Service } from '../../../src/types';
 
 export default function fakeServ(): Service {
   return {

@@ -1,4 +1,4 @@
-import type { ServiceRouter } from '@pkg/express-app/types';
+import type { ServiceRouter } from '../../../../src';
 
 export default function route(router: ServiceRouter) {
   router.get('/world', (req, res) => {

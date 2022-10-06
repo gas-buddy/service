@@ -2,8 +2,8 @@ import { URL } from 'node:url';
 import type { FetchConfig, FetchRequest } from 'rest-api-support';
 import EventSource from 'eventsource';
 
-import type { ServiceConfiguration } from '@pkg/config/schema';
-import type { ServiceExpress } from '@pkg/types';
+import type { ServiceConfiguration } from '../config/schema';
+import type { ServiceExpress } from '../types';
 
 class CustomEventSource extends EventSource {
   private activeListeners: Array<{ handler: (data: any) => void, name: string }> = [];

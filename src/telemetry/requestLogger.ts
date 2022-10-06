@@ -1,7 +1,7 @@
 import type {
   RequestHandler, Request, Response, ErrorRequestHandler,
 } from 'express';
-import { ServiceError, ServiceLogger } from '@pkg/types';
+import { ServiceError, ServiceLogger } from '../types';
 
 const LOG_PREFS = Symbol('Logging information');
 
