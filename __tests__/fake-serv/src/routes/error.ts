@@ -1,5 +1,5 @@
 import type { Router } from 'express';
-import { ServiceError } from '../../../../src/types';
+import { ServiceError } from '@pkg/types';
 
 export default function route(router: Router) {
   router.get('/sync', (req) => {

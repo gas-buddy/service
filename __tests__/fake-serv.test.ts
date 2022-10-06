@@ -1,7 +1,7 @@
 import path from 'path';
 import request from 'supertest';
+import { startApp } from '@pkg/express-app/app';
 import fakeServ from './fake-serv/src/index';
-import { startApp } from '../src/index';
 
 describe('fake-serv', () => {
   test('basic service functionality', async () => {

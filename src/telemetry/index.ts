@@ -2,14 +2,13 @@ import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import * as opentelemetry from '@opentelemetry/sdk-node';
 
-import { getAutoInstrumentations } from './instrumentations';
-
 import type {
   DelayLoadServiceStartOptions,
   RequestLocals,
   ServiceLocals,
   ServiceStartOptions,
-} from '../types';
+} from '@pkg/types';
+import { getAutoInstrumentations } from './instrumentations';
 
 // For troubleshooting, set the log level to DiagLogLevel.DEBUG
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);

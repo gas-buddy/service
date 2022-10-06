@@ -1,7 +1,7 @@
 import { glob } from 'glob';
 import path from 'path';
 import express from 'express';
-import type { ServiceExpress } from '../types';
+import type { ServiceExpress } from '@pkg/types';
 
 export default async function loadRoutes(app: ServiceExpress, routingDir: string, pattern: string) {
   const files: string[] = await new Promise((accept, reject) => {

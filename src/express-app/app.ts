@@ -7,15 +7,14 @@ import { pino } from 'pino';
 import { createTerminus } from '@godaddy/terminus';
 
 import type { RequestHandler, Response } from 'express';
-import { loadConfiguration } from '../config/index';
-import findPort from '../development/port-finder';
-import openApi from '../openapi';
+import { loadConfiguration } from '@pkg/config/index';
+import findPort from '@pkg/development/port-finder';
+import openApi from '@pkg/openapi';
 import {
   errorHandlerMiddleware,
   loggerMiddleware,
   notFoundMiddleware,
-} from '../telemetry/requestLogger';
-import loadRoutes from './route-loader';
+} from '@pkg/telemetry/requestLogger';
 
 import type {
   RequestLocals,
@@ -24,9 +23,10 @@ import type {
   ServiceLocals,
   ServiceOptions,
   ServiceStartOptions,
-} from '../types';
-import { ConfigurationSchema } from '../config/schema';
-import { isDev } from '../env';
+} from '@pkg/types';
+import { ConfigurationSchema } from '@pkg/config/schema';
+import { isDev } from '@pkg/env';
+import loadRoutes from './route-loader';
 import startInternalApp from './internal-server';
 
 export async function startApp<
