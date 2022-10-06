@@ -1,8 +1,7 @@
-import type { BaseLogger } from 'pino';
 import type {
   RequestHandler, Request, Response, ErrorRequestHandler,
 } from 'express';
-import { ServiceError } from '../types';
+import { ServiceError, ServiceLogger } from '../types';
 
 const LOG_PREFS = Symbol('Logging information');
 
@@ -23,7 +22,7 @@ function getBasicInfo(req: Request) {
   return preInfo;
 }
 
-function finishLog(logger: BaseLogger, error: Error | undefined, req: Request, res: Response) {
+function finishLog(logger: ServiceLogger, error: Error | undefined, req: Request, res: Response) {
   const prefs = res.locals[LOG_PREFS as any] as LogPrefs;
   if (prefs.logged) {
     // This happens when error handler runs, but onEnd hasn't fired yet. We only log the first one.
@@ -71,7 +70,7 @@ function finishLog(logger: BaseLogger, error: Error | undefined, req: Request, r
 }
 
 export function loggerMiddleware(
-  logger: BaseLogger,
+  logger: ServiceLogger,
   logRequests?: boolean,
   logResponses?: boolean,
 ): RequestHandler {
@@ -120,7 +119,7 @@ export function loggerMiddleware(
 }
 
 export function errorHandlerMiddleware(
-  logger: BaseLogger,
+  logger: ServiceLogger,
   unnest?: boolean,
   returnError?: boolean,
 ) {
@@ -155,7 +154,7 @@ export function errorHandlerMiddleware(
   return gbErrorHandler;
 }
 
-export function notFoundMiddleware(logger: BaseLogger, returnError?: boolean) {
+export function notFoundMiddleware(logger: ServiceLogger, returnError?: boolean) {
   const gbNotFoundHandler: RequestHandler = (req, res, next) => {
     if (returnError) {
       const error = new ServiceError(req, `Cannot ${req.method} ${req.path}`, {

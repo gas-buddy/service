@@ -3,17 +3,19 @@ import type { Server } from 'http';
 import type { Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
 import type { middleware } from 'express-openapi-validator';
-import { ConfigStore } from './config/types';
+import type { ConfigStore } from './config/types';
 
 export interface InternalLocals extends Record<string, any> {
   server?: Server;
   mainApp: ServiceExpress;
 }
 
+export type ServiceLogger = pino.BaseLogger & Pick<pino.Logger, 'isLevelEnabled'>;
+
 export interface ServiceLocals extends Record<string, any> {
   name: string;
   service: Service;
-  logger: pino.BaseLogger;
+  logger: ServiceLogger;
   config: ConfigStore;
   internalApp: Application<InternalLocals>;
 }
@@ -22,7 +24,7 @@ export interface RequestLocals extends Record<string, any> {
   // Set this to true during the request "attachment" and if there is a body,
   // it will be set to the buffer before API and route handlers run.
   rawBody?: Buffer | true;
-  logger: pino.BaseLogger;
+  logger: ServiceLogger;
 }
 
 export type ServiceExpress<Locals extends ServiceLocals = ServiceLocals> = Application<Locals>;
