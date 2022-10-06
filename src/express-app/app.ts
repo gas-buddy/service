@@ -44,19 +44,22 @@ export async function startApp<
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
     minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
   });
-  const logger = pino(
-    shouldPrettyPrint
-      ? {
-        transport: {
-          destination,
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-          },
-        },
-      }
-      : destination,
-  );
+  const logger = shouldPrettyPrint ? pino({
+    transport: {
+      destination,
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+      },
+    },
+  }) : pino({
+    destination,
+    formatters: {
+      level(label) {
+        return { level: label };
+      },
+    },
+  });
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
