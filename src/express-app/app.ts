@@ -102,7 +102,7 @@ export async function startApp<
       res as Response<any, RLocals>,
     );
     if (maybePromise) {
-      maybePromise.then(next);
+      maybePromise.catch(next).then(next);
     } else {
       next();
     }
@@ -133,7 +133,7 @@ export async function startApp<
         res as Response<any, RLocals>,
       );
       if (maybePromise) {
-        maybePromise.then(next);
+        maybePromise.catch(next).then(next);
       } else {
         next();
       }
