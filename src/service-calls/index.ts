@@ -95,7 +95,7 @@ export async function succeedOrThrow<
 >(
   req: RequestLike<SLocals, any>,
   callPromise: Promise<RestApiSuccessResponse<ResponseType> | RestApiErrorResponse>,
-) {
+): Promise<RestApiSuccessResponse<ResponseType>> {
   return callPromise.then((result) => {
     if (result.responseType === 'error') {
       throw new ServiceError(req.app, result.body?.message || 'Service call failed', {

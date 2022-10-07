@@ -478,16 +478,16 @@ __metadata:
     "@types/eventsource": ^1.1.9
     "@types/express": ^4.17.14
     "@types/glob": ^8.0.0
-    "@types/jest": ^29.1.1
+    "@types/jest": ^29.1.2
     "@types/lodash": ^4.14.186
     "@types/minimist": ^1.2.2
-    "@types/node": ^18.8.0
+    "@types/node": ^18.8.3
     "@types/supertest": ^2.0.12
     abort-controller: ^3.0.0
     confit: ^3.0.0
     dotenv: ^16.0.3
     eslint: ^8.24.0
-    eslint-config-gasbuddy: ^7.0.2
+    eslint-config-gasbuddy: ^7.0.3
     eventsource: ^1.1.2
     express: next
     express-openapi-validator: ^4.13.8
@@ -499,11 +499,11 @@ __metadata:
     minimist: ^1.2.6
     pino: ^8.6.1
     read-pkg-up: ^7.0.1
-    rest-api-support: ^1.13.3
+    rest-api-support: ^1.14.0
     shortstop-dns: ^1.1.0
     shortstop-handlers: ^1.1.1
     shortstop-yaml: ^1.0.0
-    supertest: ^6.2.4
+    supertest: ^6.3.0
     ts-jest: ^29.0.3
     ts-node: ^10.9.1
     typescript: ^4.8.4
@@ -1654,13 +1654,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.1.1":
-  version: 29.1.1
-  resolution: "@types/jest@npm:29.1.1"
+"@types/jest@npm:^29.1.2":
+  version: 29.1.2
+  resolution: "@types/jest@npm:29.1.2"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
-  checksum: d9e6f7d6ab64cf45535369d0a3dc4640cbe6b37ab6f8927e874eacc199581338ebf6ff544f7c2cd188c5fc7cd0b3197aa72cb2b826f0a1352b93b89993711413
+  checksum: a6761b5ac132c641740886f9c0714607255ebffb6add5989f51ea9e392fc3c5cd474e7590f12b003d5b67ce177dfbc8d3d60d0baa335c48c50deeee6b755a473
   languageName: node
   linkType: hard
 
@@ -1722,10 +1722,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^18.8.0":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 18.8.0
   resolution: "@types/node@npm:18.8.0"
   checksum: 3433cbc22e90fafb047f93b3ef05ba01a07f780a24ff1af393f435f807537b533fe9e8a816586825f4c5fd5336c3e80225571f44ec3b6479c463408c072773e7
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.8.3":
+  version: 18.8.3
+  resolution: "@types/node@npm:18.8.3"
+  checksum: 9201adc6dc389644c9f478f950ef8926a93e5827865dcd80d7d12fefacab665c96879c87cd6ec74d5eccdd998c4603d02e1e07a35d71a63fe4c20670a381f6ef
   languageName: node
   linkType: hard
 
@@ -3219,9 +3226,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-gasbuddy@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "eslint-config-gasbuddy@npm:7.0.2"
+"eslint-config-gasbuddy@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "eslint-config-gasbuddy@npm:7.0.3"
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
@@ -3231,7 +3238,7 @@ __metadata:
     eslint-plugin-import: ^2.25.3
     eslint-plugin-prettier: ^4.0.0
     prettier: ^2.5.1
-  checksum: 82fa580d182b9b4696e9c0037d4423fd28d4334cfa08aaafeffb3dc0efb75fa8877513a74286d146a6527243833415260c0f81974f5ff2a17ede004251715c4e
+  checksum: ff127b1279349f3d48da3c04acac812fa08c06faf64caf95cd027110c21928598ce9e8a482e53520524f45bef2ba2e432a050883d4412bf129e8cc73330f1968
   languageName: node
   linkType: hard
 
@@ -6430,12 +6437,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rest-api-support@npm:^1.13.3":
-  version: 1.13.3
-  resolution: "rest-api-support@npm:1.13.3"
+"rest-api-support@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "rest-api-support@npm:1.14.0"
   dependencies:
     query-string: ^6.14.1
-  checksum: fd8589a98f27830994964a840d38b322f757c76191d666342fb8c7576b4c89b91931137373e30729363674af424f96025f7ed096dee107c6592ac752e25c903b
+  checksum: 0250b8410bcef434dd4c4d1aac65a7d60ddfe01ca8526e229eee6ec03e0f2bca13be3825c93cca61228c76204008633bee4421524fa901dea43ab6cc4b26050c
   languageName: node
   linkType: hard
 
@@ -7075,13 +7082,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supertest@npm:^6.2.4":
-  version: 6.2.4
-  resolution: "supertest@npm:6.2.4"
+"supertest@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "supertest@npm:6.3.0"
   dependencies:
     methods: ^1.1.2
     superagent: ^8.0.0
-  checksum: f2ddc4f3ba467a5c4036dd4aad41351e4b60eb13c39ecf5233ccd2ebb425504073b2b7036c973a70c7047f5c6bc1b9fef096b7bbff114d357cbe80654441db23
+  checksum: 95062161af3a16669231dcde0375f89a8c57339ca8e5820b483959dd77c88a89c9d63241cad000f6178822666ae818fd2e158b44a10d865366809e173737720e
   languageName: node
   linkType: hard
 
