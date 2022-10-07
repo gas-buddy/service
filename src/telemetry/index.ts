@@ -1,5 +1,8 @@
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
+import { MeterProvider } from '@opentelemetry/sdk-metrics';
+import { metrics } from '@opentelemetry/api-metrics';
+import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import * as opentelemetry from '@opentelemetry/sdk-node';
 
 import { getAutoInstrumentations } from './instrumentations';
@@ -35,12 +38,38 @@ export async function startWithTelemetry<
   });
   await sdk.start();
 
+  const meters = new MeterProvider();
+  metrics.setGlobalMeterProvider(meters);
+
   const { startApp, listen } = await import('../express-app/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
   const { default: service } = require(options.service);
-  const startOptions: ServiceStartOptions = { ...options, service };
+  const startOptions: ServiceStartOptions<SLocals> = {
+    ...options,
+    service,
+    locals: { ...options.locals, meters } as Partial<SLocals>,
+  };
   const app = await startApp<SLocals, RLocals>(startOptions);
   app.locals.logger.info('OpenTelemetry enabled');
+
+  const metricsConfig = app.locals.config.get('metrics');
+  if (metricsConfig) {
+    const { endpoint, port } = PrometheusExporter.DEFAULT_OPTIONS;
+    const finalConfig = {
+      endpoint,
+      port,
+      ...metricsConfig,
+      preventServerStart: true,
+    };
+    const exporter = new PrometheusExporter(finalConfig);
+    await exporter.startServer();
+    app.locals.logger.info(
+      { endpoint: finalConfig.endpoint, port: finalConfig.port },
+      'Prometheus exporter started',
+    );
+
+    meters.addMetricReader(exporter);
+  }
 
   const server = await listen(app, async () => {
     await sdk.shutdown();

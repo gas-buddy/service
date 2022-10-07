@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.7.1",
+  "version": "11.8.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -45,6 +45,8 @@
   "dependencies": {
     "@godaddy/terminus": "^4.11.2",
     "@opentelemetry/api": "^1.2.0",
+    "@opentelemetry/api-metrics": "^0.33.0",
+    "@opentelemetry/exporter-prometheus": "^0.33.0",
     "@opentelemetry/exporter-trace-otlp-proto": "^0.33.0",
     "@opentelemetry/instrumentation-aws-sdk": "^0.9.2",
     "@opentelemetry/instrumentation-dns": "^0.30.0",
@@ -59,6 +61,7 @@
     "@opentelemetry/instrumentation-pino": "^0.32.0",
     "@opentelemetry/instrumentation-redis": "^0.33.0",
     "@opentelemetry/instrumentation-redis-4": "^0.33.0",
+    "@opentelemetry/sdk-metrics": "^0.33.0",
     "@opentelemetry/sdk-node": "^0.33.0",
     "abort-controller": "^3.0.0",
     "confit": "^3.0.0",

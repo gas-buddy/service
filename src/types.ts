@@ -3,6 +3,7 @@ import type { Server } from 'http';
 import type { Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
 import type { middleware } from 'express-openapi-validator';
+import type metrics from '@opentelemetry/sdk-metrics';
 import type { ConfigStore } from './config/types';
 
 export interface InternalLocals extends Record<string, any> {
@@ -17,6 +18,7 @@ export interface ServiceLocals extends Record<string, any> {
   service: Service;
   logger: ServiceLogger;
   config: ConfigStore;
+  meters: metrics.MeterProvider;
   internalApp: Application<InternalLocals>;
 }
 
@@ -70,6 +72,11 @@ export interface ServiceStartOptions<
 
   // Defaults to "build", but can be set to "src" to run off non-built source
   codepath?: 'build' | 'src';
+
+  // NOTE: if you use this, you need to cast it because of a Typescript error:
+  // https://github.com/microsoft/TypeScript/issues/22229
+  // locals: { stuff } as Partial<MyLocals>
+  locals?: Partial<SLocals>;
 
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
