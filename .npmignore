@@ -3,6 +3,8 @@ node_modules
 coverage
 .nyc_output
 .tap_output
+.yarnrc.*
+.yarnrc
 
 # TypeScript incremental compilation cache
 *.tsbuildinfo
