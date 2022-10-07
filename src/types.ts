@@ -89,6 +89,28 @@ export interface ServiceOptions {
   openApiOptions?: Parameters<typeof middleware>[0];
 }
 
+export interface ServiceLike<SLocals extends ServiceLocals = ServiceLocals> {
+  locals: SLocals;
+}
+
+/**
+ * This type should be used (or extended) to pass "context"
+ * into functions not directly wired into the Express request
+ * handling flow. It will allow "synthetic" requests to be
+ * easily constructed without depending on things they should not,
+ * like query strings or body or similar. Most often, you want the
+ * logger.
+ */
+export interface RequestLike<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+> {
+  app: ServiceLike<SLocals>;
+  res: {
+    locals: RLocals;
+  };
+}
+
 /**
  * An error that gives more structured information to callers. Throw inside a handler as
  *
@@ -108,7 +130,7 @@ export class ServiceError extends Error {
   public log_stack?: boolean;
 
   constructor(
-    req: Request,
+    app: ServiceLike<ServiceLocals>,
     message: string,
     spec: {
       status?: number;
@@ -119,7 +141,7 @@ export class ServiceError extends Error {
     },
   ) {
     super(message);
-    this.domain = (req.app as ServiceExpress).locals.name;
+    this.domain = app.locals.name;
     Object.assign(this, spec);
   }
 }

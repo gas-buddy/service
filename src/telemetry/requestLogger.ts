@@ -1,7 +1,9 @@
 import type {
   RequestHandler, Request, Response, ErrorRequestHandler,
 } from 'express';
-import { ServiceError, ServiceLogger } from '../types';
+import { ServiceError } from '../types';
+import type { ServiceLogger } from '../types';
+import type { ServiceHandler } from '../express-app/types';
 
 const LOG_PREFS = Symbol('Logging information');
 
@@ -155,9 +157,9 @@ export function errorHandlerMiddleware(
 }
 
 export function notFoundMiddleware(logger: ServiceLogger, returnError?: boolean) {
-  const gbNotFoundHandler: RequestHandler = (req, res, next) => {
+  const gbNotFoundHandler: ServiceHandler = (req, res, next) => {
     if (returnError) {
-      const error = new ServiceError(req, `Cannot ${req.method} ${req.path}`, {
+      const error = new ServiceError(req.app, `Cannot ${req.method} ${req.path}`, {
         status: 404,
         code: 'NotFound',
         domain: 'http',
@@ -168,5 +170,5 @@ export function notFoundMiddleware(logger: ServiceLogger, returnError?: boolean)
       next();
     }
   };
-  return gbNotFoundHandler;
+  return gbNotFoundHandler as RequestHandler;
 }
