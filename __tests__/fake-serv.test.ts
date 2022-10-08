@@ -22,7 +22,6 @@ describe('fake-serv', () => {
     ({ body } = await request(app)
       .get('/hello')
       .query({ greeting: 'Hello Pluto!' })
-      .timeout(1000)
       .expect(200));
     expect(body.greeting).toEqual('Hello Pluto!');
 
@@ -31,5 +30,8 @@ describe('fake-serv', () => {
 
     ({ body } = await request(app).get('/error/async').timeout(1000).expect(500));
     expect(body.code).toEqual('AsyncError');
+
+    // Mocking
+    await request(app).post('/world').expect(500);
   });
 });

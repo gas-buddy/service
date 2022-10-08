@@ -80,7 +80,7 @@ export async function startApp<
 
   // Concentrate the Typescript ugliness...
   const app = express() as unknown as ServiceExpress<SLocals>;
-  Object.assign(app.locals, startOptions.locals, {
+  Object.assign(app.locals, { services: {} }, startOptions.locals, {
     service: serviceImpl,
     logger,
     config,

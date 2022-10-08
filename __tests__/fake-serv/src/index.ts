@@ -1,8 +1,21 @@
-import type { Service } from '../../../src/types';
+import { RestApiErrorResponse, RestApiSuccessResponse } from 'rest-api-support';
+import type { Service, ServiceLocals } from '../../../src/types';
 
-export default function fakeServ(): Service {
+export interface FakeServLocals extends ServiceLocals {
+  services: {
+    fakeServ: {
+      get_something(): RestApiSuccessResponse<{ things: string[] }> | RestApiErrorResponse;
+    }
+  }
+}
+
+export default function fakeServ(): Service<FakeServLocals> {
   return {
-    start() {},
+    start(app) {
+      app.locals.services.fakeServ = {
+        get_something() { throw new Error('Should not be called.'); },
+      };
+    },
     onRequest(req, res) {
       res.locals.rawBody = true;
     },
