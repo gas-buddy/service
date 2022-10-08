@@ -51,11 +51,19 @@ async function enableMetrics<
     await exporter.startServer();
     app.locals.logger.info(
       { endpoint: finalConfig.endpoint, port: finalConfig.port },
-      'Prometheus exporter started',
+      'Metrics exporter started',
     );
 
     meters.addMetricReader(exporter);
   }
+}
+
+async function endMetrics<
+  SLocals extends ServiceLocals = ServiceLocals,
+>(app: ServiceExpress<SLocals>) {
+  const { meters, logger } = app.locals;
+  await meters.shutdown();
+  logger.info('Metrics shutdown');
 }
 
 export async function startApp<
@@ -193,6 +201,17 @@ export async function startApp<
   return app;
 }
 
+export async function shutdownApp(app: ServiceExpress) {
+  const { logger } = app.locals;
+  try {
+    await app.locals.service.stop?.();
+    await endMetrics(app);
+    logger.info('App shutdown complete');
+  } catch (error) {
+    logger.warn(error, 'Shutdown failed');
+  }
+}
+
 export async function listen(app: ServiceExpress, shutdownHandler?: () => Promise<void>) {
   let port = app.locals.config.get('port');
 
@@ -218,6 +237,7 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
     onShutdown() {
       return Promise.resolve()
         .then(() => service.stop?.())
+        .then(() => endMetrics(app))
         .then(shutdownHandler || (() => {}))
         .then(() => app.locals.logger.info('Graceful shutdown complete'))
         .catch((error) => app.locals.logger.error(error, 'Error terminating tracing'));

@@ -1,16 +1,17 @@
 import path from 'path';
 import request from 'supertest';
 import fakeServ from './fake-serv/src/index';
-import { startApp } from '../src/index';
+import { ServiceStartOptions, shutdownApp, startApp } from '../src/index';
 
 describe('fake-serv', () => {
   test('basic service functionality', async () => {
-    const app = await startApp({
+    const options: ServiceStartOptions = {
       service: fakeServ,
       name: 'fake-serv',
       rootDirectory: path.resolve(__dirname, './fake-serv'),
       codepath: 'src',
-    });
+    };
+    const app = await startApp(options);
     expect(app).toBeTruthy();
 
     let { body } = await request(app).get('/world').timeout(500).expect(200);
@@ -33,5 +34,10 @@ describe('fake-serv', () => {
 
     // Mocking
     await request(app).post('/world').expect(500);
+
+    // Clean shutdown
+    await expect(shutdownApp(app)).resolves;
+    const secondApp = await startApp(options);
+    await shutdownApp(secondApp);
   });
 });
