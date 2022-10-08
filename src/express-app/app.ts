@@ -3,7 +3,9 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 import { pino } from 'pino';
-
+import { MeterProvider } from '@opentelemetry/sdk-metrics';
+import { metrics } from '@opentelemetry/api-metrics';
+import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { createTerminus } from '@godaddy/terminus';
 
 import type { RequestHandler, Response } from 'express';
@@ -28,6 +30,33 @@ import type {
 import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
+
+async function enableMetrics<
+  SLocals extends ServiceLocals = ServiceLocals,
+>(app: ServiceExpress<SLocals>) {
+  const meters = new MeterProvider();
+  metrics.setGlobalMeterProvider(meters);
+  app.locals.meters = meters;
+
+  const metricsConfig = app.locals.config.get('metrics');
+  if (metricsConfig) {
+    const { endpoint, port } = PrometheusExporter.DEFAULT_OPTIONS;
+    const finalConfig = {
+      endpoint,
+      port,
+      ...metricsConfig,
+      preventServerStart: true,
+    };
+    const exporter = new PrometheusExporter(finalConfig);
+    await exporter.startServer();
+    app.locals.logger.info(
+      { endpoint: finalConfig.endpoint, port: finalConfig.port },
+      'Prometheus exporter started',
+    );
+
+    meters.addMetricReader(exporter);
+  }
+}
 
 export async function startApp<
   SLocals extends ServiceLocals = ServiceLocals,
@@ -86,6 +115,8 @@ export async function startApp<
     config,
     name,
   });
+
+  await enableMetrics(app);
 
   if (config.get('trustProxy')) {
     app.set('trust proxy', config.get('trustProxy'));
