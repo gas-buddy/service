@@ -37,25 +37,6 @@ async function enableMetrics<
   const meters = new MeterProvider();
   metrics.setGlobalMeterProvider(meters);
   app.locals.meters = meters;
-
-  const metricsConfig = app.locals.config.get('metrics');
-  if (metricsConfig) {
-    const { endpoint, port } = PrometheusExporter.DEFAULT_OPTIONS;
-    const finalConfig = {
-      endpoint,
-      port,
-      ...metricsConfig,
-      preventServerStart: true,
-    };
-    const exporter = new PrometheusExporter(finalConfig);
-    await exporter.startServer();
-    app.locals.logger.info(
-      { endpoint: finalConfig.endpoint, port: finalConfig.port },
-      'Metrics exporter started',
-    );
-
-    meters.addMetricReader(exporter);
-  }
 }
 
 async function endMetrics<
@@ -124,7 +105,12 @@ export async function startApp<
     name,
   });
 
-  await enableMetrics(app);
+  try {
+    await enableMetrics(app);
+  } catch (error) {
+    logger.error(error, 'Could not enable metrics.');
+    throw error;
+  }
 
   if (config.get('trustProxy')) {
     app.set('trust proxy', config.get('trustProxy'));
@@ -219,17 +205,22 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
     port = await findPort(8001);
   }
 
-  const { service } = app.locals;
+  const { service, logger } = app.locals;
   const server = http.createServer(app);
+  let shutdownInProgress = false;
   createTerminus(server, {
     timeout: 15000,
     useExit0: true,
     // https://github.com/godaddy/terminus#how-to-set-terminus-up-with-kubernetes
     beforeShutdown() {
+      if (shutdownInProgress) {
+        return Promise.resolve();
+      }
+      shutdownInProgress = true;
       if (app.locals.internalApp) {
         app.locals.internalApp.locals.server?.close();
       }
-      app.locals.logger.info('Graceful shutdown beginning');
+      logger.info('Graceful shutdown beginning');
       return new Promise((accept) => {
         setTimeout(accept, 10000);
       });
@@ -239,12 +230,23 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
         .then(() => service.stop?.())
         .then(() => endMetrics(app))
         .then(shutdownHandler || (() => {}))
-        .then(() => app.locals.logger.info('Graceful shutdown complete'))
-        .catch((error) => app.locals.logger.error(error, 'Error terminating tracing'));
+        .then(() => logger.info('Graceful shutdown complete'))
+        .catch((error) => logger.error(error, 'Error terminating tracing'));
     },
     logger: (msg, e) => {
-      app.locals.logger.error(e, msg);
+      logger.error(e, msg);
     },
+  });
+
+  server.on('close', () => {
+    if (!shutdownInProgress) {
+      shutdownInProgress = true;
+      app.locals.logger.info('Shutdown requested');
+      if (app.locals.internalApp) {
+        app.locals.internalApp.locals.server?.close();
+      }
+      shutdownApp(app);
+    }
   });
 
   // TODO handle rejection/error?
@@ -260,6 +262,24 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
           .then((internalApp) => {
             locals.internalApp = internalApp;
             locals.logger.info({ port: internalPort }, 'Internal metadata server started');
+          })
+          .then(() => {
+            const metricsConfig = app.locals.config.get('metrics');
+            if (metricsConfig?.enabled) {
+              const finalConfig = {
+                ...metricsConfig,
+                preventServerStart: true,
+              };
+              const exporter = new PrometheusExporter(finalConfig);
+              locals.internalApp.get('/metrics', exporter.getMetricsRequestHandler);
+              locals.logger.info(
+                { endpoint: finalConfig.endpoint, port: finalConfig.port },
+                'Metrics exporter started',
+              );
+              locals.meters.addMetricReader(exporter);
+            } else {
+              locals.logger.info('No metrics will be exported');
+            }
           })
           .catch((error) => {
             locals.logger.warn(error, 'Failed to start internal metadata app');

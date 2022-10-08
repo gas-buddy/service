@@ -1,10 +1,13 @@
 {
   "logging": {
-    "level": "warn"
+    "level": "debug"
   },
   "google": "dns:google.com",
   "envswitchoff": "env_switch:ENV_VAR_DOESNT_EXIST",
   "envswitchon": "env_switch:!ENV_VAR_DOESNT_EXIST",
   "servicetype": "servicetype:serv",
-  "notservicetype": "servicetype:api"
+  "notservicetype": "servicetype:api",
+  "metrics": {
+    "enabled": true
+  }
 }

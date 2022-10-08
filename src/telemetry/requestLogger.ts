@@ -109,6 +109,8 @@ export function loggerMiddleware(
     logger.info(
       {
         ...getBasicInfo(req),
+        ref: req.headers.referer || undefined,
+        sid: (req as any).session?.id,
         c: req.headers.correlationid || undefined,
       },
       'pre',

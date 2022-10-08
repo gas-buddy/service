@@ -38,4 +38,7 @@ export interface ConfigurationSchema extends Record<string, any> {
   internalPort?: number,
   port?: number,
   connections: Record<string, ServiceConfiguration>;
+  metrics: {
+    enabled?: boolean;
+  },
 }
