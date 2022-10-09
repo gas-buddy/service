@@ -1,13 +1,13 @@
 import path from 'path';
 import request from 'supertest';
-import fakeServ from './fake-serv/src/index';
+import fakeServ, { FakeServLocals } from './fake-serv/src/index';
 import {
   listen, ServiceStartOptions, shutdownApp, startApp,
 } from '../src/index';
 
 describe('fake-serv', () => {
   test('basic service functionality', async () => {
-    const options: ServiceStartOptions = {
+    const options: ServiceStartOptions<FakeServLocals> = {
       service: fakeServ,
       name: 'fake-serv',
       rootDirectory: path.resolve(__dirname, './fake-serv'),

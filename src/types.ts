@@ -41,12 +41,15 @@ export interface Service<
   name?: string;
 
   // Modify options used for application start
-  configure?: (startOptions: ServiceStartOptions, options: ServiceOptions) => ServiceOptions;
+  configure?: (
+    startOptions: ServiceStartOptions<SLocals, RLocals>,
+    options: ServiceOptions,
+  ) => ServiceOptions;
 
   start(app: ServiceExpress<SLocals>): void | Promise<void>;
-  stop?: () => void | Promise<void>;
+  stop?: (app: ServiceExpress<SLocals>) => void | Promise<void>;
 
-  healthy?: () => boolean | Promise<boolean>;
+  healthy?: (app: ServiceExpress<SLocals>) => boolean | Promise<boolean>;
 
   // This runs as middleware right BEFORE the body parsers.
   // If you want to run AFTER the body parsers, the current

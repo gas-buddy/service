@@ -10,7 +10,7 @@ export default async function startInternalApp(mainApp: ServiceExpress, port: nu
   app.get('/health', async (req, res) => {
     if (mainApp.locals.service?.healthy) {
       try {
-        const ok = await mainApp.locals.service.healthy();
+        const ok = await mainApp.locals.service.healthy(mainApp);
         res.sendStatus(ok ? 204 : 500);
       } catch (error) {
         mainApp.locals.logger.error(error, 'Health check failed');

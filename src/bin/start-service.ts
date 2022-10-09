@@ -80,7 +80,7 @@ getPackage().then(async (pkg) => {
     if (argv.repl) {
       serviceRepl(app, () => {
         server?.close();
-        app.locals.service?.stop?.();
+        app.locals.service?.stop?.(app);
       });
     }
   } else {

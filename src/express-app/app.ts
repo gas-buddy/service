@@ -190,7 +190,7 @@ export async function startApp<
 export async function shutdownApp(app: ServiceExpress) {
   const { logger } = app.locals;
   try {
-    await app.locals.service.stop?.();
+    await app.locals.service.stop?.(app);
     await endMetrics(app);
     logger.info('App shutdown complete');
   } catch (error) {
@@ -198,7 +198,9 @@ export async function shutdownApp(app: ServiceExpress) {
   }
 }
 
-export async function listen(app: ServiceExpress, shutdownHandler?: () => Promise<void>) {
+export async function listen<
+  SLocals extends ServiceLocals = ServiceLocals,
+>(app: ServiceExpress<SLocals>, shutdownHandler?: () => Promise<void>) {
   let port = app.locals.config.get('port');
 
   if (port === 0) {
@@ -227,7 +229,7 @@ export async function listen(app: ServiceExpress, shutdownHandler?: () => Promis
     },
     onShutdown() {
       return Promise.resolve()
-        .then(() => service.stop?.())
+        .then(() => service.stop?.(app))
         .then(() => endMetrics(app))
         .then(shutdownHandler || (() => {}))
         .then(() => logger.info('Graceful shutdown complete'))
