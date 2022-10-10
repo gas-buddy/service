@@ -139,6 +139,11 @@ export class ServiceError extends Error {
 
   public log_stack?: boolean;
 
+  // If true, this shouldn't be logged as an error, but as an info log.
+  // This is common when the error needs to go to the client, but should not
+  // take up the valuable mental space of an error log.
+  public expected_error?: boolean;
+
   constructor(
     app: ServiceLike<ServiceLocals>,
     message: string,
@@ -148,6 +153,7 @@ export class ServiceError extends Error {
       domain?: string;
       display_message?: string;
       log_stack?: boolean;
+      expected_error?: boolean;
     },
   ) {
     super(message);

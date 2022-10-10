@@ -166,6 +166,25 @@ export async function startApp<
     app.use(authorize);
   }
 
+  if (config.get('routing:freezeQuery')) {
+    app.use((req, res, next) => {
+      // Express 5 re-parses the query string every time. This causes problems with
+      // various libraries, namely the express OpenAPI parser. So we "freeze it" in place
+      // here, which runs right before the routing validation logic does. Note that this
+      // means the app middleware will see the unfrozen one, which is intentional. If the
+      // app wants to modify or freeze the query itself, this shouldn't get in the way.
+      const { query } = req;
+      if (query) {
+        Object.defineProperty(req, 'query', {
+          configurable: true,
+          enumerable: true,
+          value: query,
+        });
+      }
+      next();
+    });
+  }
+
   const routing = config.get('routing') as ConfigurationSchema['routing'];
   if (routing?.routes) {
     await loadRoutes(

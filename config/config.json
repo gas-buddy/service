@@ -1,4 +1,5 @@
 {
+  "$schema": "tsschema://../src/config/schema#ConfigurationSchema",
   "logging": {
     "level": "info",
     "logHttpRequests": "env_switch:LOG_HTTP_REQUESTS"
@@ -9,7 +10,8 @@
     "errors": {
       "renderErrors": true,
       "unnest": "servicetype:serv"
-    }
+    },
+    "freezeQuery": true
   },
   "bodyParsers": {
     "json": true,

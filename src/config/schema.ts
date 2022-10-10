@@ -30,6 +30,7 @@ export interface ConfigurationSchema extends Record<string, any> {
       // information.
       unnest: boolean;
     };
+    freezeQuery?: boolean;
   },
   bodyParsers?: {
     json?: boolean;
