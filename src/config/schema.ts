@@ -1,3 +1,4 @@
+import type { createKmsCryptoProvider } from '@gasbuddy/kms-crypto';
 import type { Level } from 'pino';
 
 export interface ServiceConfiguration {
@@ -15,6 +16,9 @@ export interface ConfigurationSchema extends Record<string, any> {
     logHttpRequests?: boolean;
     logRequestBody?: boolean;
     logResponseBody?: boolean;
+  },
+  crypto?: {
+    kms?: Parameters<typeof createKmsCryptoProvider>[0];
   },
   routing?: {
     openapi?: boolean;

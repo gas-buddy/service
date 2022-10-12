@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.11.2",
+  "version": "11.12.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -43,6 +43,7 @@
   },
   "homepage": "https://github.com/gas-buddy/service#readme",
   "dependencies": {
+    "@gasbuddy/kms-crypto": "^5.0.1",
     "@godaddy/terminus": "^4.11.2",
     "@opentelemetry/api": "^1.2.0",
     "@opentelemetry/api-metrics": "^0.33.0",
@@ -71,7 +72,7 @@
     "express-openapi-validator": "^4.13.8",
     "glob": "^8.0.3",
     "lodash": "^4.17.21",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.7",
     "pino": "^8.6.1",
     "read-pkg-up": "^7.0.1",
     "rest-api-support": "^1.14.0",
@@ -80,14 +81,13 @@
     "shortstop-yaml": "^1.0.0"
   },
   "devDependencies": {
-    "@types/confit": "^2.0.3",
     "@types/eventsource": "^1.1.9",
     "@types/express": "^4.17.14",
     "@types/glob": "^8.0.0",
     "@types/jest": "^29.1.2",
     "@types/lodash": "^4.14.186",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^18.8.3",
+    "@types/node": "^18.8.4",
     "@types/supertest": "^2.0.12",
     "eslint": "^8.24.0",
     "eslint-config-gasbuddy": "^7.0.3",

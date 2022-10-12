@@ -3,6 +3,7 @@ import path from 'path';
 import shortstop from 'shortstop-handlers';
 import shortstopYaml from 'shortstop-yaml';
 import shortstopDns from 'shortstop-dns';
+import type { KmsCrypto } from '@gasbuddy/kms-crypto';
 
 /**
  * Default shortstop handlers for GasBuddy service configuration
@@ -61,12 +62,14 @@ const osMethods = {
   version: os.version,
 };
 
-export default function shortstops(service: { name: string }, sourcedir: string) {
+export default function shortstops(service: { name: string; kms: KmsCrypto }, sourcedir: string) {
   /**
    * Since we use transpiled sources a lot,
    * basedir and sourcedir are meaningfully different reference points.
    */
   const basedir = path.join(sourcedir, '..');
+
+  const env = shortstop.env();
 
   /**
    * Most services have secrets. Kubernetes doesn't do a
@@ -76,10 +79,16 @@ export default function shortstops(service: { name: string }, sourcedir: string)
    * By using these shortstops, you can encode config values in
    * non-secret documents that are only useful on the target VMs
    */
-  // const kmsDecrypt = decryptorInContext(service.name);
-  // const kmsDecryptText = textDecryptorInContext(service.name);
+  const kmsDecrypt = service.kms.decryptorInContext({ service: service.name }, false);
+  const kmsDecryptText = service.kms.textDecryptorInContext({ service: service.name }, false);
 
-  const env = shortstop.env();
+  const kms = (val: string, cb?: (e?: Error, r?: any) => void) => {
+    kmsDecrypt(val).then((r) => cb?.(undefined, r)).catch(cb);
+  };
+  const kmstext = (val: string, cb?: (e?: Error, r?: any) => void) => {
+    kmsDecryptText(val).then((r) => cb?.(undefined, r)).catch(cb);
+  };
+
   return {
     env,
     // A version of env that can default to false
@@ -108,12 +117,12 @@ export default function shortstops(service: { name: string }, sourcedir: string)
     yaml: shortstopYaml(basedir),
 
     // Amazon/other key management services
-    // kms: kmsDecrypt,
-    // kmstext: kmsDecryptText,
-    // file_kms: [shortstop.file(sourcedir), kmsDecrypt],
-    // env_kms: [shortstop.env(), kmsDecrypt],
-    // file_kmstext: [shortstop.file(sourcedir), kmsDecryptText],
-    // env_kmstext: [shortstop.env(), kmsDecryptText],
+    kms,
+    kmstext,
+    file_kms: [shortstop.file(sourcedir), kms],
+    env_kms: [shortstop.env(), kms],
+    file_kmstext: [shortstop.file(sourcedir), kmstext],
+    env_kmstext: [shortstop.env(), kmstext],
 
     // Switch on service type
     servicetype: serviceTypeFactory(service.name),

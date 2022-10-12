@@ -1,3 +1,4 @@
+import { createKmsCryptoProvider } from '@gasbuddy/kms-crypto';
 import confit from 'confit';
 import fs from 'fs';
 import path from 'path';
@@ -62,7 +63,8 @@ export async function loadConfiguration({
   configurationDirectories: dirs,
   rootDirectory,
 }: ServiceConfigurationSpec): Promise<ConfigStore> {
-  const defaultProtocols = shortstops({ name }, rootDirectory);
+  const kms = await createKmsCryptoProvider();
+  const defaultProtocols = shortstops({ name, kms }, rootDirectory);
   const specificConfig = dirs[dirs.length - 1];
 
   // This confit version just gets us environment info
@@ -86,9 +88,15 @@ export async function loadConfiguration({
     Promise.resolve(),
   );
 
-  return new Promise((accept, reject) => {
+  const loaded: ConfigStore = await new Promise((accept, reject) => {
     configFactory.create((err, config) => (err ? reject(err) : accept(config)));
   });
+
+  const kmsConfig = loaded.get('crypto:kms');
+  if (kmsConfig) {
+    await kms.reconfigure(kmsConfig);
+  }
+  return loaded;
 }
 
 export * from './schema';
