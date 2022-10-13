@@ -14,7 +14,6 @@ export interface InternalLocals extends Record<string, any> {
 export type ServiceLogger = pino.BaseLogger & Pick<pino.Logger, 'isLevelEnabled'>;
 
 export interface ServiceLocals extends Record<string, any> {
-  name: string;
   service: Service;
   logger: ServiceLogger;
   config: ConfigStore;

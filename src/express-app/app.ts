@@ -88,7 +88,7 @@ export async function startApp<
   const options = serviceImpl.configure?.(startOptions, baseOptions) || baseOptions;
 
   const config = await loadConfiguration({
-    name: service.name,
+    name,
     configurationDirectories: options.configurationDirectories,
     rootDirectory,
   });
