@@ -18,7 +18,7 @@
     "form": false
   },
   "port": 8000,
-  "internalPort": 3001,
+  "internalPort": 3000,
   "metrics": {
     "enabled": true
   }
