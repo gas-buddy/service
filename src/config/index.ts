@@ -1,7 +1,7 @@
-import { createKmsCryptoProvider } from '@gasbuddy/kms-crypto';
 import confit from 'confit';
 import fs from 'fs';
 import path from 'path';
+import { getKmsWrapper } from './kmsWrapper';
 
 import shortstops from './shortstops';
 
@@ -63,7 +63,9 @@ export async function loadConfiguration({
   configurationDirectories: dirs,
   rootDirectory,
 }: ServiceConfigurationSpec): Promise<ConfigStore> {
-  const kms = await createKmsCryptoProvider();
+  // We need to fake the KMS implementation because we need the configuration to load first.
+  // So if it is used, we will reload the configuration.
+  const kms = await getKmsWrapper();
   const defaultProtocols = shortstops({ name, kms }, rootDirectory);
   const specificConfig = dirs[dirs.length - 1];
 
@@ -88,14 +90,16 @@ export async function loadConfiguration({
     Promise.resolve(),
   );
 
-  const loaded: ConfigStore = await new Promise((accept, reject) => {
+  let loaded: ConfigStore = await new Promise((accept, reject) => {
     configFactory.create((err, config) => (err ? reject(err) : accept(config)));
   });
 
-  const kmsConfig = loaded.get('crypto:kms');
-  if (kmsConfig) {
-    await kms.reconfigure(kmsConfig);
+  if (await kms.configureIfNecessary(loaded)) {
+    loaded = await new Promise((accept, reject) => {
+      configFactory.create((err, config) => (err ? reject(err) : accept(config)));
+    });
   }
+
   return loaded;
 }
 

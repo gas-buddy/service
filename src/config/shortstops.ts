@@ -62,7 +62,10 @@ const osMethods = {
   version: os.version,
 };
 
-export default function shortstops(service: { name: string; kms: KmsCrypto }, sourcedir: string) {
+export default function shortstops(
+  service: { name: string; kms: Pick<KmsCrypto, 'decryptorInContext' | 'textDecryptorInContext'> },
+  sourcedir: string,
+) {
   /**
    * Since we use transpiled sources a lot,
    * basedir and sourcedir are meaningfully different reference points.
@@ -83,10 +86,14 @@ export default function shortstops(service: { name: string; kms: KmsCrypto }, so
   const kmsDecryptText = service.kms.textDecryptorInContext({ service: service.name }, false);
 
   const kms = (val: string, cb?: (e?: Error, r?: any) => void) => {
-    kmsDecrypt(val).then((r) => cb?.(undefined, r)).catch(cb);
+    kmsDecrypt(val)
+      .then((r) => cb?.(undefined, r))
+      .catch(cb);
   };
   const kmstext = (val: string, cb?: (e?: Error, r?: any) => void) => {
-    kmsDecryptText(val).then((r) => cb?.(undefined, r)).catch(cb);
+    kmsDecryptText(val)
+      .then((r) => cb?.(undefined, r))
+      .catch(cb);
   };
 
   return {

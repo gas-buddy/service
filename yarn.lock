@@ -1210,14 +1210,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gasbuddy/kms-crypto@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@gasbuddy/kms-crypto@npm:5.0.1"
+"@gasbuddy/kms-crypto@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@gasbuddy/kms-crypto@npm:5.1.1"
   dependencies:
     "@aws-sdk/client-kms": ^3.186.0
     "@types/object-hash": 1.3.4
+    minimist: ^1.2.7
     object-hash: 1.1.4
-  checksum: 644be085406a155ccf6c335a143966f923435ef68eef6d598666c2ef01731f5cbb3d81ae5a56d8795a948a3fcc5fd9722273bed7cf0d62edd0192e8fc7b0af4a
+  bin:
+    kms-encrypt: build/bin/kms-encrypt.js
+    kms-gen-key: build/bin/kms-gen-key.js
+  checksum: c6831427b9a7b10d7e894ee47cf1923f3930320bc053850e852b5738c9d6f29040c21181d897e1d55d6ab5ebb670e82d27358ec5544309c57c36f8dd1d71a38b
   languageName: node
   linkType: hard
 
@@ -1225,7 +1229,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gasbuddy/service@workspace:."
   dependencies:
-    "@gasbuddy/kms-crypto": ^5.0.1
+    "@gasbuddy/kms-crypto": ^5.1.1
     "@godaddy/terminus": ^4.11.2
     "@opentelemetry/api": ^1.2.0
     "@opentelemetry/api-metrics": ^0.33.0
@@ -1252,7 +1256,7 @@ __metadata:
     "@types/jest": ^29.1.2
     "@types/lodash": ^4.14.186
     "@types/minimist": ^1.2.2
-    "@types/node": ^18.8.4
+    "@types/node": ^18.8.5
     "@types/supertest": ^2.0.12
     abort-controller: ^3.0.0
     confit: ^3.0.0
@@ -2492,10 +2496,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^18.8.4":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 18.8.4
   resolution: "@types/node@npm:18.8.4"
   checksum: c2b87f6b0b1f02b2ce61ca7cb93ea287119bda086a3f33e48da8f5e70c24ad7141cc3465946e0e36abb7eba70c7b320c7659842096e4aa573b3a8d557322c818
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.8.5":
+  version: 18.8.5
+  resolution: "@types/node@npm:18.8.5"
+  checksum: f7d896f54743178e64c534c6da16f582505acf18904ecd0ee8541cb4bc1d429ba514e7ecfd5145221b71adbd6ae1ff72df082f667e56d056fcd1a719df948e08
   languageName: node
   linkType: hard
 

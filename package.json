@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "11.12.2",
+  "version": "11.12.4",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/gas-buddy/service#readme",
   "dependencies": {
-    "@gasbuddy/kms-crypto": "^5.0.1",
+    "@gasbuddy/kms-crypto": "^5.1.1",
     "@godaddy/terminus": "^4.11.2",
     "@opentelemetry/api": "^1.2.0",
     "@opentelemetry/api-metrics": "^0.33.0",
@@ -87,7 +87,7 @@
     "@types/jest": "^29.1.2",
     "@types/lodash": "^4.14.186",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^18.8.4",
+    "@types/node": "^18.8.5",
     "@types/supertest": "^2.0.12",
     "eslint": "^8.25.0",
     "eslint-config-gasbuddy": "^7.0.3",

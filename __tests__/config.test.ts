@@ -18,5 +18,8 @@ describe('configuration loader', () => {
 
     expect(config.get('servicetype')).toBeTruthy();
     expect(config.get('notservicetype')).toBeFalsy();
+
+    expect(config.get('testKms')).toBeTruthy();
+    expect(config.get('testKms')).toEqual('HelloWorld');
   });
 });
