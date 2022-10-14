@@ -35,6 +35,8 @@ export interface ConfigurationSchema extends Record<string, any> {
       unnest: boolean;
     };
     freezeQuery?: boolean;
+    // Whether to compute etag headers. http://expressjs.com/en/api.html#etag.options.table
+    etag?: boolean;
   },
   bodyParsers?: {
     json?: boolean;

@@ -98,6 +98,13 @@ export async function startApp<
 
   // Concentrate the Typescript ugliness...
   const app = express() as unknown as ServiceExpress<SLocals>;
+  const routing = config.get('routing') as ConfigurationSchema['routing'];
+
+  app.disable('x-powered-by');
+  if (routing?.etag !== true) {
+    app.disable('etag');
+  }
+
   Object.assign(app.locals, { services: {} }, startOptions.locals, {
     service: serviceImpl,
     logger,
@@ -166,7 +173,7 @@ export async function startApp<
     app.use(authorize);
   }
 
-  if (config.get('routing:freezeQuery')) {
+  if (routing?.freezeQuery) {
     app.use((req, res, next) => {
       // Express 5 re-parses the query string every time. This causes problems with
       // various libraries, namely the express OpenAPI parser. So we "freeze it" in place
@@ -185,7 +192,6 @@ export async function startApp<
     });
   }
 
-  const routing = config.get('routing') as ConfigurationSchema['routing'];
   if (routing?.routes) {
     await loadRoutes(
       app,
