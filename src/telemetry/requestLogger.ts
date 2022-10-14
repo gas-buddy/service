@@ -1,7 +1,7 @@
 import type {
   RequestHandler, Request, Response, ErrorRequestHandler,
 } from 'express';
-import { ServiceError } from '../types';
+import { ServiceError, ServiceExpress, ServiceLocals } from '../types';
 import type { ServiceLogger } from '../types';
 import type { ServiceHandler } from '../express-app/types';
 
@@ -17,20 +17,27 @@ interface LogPrefs {
 function getBasicInfo(req: Request) {
   const url = req.originalUrl || req.url;
 
-  const preInfo = {
+  const preInfo: Record<string, string> = {
     url,
     m: req.method,
   };
+
   return preInfo;
 }
 
-function finishLog(logger: ServiceLogger, error: Error | undefined, req: Request, res: Response) {
+function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
+  error: Error | undefined,
+  req: Request,
+  res: Response,
+) {
   const prefs = res.locals[LOG_PREFS as any] as LogPrefs;
   if (prefs.logged) {
     // This happens when error handler runs, but onEnd hasn't fired yet. We only log the first one.
     return;
   }
 
+  const { logger, service } = app.locals;
   const hrdur = process.hrtime(prefs.start);
 
   const dur = hrdur[0] + hrdur[1] / 1000000000;
@@ -68,14 +75,16 @@ function finishLog(logger: ServiceLogger, error: Error | undefined, req: Request
     }
   }
 
+  service.getLogFields?.(req as any, endLog);
   logger.info(endLog, 'req');
 }
 
-export function loggerMiddleware(
-  logger: ServiceLogger,
+export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
   logRequests?: boolean,
   logResponses?: boolean,
 ): RequestHandler {
+  const { logger, service } = app.locals;
   return function gblogger(req, res, next) {
     const prefs: LogPrefs = {
       start: process.hrtime(),
@@ -83,6 +92,7 @@ export function loggerMiddleware(
       chunks: logResponses ? [] : undefined,
       logged: false,
     };
+
     res.locals[LOG_PREFS as any] = prefs;
 
     if (logResponses) {
@@ -106,24 +116,23 @@ export function loggerMiddleware(
       };
     }
 
-    logger.info(
-      {
-        ...getBasicInfo(req),
-        ref: req.headers.referer || undefined,
-        sid: (req as any).session?.id,
-        c: req.headers.correlationid || undefined,
-      },
-      'pre',
-    );
+    const preLog: Record<string, any> = {
+      ...getBasicInfo(req),
+      ref: req.headers.referer || undefined,
+      sid: (req as any).session?.id,
+      c: req.headers.correlationid || undefined,
+    };
+    service.getLogFields?.(req as any, preLog);
+    logger.info(preLog, 'pre');
 
-    const logWriter = () => finishLog(logger, undefined, req, res);
+    const logWriter = () => finishLog(app, undefined, req, res);
     res.on('finish', logWriter);
     next();
   };
 }
 
-export function errorHandlerMiddleware(
-  logger: ServiceLogger,
+export function errorHandlerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
   unnest?: boolean,
   returnError?: boolean,
 ) {
@@ -142,7 +151,7 @@ export function errorHandlerMiddleware(
     // Set the status to error, even if we aren't going to render the error.
     res.status(loggable.status || 500);
     if (returnError) {
-      finishLog(logger, error, req, res);
+      finishLog(app, error, req, res);
       const prefs = res.locals[LOG_PREFS as any] as LogPrefs;
       prefs.logged = true;
       res.json({

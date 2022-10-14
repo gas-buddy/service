@@ -122,7 +122,7 @@ export async function startApp<
     app.set('trust proxy', config.get('trustProxy'));
   }
 
-  app.use(loggerMiddleware(logger, logging?.logRequestBody, logging?.logResponseBody));
+  app.use(loggerMiddleware(app, logging?.logRequestBody, logging?.logResponseBody));
 
   // Allow the service to add locals, etc. We put this before the body parsers
   // so that the req can decide whether to save the raw request body or not.
@@ -206,7 +206,7 @@ export async function startApp<
   await serviceImpl.start(app);
 
   app.use(notFoundMiddleware(logger, routing?.errors?.renderErrors));
-  app.use(errorHandlerMiddleware(logger, routing?.errors?.unnest, routing?.errors?.renderErrors));
+  app.use(errorHandlerMiddleware(app, routing?.errors?.unnest, routing?.errors?.renderErrors));
 
   return app;
 }

@@ -58,6 +58,10 @@ export interface Service<
 
   // This runs after body parsing but before routing
   authorize?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
+
+  // Add or redact any fields for logging. Note this will be called twice per request,
+  // once at the start and once at the end. Modify the values directly.
+  getLogFields?(req: RequestWithApp<SLocals>, values: Record<string, string | number>): void;
 }
 
 export type ServiceFactory<
