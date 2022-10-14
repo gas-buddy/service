@@ -71,13 +71,12 @@ export async function startApp<
       },
     },
   }) : pino({
-    destination,
     formatters: {
       level(label) {
         return { level: label };
       },
     },
-  });
+  }, destination);
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
@@ -221,6 +220,7 @@ export async function shutdownApp(app: ServiceExpress) {
   } catch (error) {
     logger.warn(error, 'Shutdown failed');
   }
+  (logger as pino.Logger).flush?.();
 }
 
 export async function listen<
@@ -258,7 +258,8 @@ export async function listen<
         .then(() => endMetrics(app))
         .then(shutdownHandler || (() => {}))
         .then(() => logger.info('Graceful shutdown complete'))
-        .catch((error) => logger.error(error, 'Error terminating tracing'));
+        .catch((error) => logger.error(error, 'Error terminating tracing'))
+        .then(() => (logger as pino.Logger).flush?.());
     },
     logger: (msg, e) => {
       logger.error(e, msg);
