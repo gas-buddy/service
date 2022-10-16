@@ -260,7 +260,7 @@ export async function listen<SLocals extends ServiceLocals = ServiceLocals>(
   app: ServiceExpress<SLocals>,
   shutdownHandler?: () => Promise<void>,
 ) {
-  let port = app.locals.config.get('port');
+  let port = app.locals.config.get('server:port');
 
   if (port === 0) {
     port = await findPort(8001);
