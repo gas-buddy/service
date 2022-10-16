@@ -299,7 +299,7 @@ export async function listen<
                 preventServerStart: true,
               };
               const exporter = new PrometheusExporter(finalConfig);
-              locals.internalApp.get('/metrics', exporter.getMetricsRequestHandler);
+              locals.internalApp.get('/metrics', exporter.getMetricsRequestHandler.bind(exporter));
               locals.logger.info(
                 { endpoint: finalConfig.endpoint, port: finalConfig.port },
                 'Metrics exporter started',
@@ -308,13 +308,14 @@ export async function listen<
             } else {
               locals.logger.info('No metrics will be exported');
             }
+            accept();
           })
           .catch((error) => {
             locals.logger.warn(error, 'Failed to start internal metadata app');
           });
+      } else {
+        accept();
       }
-
-      accept();
     });
   });
 

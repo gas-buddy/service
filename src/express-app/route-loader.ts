@@ -26,7 +26,7 @@ export default async function loadRoutes(app: ServiceExpress, routingDir: string
       const mounter = module.default || module.route;
       if (typeof mounter === 'function') {
         const childRouter = express.Router();
-        mounter(childRouter);
+        mounter(childRouter, app);
         const pathParts = [''];
         if (routeBase !== '.') {
           pathParts.push(routeBase);
