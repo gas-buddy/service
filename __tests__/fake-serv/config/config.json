@@ -7,8 +7,10 @@
   "envswitchon": "env_switch:!ENV_VAR_DOESNT_EXIST",
   "servicetype": "servicetype:serv",
   "notservicetype": "servicetype:api",
-  "metrics": {
-    "enabled": true
+  "server": {
+    "metrics": {
+      "enabled": true
+    }
   },
   "testKms": "kmstext:nil:eyJoYXNoIjoiYzgwYjFmN2MyMzg0MGFkOWM3OTcwNWViMTgwYzE1ZTIzYWM1NzNhYiIsInBsYWluIjoiU0dWc2JHOVhiM0pzWkE9PSJ9"
 }

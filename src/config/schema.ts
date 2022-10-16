@@ -34,18 +34,23 @@ export interface ConfigurationSchema extends Record<string, any> {
       // information.
       unnest: boolean;
     };
+    // Whether to add middleware that "freezes" the query string
+    // rather than preserving the new Express@5 behavior of reparsing
+    // every time (which causes problems for OpenAPI validation)
     freezeQuery?: boolean;
     // Whether to compute etag headers. http://expressjs.com/en/api.html#etag.options.table
     etag?: boolean;
+    bodyParsers?: {
+      json?: boolean;
+      form?: boolean;
+    },
   },
-  bodyParsers?: {
-    json?: boolean;
-    form?: boolean;
+  server?: {
+    internalPort?: number,
+    port?: number,
+    metrics: {
+      enabled?: boolean;
+    },
   },
-  internalPort?: number,
-  port?: number,
   connections: Record<string, ServiceConfiguration>;
-  metrics: {
-    enabled?: boolean;
-  },
 }

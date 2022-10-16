@@ -3,11 +3,12 @@ import type { Server } from 'http';
 import type { Request, Response } from 'express';
 import type { Application } from 'express-serve-static-core';
 import type { middleware } from 'express-openapi-validator';
-import type metrics from '@opentelemetry/sdk-metrics';
+import type metrics from '@opentelemetry/api-metrics';
 import type { ConfigStore } from './config/types';
 
 export interface InternalLocals extends Record<string, any> {
   server?: Server;
+  meterProvider: metrics.MeterProvider;
   mainApp: ServiceExpress;
 }
 
@@ -17,7 +18,7 @@ export interface ServiceLocals extends Record<string, any> {
   service: Service;
   logger: ServiceLogger;
   config: ConfigStore;
-  meters: metrics.MeterProvider;
+  meter: metrics.Meter;
   internalApp: Application<InternalLocals>;
 }
 

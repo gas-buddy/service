@@ -40,6 +40,13 @@ describe('fake-serv', () => {
 
     // Make sure we can listen
     const server = await listen(secondApp);
+
+    // Call metrics
+    await request(secondApp).get('/world').expect(200);
+    await request(secondApp.locals.internalApp).get('/metrics')
+      .expect(200)
+      .expect((res) => expect(res.text).toMatch(/world_requests_total{method="get"} 1/));
+
     await new Promise<void>((accept, reject) => {
       server.close((e) => {
         if (e) {

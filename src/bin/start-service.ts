@@ -20,17 +20,6 @@ const argv = minimist(process.argv.slice(2), {
   boolean: ['built', 'repl', 'telemetry', 'nobind'],
 });
 
-async function getPackage() {
-  const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
-  const pkg = await readPackageUp({ cwd });
-  if (!pkg) {
-    throw new Error(
-      `Unable to find package.json in ${cwd} to get main module. Make sure you are running from the package root directory.`,
-    );
-  }
-  return pkg;
-}
-
 function resolveMain(packageJson: NormalizedPackageJson) {
   if (typeof packageJson.main === 'string') {
     return packageJson.main;
@@ -38,8 +27,31 @@ function resolveMain(packageJson: NormalizedPackageJson) {
   return undefined;
 }
 
-getPackage().then(async (pkg) => {
+async function getServiceDetails() {
+  if (argv.name && argv.root) {
+    return {
+      rootDirectory: argv.root,
+      name: argv.name,
+      main: argv.main || (isDev() && !argv.built ? 'src/index.ts' : 'build/index.js'),
+    };
+  }
+  const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
+  const pkg = await readPackageUp({ cwd });
+  if (!pkg) {
+    throw new Error(
+      `Unable to find package.json in ${cwd} to get main module. Make sure you are running from the package root directory.`,
+    );
+  }
   const main = resolveMain(pkg.packageJson);
+  const parts = pkg.packageJson.name.split('/');
+  return {
+    main,
+    rootDirectory: path.dirname(pkg.path),
+    name: parts[parts.length - 1],
+  };
+}
+
+getServiceDetails().then(async ({ main, rootDirectory, name }) => {
   let entrypoint: string;
   let codepath: 'build' | 'src' = 'build';
   if (isDev() && !argv.built) {
@@ -57,9 +69,6 @@ getPackage().then(async (pkg) => {
   } else {
     entrypoint = './build/index.js';
   }
-  const rootDirectory = path.dirname(pkg.path);
-  const parts = pkg.packageJson.name.split('/');
-  const name = parts[parts.length - 1];
 
   dotenv.config();
 

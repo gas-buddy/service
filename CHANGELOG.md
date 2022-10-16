@@ -176,3 +176,7 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 * Uses OpenTelemetry instead of bespoke logging/tracing/metric instrumentation
 * Pino seems to have flipped logging metadata arguments - what was logger.info('message', { ...stuff }) is now logger.info({ ...stuff }, 'message')
 * Switch to Jest from Tap
+
+12.0.0
+======
+* Move some configuration keys under "server" setting - see schema.ts for the update

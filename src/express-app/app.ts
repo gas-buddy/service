@@ -31,17 +31,48 @@ import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
 
-async function enableMetrics<
-  SLocals extends ServiceLocals = ServiceLocals,
->(app: ServiceExpress<SLocals>) {
-  const meters = new MeterProvider();
-  metrics.setGlobalMeterProvider(meters);
-  app.locals.meters = meters;
+const METRICS_KEY = Symbol('PrometheusMetricsInfo');
+
+interface InternalMetricsInfo {
+  meterProvider: MeterProvider;
+  exporter?: PrometheusExporter;
 }
 
-async function endMetrics<
-  SLocals extends ServiceLocals = ServiceLocals,
->(app: ServiceExpress<SLocals>) {
+async function enableMetrics<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
+  name: string,
+) {
+  const meterProvider = new MeterProvider();
+  metrics.setGlobalMeterProvider(meterProvider);
+  app.locals.meter = meterProvider.getMeter(name);
+
+  const metricsConfig = app.locals.config.get('server:metrics');
+  const value: InternalMetricsInfo = { meterProvider };
+  if (metricsConfig?.enabled) {
+    const finalConfig = {
+      ...metricsConfig,
+      preventServerStart: true,
+    };
+    // There is what I would consider a bug in OpenTelemetry metrics
+    // wherein adding metrics BEFORE the metricReader is added results
+    // in those metrics screaming into the void. So, we need to add
+    // this up front and then just tie it to the internal express
+    // app if and when "listen" is called.
+    const exporter = new PrometheusExporter(finalConfig);
+    meterProvider.addMetricReader(exporter);
+    value.exporter = exporter;
+  }
+  app.locals.logger.info('No metrics will be exported');
+  Object.defineProperty(app.locals, METRICS_KEY, {
+    value,
+    enumerable: false,
+    configurable: true,
+  });
+}
+
+async function endMetrics<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
+) {
   const { meters, logger } = app.locals;
   await meters.shutdown();
   logger.info('Metrics shutdown');
@@ -52,31 +83,33 @@ export async function startApp<
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service,
-    rootDirectory,
-    codepath = 'build',
-    name,
+    service, rootDirectory, codepath = 'build', name,
   } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
     minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
   });
-  const logger = shouldPrettyPrint ? pino({
-    transport: {
+  const logger = shouldPrettyPrint
+    ? pino({
+      transport: {
+        destination,
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      },
+    })
+    : pino(
+      {
+        formatters: {
+          level(label) {
+            return { level: label };
+          },
+        },
+      },
       destination,
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-      },
-    },
-  }) : pino({
-    formatters: {
-      level(label) {
-        return { level: label };
-      },
-    },
-  }, destination);
+    );
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
@@ -112,7 +145,7 @@ export async function startApp<
   });
 
   try {
-    await enableMetrics(app);
+    await enableMetrics(app, name);
   } catch (error) {
     logger.error(error, 'Could not enable metrics.');
     throw error;
@@ -140,8 +173,7 @@ export async function startApp<
   };
   app.use(attachServiceLocals);
 
-  const bodyParsers = config.get('bodyParsers') as ConfigurationSchema['bodyParsers'];
-  if (bodyParsers?.json) {
+  if (routing?.bodyParsers?.json) {
     app.use(
       express.json({
         verify(req, res, buf) {
@@ -153,7 +185,7 @@ export async function startApp<
       }),
     );
   }
-  if (bodyParsers?.form) {
+  if (routing?.bodyParsers?.form) {
     app.use(express.urlencoded());
   }
 
@@ -223,9 +255,10 @@ export async function shutdownApp(app: ServiceExpress) {
   (logger as pino.Logger).flush?.();
 }
 
-export async function listen<
-  SLocals extends ServiceLocals = ServiceLocals,
->(app: ServiceExpress<SLocals>, shutdownHandler?: () => Promise<void>) {
+export async function listen<SLocals extends ServiceLocals = ServiceLocals>(
+  app: ServiceExpress<SLocals>,
+  shutdownHandler?: () => Promise<void>,
+) {
   let port = app.locals.config.get('port');
 
   if (port === 0) {
@@ -277,34 +310,31 @@ export async function listen<
     }
   });
 
+  const metricInfo = (app.locals as any)[METRICS_KEY] as InternalMetricsInfo;
+  delete (app.locals as any)[METRICS_KEY];
+
   // TODO handle rejection/error?
   const listenPromise = new Promise<void>((accept) => {
     server.listen(port, () => {
       const { locals } = app;
       locals.logger.info({ port, service: locals.name }, 'express listening');
 
+      const serverConfig = locals.config.get('server') as ConfigurationSchema['server'];
       // Ok now start the internal port if we have one.
-      const internalPort = locals.config.get('internalPort');
-      if (internalPort) {
-        startInternalApp(app, internalPort)
+      if (serverConfig?.internalPort) {
+        startInternalApp(app, serverConfig.internalPort)
           .then((internalApp) => {
             locals.internalApp = internalApp;
-            locals.logger.info({ port: internalPort }, 'Internal metadata server started');
+            internalApp.locals.meterProvider = metricInfo.meterProvider;
+            locals.logger.info({ port: serverConfig.internalPort }, 'Internal metadata server started');
           })
           .then(() => {
-            const metricsConfig = app.locals.config.get('metrics');
-            if (metricsConfig?.enabled) {
-              const finalConfig = {
-                ...metricsConfig,
-                preventServerStart: true,
-              };
-              const exporter = new PrometheusExporter(finalConfig);
-              locals.internalApp.get('/metrics', exporter.getMetricsRequestHandler.bind(exporter));
-              locals.logger.info(
-                { endpoint: finalConfig.endpoint, port: finalConfig.port },
-                'Metrics exporter started',
+            if (metricInfo.exporter) {
+              locals.internalApp.get(
+                '/metrics',
+                metricInfo.exporter.getMetricsRequestHandler.bind(metricInfo.exporter),
               );
-              locals.meters.addMetricReader(exporter);
+              locals.logger.info('Metrics exporter started');
             } else {
               locals.logger.info('No metrics will be exported');
             }

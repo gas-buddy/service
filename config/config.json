@@ -11,15 +11,17 @@
       "renderErrors": true,
       "unnest": "servicetype:serv"
     },
-    "freezeQuery": true
+    "freezeQuery": true,
+    "bodyParsers": {
+      "json": true,
+      "form": false
+    }
   },
-  "bodyParsers": {
-    "json": true,
-    "form": false
-  },
-  "port": 8000,
-  "internalPort": 3000,
-  "metrics": {
-    "enabled": true
+  "server": {
+    "port": 8000,
+    "internalPort": 3000,
+    "metrics": {
+      "enabled": true
+    }
   }
 }
