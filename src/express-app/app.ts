@@ -73,8 +73,9 @@ async function enableMetrics<SLocals extends ServiceLocals = ServiceLocals>(
 async function endMetrics<SLocals extends ServiceLocals = ServiceLocals>(
   app: ServiceExpress<SLocals>,
 ) {
-  const { meters, logger } = app.locals;
-  await meters.shutdown();
+  const { internalApp, logger } = app.locals;
+  const meterProvider = internalApp?.locals.meterProvider as MeterProvider | undefined;
+  await meterProvider?.shutdown();
   logger.info('Metrics shutdown');
 }
 
