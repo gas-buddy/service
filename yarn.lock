@@ -1271,7 +1271,7 @@ __metadata:
     pino: ^8.6.1
     pino-pretty: ^9.1.1
     read-pkg-up: ^7.0.1
-    rest-api-support: ^1.14.0
+    rest-api-support: ^1.16.1
     shortstop-dns: ^1.1.0
     shortstop-handlers: ^1.1.1
     shortstop-yaml: ^1.0.0
@@ -7052,15 +7052,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^6.14.1":
-  version: 6.14.1
-  resolution: "query-string@npm:6.14.1"
+"query-string@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "query-string@npm:7.1.1"
   dependencies:
     decode-uri-component: ^0.2.0
     filter-obj: ^1.1.0
     split-on-first: ^1.0.0
     strict-uri-encode: ^2.0.0
-  checksum: f2c7347578fa0f3fd4eaace506470cb4e9dc52d409a7ddbd613f614b9a594d750877e193b5d5e843c7477b3b295b857ec328903c943957adc41a3efb6c929449
+  checksum: b227d1f588ae93f9f0ad078c6b811295fa151dc5a160a03bb2bac5fa0e6919cb1daa570aad1d288e77c8e89fde5362ba505b1014e6e793da9b1e885b59a690a6
   languageName: node
   linkType: hard
 
@@ -7264,12 +7264,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rest-api-support@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "rest-api-support@npm:1.14.0"
+"rest-api-support@npm:^1.16.1":
+  version: 1.16.1
+  resolution: "rest-api-support@npm:1.16.1"
   dependencies:
-    query-string: ^6.14.1
-  checksum: 0250b8410bcef434dd4c4d1aac65a7d60ddfe01ca8526e229eee6ec03e0f2bca13be3825c93cca61228c76204008633bee4421524fa901dea43ab6cc4b26050c
+    query-string: ^7.1.1
+  checksum: 1133105a0fc7b47015ffaa33f19335a8e154c840231c78c2cb7a8e11ae6d49dd1dff8a0585e762a220b63836186c440c2b600b9103502b05329a5aad139672bb
   languageName: node
   linkType: hard
 
