@@ -7,6 +7,7 @@ export default function serviceRepl(app: ServiceExpress, onExit: () => void) {
     prompt: '> ',
   });
   Object.assign(rl.context, app.locals, {
+    app,
     dump(o: any) {
       // eslint-disable-next-line no-console
       console.log(JSON.stringify(o, null, '\t'));
