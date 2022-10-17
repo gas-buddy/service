@@ -89,7 +89,6 @@ getServiceDetails().then(async ({ main, rootDirectory, name }) => {
     if (argv.repl) {
       serviceRepl(app, () => {
         server?.close();
-        app.locals.service?.stop?.(app);
       });
     }
   } else {
