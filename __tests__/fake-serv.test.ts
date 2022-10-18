@@ -13,7 +13,10 @@ describe('fake-serv', () => {
       rootDirectory: path.resolve(__dirname, './fake-serv'),
       codepath: 'src',
     };
-    const app = await startApp(options);
+    const app = await startApp(options).catch((error) => {
+      console.error(error);
+      throw error;
+    });
     expect(app).toBeTruthy();
 
     let { body } = await request(app).get('/world').timeout(500).expect(200);

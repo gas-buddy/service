@@ -1,6 +1,10 @@
 import type { ServiceExpress, ServiceRouter } from '../../../../src';
+import { FakeServLocals } from '../index';
 
-export default function route(router: ServiceRouter, app: ServiceExpress) {
+export default function route(
+  router: ServiceRouter<FakeServLocals>,
+  app: ServiceExpress<FakeServLocals>,
+) {
   const worldRequests = app.locals.meter.createCounter('world_requests', {
     description: 'Metrics about requests to world',
   });
@@ -11,7 +15,7 @@ export default function route(router: ServiceRouter, app: ServiceExpress) {
   });
 
   router.post('/world', async (req, res) => {
-    await req.app.locals.services.fakeServ.get_something();
+    await app.locals.services.fakeServ.get_something();
     worldRequests.add(1);
     res.sendStatus(204);
   });

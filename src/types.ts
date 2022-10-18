@@ -14,15 +14,19 @@ export interface InternalLocals extends Record<string, any> {
 
 export type ServiceLogger = pino.BaseLogger & Pick<pino.Logger, 'isLevelEnabled'>;
 
-export interface ServiceLocals extends Record<string, any> {
+// Vanilla express wants this to extend Record<string, any> but this is a mistake
+// because you lose type checking on it, even though I get that underneath it truly
+// is Record<string, any>
+export interface ServiceLocals {
   service: Service;
+  name: string;
   logger: ServiceLogger;
   config: ConfigStore;
   meter: metrics.Meter;
   internalApp: Application<InternalLocals>;
 }
 
-export interface RequestLocals extends Record<string, any> {
+export interface RequestLocals {
   // Set this to true during the request "attachment" and if there is a body,
   // it will be set to the buffer before API and route handlers run.
   rawBody?: Buffer | true;
