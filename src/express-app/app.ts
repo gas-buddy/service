@@ -61,8 +61,10 @@ async function enableMetrics<SLocals extends ServiceLocals = ServiceLocals>(
     const exporter = new PrometheusExporter(finalConfig);
     meterProvider.addMetricReader(exporter);
     value.exporter = exporter;
+  } else {
+    app.locals.logger.info('No metrics will be exported');
   }
-  app.locals.logger.info('No metrics will be exported');
+  // Squirrel it away for later
   Object.defineProperty(app.locals, METRICS_KEY, {
     value,
     enumerable: false,
