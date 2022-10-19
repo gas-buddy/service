@@ -1,6 +1,6 @@
 import diagch from 'node:diagnostics_channel';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import { InstrumentationBase, InstrumentationConfig } from '@opentelemetry/instrumentation';
+import { Instrumentation, InstrumentationConfig } from '@opentelemetry/instrumentation';
 import {
   Attributes,
   context,
@@ -9,7 +9,10 @@ import {
   SpanKind,
   SpanStatusCode,
   trace,
+  Tracer,
+  TracerProvider,
 } from '@opentelemetry/api';
+import { Meter, MeterProvider, metrics } from '@opentelemetry/api-metrics';
 
 interface ListenerRecord {
   name: string;
@@ -41,14 +44,24 @@ function contentLengthFromResponseHeaders(headers: Buffer[]) {
 
 // A combination of https://github.com/elastic/apm-agent-nodejs and
 // https://github.com/gadget-inc/opentelemetry-instrumentations/blob/main/packages/opentelemetry-instrumentation-undici/src/index.ts
-export class FetchInstrumentation extends InstrumentationBase {
+export class FetchInstrumentation implements Instrumentation {
   // Keep ref to avoid https://github.com/nodejs/node/issues/42170 bug and for
   // unsubscribing.
   private channelSubs: Array<ListenerRecord> | undefined;
 
   private spanFromReq = new WeakMap<any, Span>();
 
-  private requestHook: FetchInstrumentationConfig['onRequest'];
+  private tracer: Tracer;
+
+  private config: FetchInstrumentationConfig;
+
+  private meter: Meter;
+
+  public readonly instrumentationName = 'opentelemetry-instrumentation-node-18-fetch';
+
+  public readonly instrumentationVersion = '1.0.0';
+
+  public readonly instrumentationDescription = 'Instrumentation for Node 18 fetch via diagnostics_channel';
 
   private subscribeToChannel(diagnosticChannel: string, onMessage: diagch.ChannelListener) {
     const channel = diagch.channel(diagnosticChannel);
@@ -60,22 +73,46 @@ export class FetchInstrumentation extends InstrumentationBase {
     });
   }
 
-  protected init() {
+  constructor(config: FetchInstrumentationConfig) {
     // Force load fetch API (since it's lazy loaded in Node 18)
     fetch('').catch(() => {});
-
     this.channelSubs = [];
+    this.meter = metrics.getMeter(this.instrumentationName, this.instrumentationVersion);
+    this.tracer = trace.getTracer(this.instrumentationName, this.instrumentationVersion);
+    this.config = { ...config };
+  }
+
+  disable(): void {
+    this.channelSubs?.forEach((sub) => sub.channel.unsubscribe(sub.onMessage));
+  }
+
+  enable(): void {
     this.subscribeToChannel('undici:request:create', (args) => this.onRequest(args));
     this.subscribeToChannel('undici:request:headers', (args) => this.onHeaders(args));
     this.subscribeToChannel('undici:request:trailers', (args) => this.onDone(args));
     this.subscribeToChannel('undici:request:error', (args) => this.onError(args));
-    // We don't need to monkey patch anything. We're cool like that.
-    return [];
   }
 
-  constructor(config: FetchInstrumentationConfig) {
-    super('opentelemetry-instrumentation-node-18-fetch', '1.0.0', config);
-    this.requestHook = config.onRequest;
+  setTracerProvider(tracerProvider: TracerProvider): void {
+    this.tracer = tracerProvider.getTracer(
+      this.instrumentationName,
+      this.instrumentationVersion,
+    );
+  }
+
+  public setMeterProvider(meterProvider: MeterProvider): void {
+    this.meter = meterProvider.getMeter(
+      this.instrumentationName,
+      this.instrumentationVersion,
+    );
+  }
+
+  setConfig(config: InstrumentationConfig): void {
+    this.config = { ...config };
+  }
+
+  getConfig(): InstrumentationConfig {
+    return this.config;
   }
 
   onRequest({ request }: any): void {
@@ -96,8 +133,8 @@ export class FetchInstrumentation extends InstrumentationBase {
     const addedHeaders: Record<string, string> = {};
     propagation.inject(requestContext, addedHeaders);
 
-    if (this.requestHook) {
-      this.requestHook({ request, span, additionalHeaders: addedHeaders });
+    if (this.config.onRequest) {
+      this.config.onRequest({ request, span, additionalHeaders: addedHeaders });
     }
 
     request.headers += Object.entries(addedHeaders)
