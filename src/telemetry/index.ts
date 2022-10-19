@@ -31,7 +31,18 @@ export async function startWithTelemetry<
     serviceName: options.name,
     autoDetectResources: true,
     traceExporter: getExporter(),
-    instrumentations: [getAutoInstrumentations()],
+    instrumentations: [getAutoInstrumentations({
+      'opentelemetry-instrumentation-node-18-fetch': {
+        onRequest({ span, additionalHeaders }) {
+          // This particular line is "GasBuddy" specific, in that we have a number
+          // of services not yet on OpenTelemetry that look for this header instead.
+          // Putting traceId gives us a "shot in heck" of useful searches
+          const ctx = span.spanContext();
+          additionalHeaders.correlationid = ctx.traceId;
+          additionalHeaders.span = ctx.spanId;
+        },
+      },
+    })],
   });
   await sdk.start();
 

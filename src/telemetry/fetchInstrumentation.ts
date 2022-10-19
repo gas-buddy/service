@@ -17,6 +17,10 @@ interface ListenerRecord {
   onMessage: diagch.ChannelListener;
 }
 
+interface FetchInstrumentationConfig extends InstrumentationConfig {
+  onRequest?: (args: { request: any; span: Span; additionalHeaders: Record<string, any>; }) => void;
+}
+
 // Get the content-length from undici response headers.
 // `headers` is an Array of buffers: [k, v, k, v, ...].
 // If the header is not present, or has an invalid value, this returns null.
@@ -37,12 +41,14 @@ function contentLengthFromResponseHeaders(headers: Buffer[]) {
 
 // A combination of https://github.com/elastic/apm-agent-nodejs and
 // https://github.com/gadget-inc/opentelemetry-instrumentations/blob/main/packages/opentelemetry-instrumentation-undici/src/index.ts
-export class FetchInstrumentation extends InstrumentationBase<typeof fetch> {
+export class FetchInstrumentation extends InstrumentationBase {
   // Keep ref to avoid https://github.com/nodejs/node/issues/42170 bug and for
   // unsubscribing.
   private channelSubs: Array<ListenerRecord> | undefined;
 
   private spanFromReq = new WeakMap<any, Span>();
+
+  private requestHook: FetchInstrumentationConfig['onRequest'];
 
   private subscribeToChannel(diagnosticChannel: string, onMessage: diagch.ChannelListener) {
     const channel = diagch.channel(diagnosticChannel);
@@ -67,8 +73,9 @@ export class FetchInstrumentation extends InstrumentationBase<typeof fetch> {
     return [];
   }
 
-  constructor(config: InstrumentationConfig) {
+  constructor(config: FetchInstrumentationConfig) {
     super('opentelemetry-instrumentation-node-18-fetch', '1.0.0', config);
+    this.requestHook = config.onRequest;
   }
 
   onRequest({ request }: any): void {
@@ -89,12 +96,9 @@ export class FetchInstrumentation extends InstrumentationBase<typeof fetch> {
     const addedHeaders: Record<string, string> = {};
     propagation.inject(requestContext, addedHeaders);
 
-    // This particular line is "GasBuddy" specific, in that we have a number
-    // of services not yet on OpenTelemetry that look for this header instead.
-    // Putting traceId gives us a "shot in heck" of useful searches
-    const ctx = span.spanContext();
-    addedHeaders.correlationid = ctx.traceId;
-    addedHeaders.span = ctx.spanId;
+    if (this.requestHook) {
+      this.requestHook({ request, span, additionalHeaders: addedHeaders });
+    }
 
     request.headers += Object.entries(addedHeaders)
       .map(([k, v]) => `${k}: ${v}\r\n`)
