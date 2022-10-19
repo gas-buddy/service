@@ -1,15 +1,9 @@
 import { URL } from 'node:url';
-import type {
-  FetchConfig,
-  FetchRequest,
-  RestApiResponse,
-} from 'rest-api-support';
+import type { FetchConfig, FetchRequest } from 'rest-api-support';
 import EventSource from 'eventsource';
 
 import type { ServiceConfiguration } from '../config/schema';
-import {
-  RequestLike, ServiceError, ServiceExpress, ServiceLocals,
-} from '../types';
+import { ServiceExpress } from '../types';
 
 class CustomEventSource extends EventSource {
   private activeListeners: Array<{ handler: (data: any) => void; name: string }> = [];
@@ -21,9 +15,9 @@ class CustomEventSource extends EventSource {
   }
 
   removeAllListeners() {
-    this.activeListeners.forEach(
-      (l) => super.removeEventListener(l.name as keyof EventSourceEventMap, l.handler),
-    );
+    this.activeListeners.forEach((l) => {
+      super.removeEventListener(l.name as keyof EventSourceEventMap, l.handler);
+    });
   }
 }
 
@@ -82,26 +76,4 @@ export function createServiceInterface<ServiceType>(
   }
 
   return new Implementation(fetchConfig);
-}
-
-/**
- * Require that a service call succeeds or throw a service exception
- * (which narrows the response type information for the normal case)
- */
-export async function succeedOrThrow<
-  ResponseType extends RestApiResponse<number, any>,
-  SLocals extends ServiceLocals = ServiceLocals,
->(
-  req: RequestLike<SLocals, any>,
-  callPromise: Promise<ResponseType>,
-): Promise<ResponseType> {
-  return callPromise.then((result) => {
-    if (result.responseType === 'error') {
-      throw new ServiceError(req.app, result.body?.message || 'Service call failed', {
-        ...result.body,
-        status: result.status,
-      });
-    }
-    return result;
-  });
 }
