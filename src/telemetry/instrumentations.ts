@@ -10,15 +10,17 @@ import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import { NetInstrumentation } from '@opentelemetry/instrumentation-net';
 import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
+import { FetchInstrumentation } from './fetchInstrumentation';
 
 const InstrumentationMap = {
   // Disable this for now because it logs a stupid message
   // '@opentelemetry/instrumentation-aws-lambda': AwsLambdaInstrumentation,
+  '@opentelemetry/instrumentation-http': HttpInstrumentation,
+  'opentelemetry-instrumentation-node-18-fetch': FetchInstrumentation,
   '@opentelemetry/instrumentation-aws-sdk': AwsInstrumentation,
   '@opentelemetry/instrumentation-dns': DnsInstrumentation,
   '@opentelemetry/instrumentation-express': ExpressInstrumentation,
   '@opentelemetry/instrumentation-generic-pool': GenericPoolInstrumentation,
-  '@opentelemetry/instrumentation-http': HttpInstrumentation,
   '@opentelemetry/instrumentation-ioredis': IORedisInstrumentation,
   '@opentelemetry/instrumentation-net': NetInstrumentation,
   '@opentelemetry/instrumentation-pg': PgInstrumentation,

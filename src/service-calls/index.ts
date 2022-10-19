@@ -2,8 +2,7 @@ import { URL } from 'node:url';
 import type {
   FetchConfig,
   FetchRequest,
-  RestApiErrorResponse,
-  RestApiSuccessResponse,
+  RestApiResponse,
 } from 'rest-api-support';
 import EventSource from 'eventsource';
 
@@ -90,12 +89,12 @@ export function createServiceInterface<ServiceType>(
  * (which narrows the response type information for the normal case)
  */
 export async function succeedOrThrow<
-  ResponseType,
+  ResponseType extends RestApiResponse<number, any>,
   SLocals extends ServiceLocals = ServiceLocals,
 >(
   req: RequestLike<SLocals, any>,
-  callPromise: Promise<RestApiSuccessResponse<ResponseType> | RestApiErrorResponse>,
-): Promise<RestApiSuccessResponse<ResponseType>> {
+  callPromise: Promise<ResponseType>,
+): Promise<ResponseType> {
   return callPromise.then((result) => {
     if (result.responseType === 'error') {
       throw new ServiceError(req.app, result.body?.message || 'Service call failed', {

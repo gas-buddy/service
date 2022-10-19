@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "12.3.0",
+  "version": "12.4.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -62,6 +62,7 @@
     "@opentelemetry/instrumentation-pino": "^0.32.0",
     "@opentelemetry/sdk-metrics": "^0.33.0",
     "@opentelemetry/sdk-node": "^0.33.0",
+    "@opentelemetry/semantic-conventions": "^1.7.0",
     "confit": "^3.0.0",
     "dotenv": "^16.0.3",
     "eventsource": "^1.1.2",
