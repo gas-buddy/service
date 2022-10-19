@@ -25,8 +25,16 @@ describe('fake-serv', () => {
     ({ body } = await request(app).get('/other/world').timeout(500).expect(200));
     expect(body.hello).toEqual('jupiter');
 
-    ({ body } = await request(app).get('/hello').query({ greeting: 'Hello Pluto!' }).expect(200));
+    ({ body } = await request(app).get('/hello').query({ greeting: 'Hello Pluto!', number: '6' }).expect(200));
     expect(body.greeting).toEqual('Hello Pluto!');
+
+    // Can't convert green to a number
+    await request(app).get('/hello').query({ greeting: 'Hello Pluto!', number: 'green' }).expect(400);
+
+    // Make sure body paramater conversion works
+    await request(app).post('/hello').send({ number: 'green' }).expect(400);
+    await request(app).post('/hello').send({ number: '6' }).expect(204);
+    await request(app).post('/hello').send({ number: 6 }).expect(204);
 
     ({ body } = await request(app).get('/error/sync').timeout(1000).expect(500));
     expect(body.code).toEqual('SyncError');

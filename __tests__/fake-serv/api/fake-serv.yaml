@@ -12,6 +12,11 @@ paths:
           required: false
           schema:
             type: string
+        - name: number
+          in: query
+          required: false
+          schema:
+            type: number
       responses:
         200:
           description: We responded
@@ -22,3 +27,17 @@ paths:
                 properties:
                   greeting:
                     type: string
+    post:
+      description: Test body conversion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: number
+        required: true
+      responses:
+        204:
+          description: I heard you
