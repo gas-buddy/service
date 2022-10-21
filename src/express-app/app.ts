@@ -192,6 +192,11 @@ export async function startApp<
     app.use(express.urlencoded());
   }
 
+  if (routing?.static) {
+    const relPath = routing.static === true ? 'static' : routing.static;
+    app.use(express.static(path.resolve(rootDirectory, relPath)));
+  }
+
   if (serviceImpl.authorize) {
     const authorize: RequestHandler = (req, res, next) => {
       const maybePromise = serviceImpl.authorize?.(
