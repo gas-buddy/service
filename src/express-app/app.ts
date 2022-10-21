@@ -192,9 +192,13 @@ export async function startApp<
     app.use(express.urlencoded());
   }
 
-  if (routing?.static) {
-    const relPath = routing.static === true ? 'static' : routing.static;
-    app.use(express.static(path.resolve(rootDirectory, relPath)));
+  if (routing?.static?.enabled) {
+    const localdir = path.resolve(rootDirectory, routing?.static?.path || 'static');
+    if (routing.static.mountPath) {
+      app.use(routing.static.mountPath, express.static(localdir));
+    } else {
+      app.use(express.static(localdir));
+    }
   }
 
   if (serviceImpl.authorize) {

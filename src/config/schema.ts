@@ -44,9 +44,14 @@ export interface ConfigurationSchema extends Record<string, any> {
       json?: boolean;
       form?: boolean;
     },
-    // If you would like to serve static assets, set this to true or to a path relative to the
-    // root directory of the app
-    static?: string | boolean;
+    static?: {
+      // True to enable static assets to be served
+      enabled?: boolean;
+      // The path relative to the root directory of the app
+      path?: string;
+      // The path on which to mount the static assets (defaults to /)
+      mountPath?: string;
+    },
   },
   server?: {
     internalPort?: number,
