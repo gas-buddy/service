@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: @gasbuddy/service
+title: "@gasbuddy/service"
 email: developers@gasbuddy.com
 description: >- # this means to ignore newlines until "baseurl:"
   @gasbuddy/service is an opinionated framework for scalable REST services built
