@@ -30,9 +30,7 @@ twitter_username: djMaxM
 github_username:  djMax
 
 # Build settings
-theme: minima
-plugins:
-  - jekyll-feed
+theme: just-the-docs
 
 # Exclude from processing.
 # The following items will not be processed, by default.
