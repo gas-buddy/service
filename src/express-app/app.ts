@@ -192,15 +192,6 @@ export async function startApp<
     app.use(express.urlencoded());
   }
 
-  if (routing?.static?.enabled) {
-    const localdir = path.resolve(rootDirectory, routing?.static?.path || 'static');
-    if (routing.static.mountPath) {
-      app.use(routing.static.mountPath, express.static(localdir));
-    } else {
-      app.use(express.static(localdir));
-    }
-  }
-
   if (serviceImpl.authorize) {
     const authorize: RequestHandler = (req, res, next) => {
       const maybePromise = serviceImpl.authorize?.(
@@ -219,6 +210,15 @@ export async function startApp<
       }
     };
     app.use(authorize);
+  }
+
+  if (routing?.static?.enabled) {
+    const localdir = path.resolve(rootDirectory, routing?.static?.path || 'static');
+    if (routing.static.mountPath) {
+      app.use(routing.static.mountPath, express.static(localdir));
+    } else {
+      app.use(express.static(localdir));
+    }
   }
 
   if (routing?.freezeQuery) {
