@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "12.9.3",
+  "version": "12.10.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -64,6 +64,7 @@
     "@opentelemetry/sdk-node": "^0.33.0",
     "@opentelemetry/semantic-conventions": "^1.7.0",
     "confit": "^3.0.0",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "eventsource": "^1.1.2",
     "express": "next",
@@ -79,6 +80,7 @@
     "shortstop-yaml": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
     "@types/eventsource": "^1.1.10",
     "@types/express": "^4.17.14",
     "@types/glob": "^8.0.0",

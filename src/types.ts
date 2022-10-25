@@ -42,6 +42,9 @@ export type ResponseFromApp<
   RLocals extends RequestLocals = RequestLocals,
 > = Response<ResBody, RLocals>;
 
+/**
+ * This is the core type you need to implement to provide a service
+ */
 export interface Service<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,

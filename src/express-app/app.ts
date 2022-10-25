@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 import { pino } from 'pino';
+import cookieParser from 'cookie-parser';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api-metrics';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
@@ -180,6 +181,10 @@ export async function startApp<
     }
   };
   app.use(attachServiceLocals);
+
+  if (routing?.cookieParser) {
+    app.use(cookieParser());
+  }
 
   if (routing?.bodyParsers?.json) {
     app.use(

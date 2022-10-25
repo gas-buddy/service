@@ -1249,6 +1249,7 @@ __metadata:
     "@opentelemetry/sdk-metrics": ^0.33.0
     "@opentelemetry/sdk-node": ^0.33.0
     "@opentelemetry/semantic-conventions": ^1.7.0
+    "@types/cookie-parser": ^1.4.3
     "@types/eventsource": ^1.1.10
     "@types/express": ^4.17.14
     "@types/glob": ^8.0.0
@@ -1258,6 +1259,7 @@ __metadata:
     "@types/node": ^18.11.5
     "@types/supertest": ^2.0.12
     confit: ^3.0.0
+    cookie-parser: ^1.4.6
     dotenv: ^16.0.3
     eslint: ^8.26.0
     eslint-config-gasbuddy: ^7.0.3
@@ -2276,6 +2278,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: fe81351470f2d3165e8b12ce33542eef89ea893e36dd62e8f7d72566dfb7e448376ae962f9f3ea888547ce8b55a40020ca0e01d637fab5d99567673084542641
+  languageName: node
+  linkType: hard
+
+"@types/cookie-parser@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "@types/cookie-parser@npm:1.4.3"
+  dependencies:
+    "@types/express": "*"
+  checksum: f390f3af1b1711190dee2c2ecd9af33af81fbde8d81ee820dadb6fe1e0d80c3faba40af37c6ed36fb88b04b64870f6a021f7e9edceecd17c42fe22abe0af5005
   languageName: node
   linkType: hard
 
@@ -3536,6 +3547,16 @@ __metadata:
   version: 1.9.0
   resolution: "convert-source-map@npm:1.9.0"
   checksum: dc55a1f28ddd0e9485ef13565f8f756b342f9a46c4ae18b843fe3c30c675d058d6a4823eff86d472f187b176f0adf51ea7b69ea38be34be4a63cbbf91b0593c8
+  languageName: node
+  linkType: hard
+
+"cookie-parser@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "cookie-parser@npm:1.4.6"
+  dependencies:
+    cookie: 0.4.1
+    cookie-signature: 1.0.6
+  checksum: 1e5a63aa82e8eb4e02d2977c6902983dee87b02e87ec5ec43ac3cb1e72da354003716570cd5190c0ad9e8a454c9d3237f4ad6e2f16d0902205a96a1c72b77ba5
   languageName: node
   linkType: hard
 

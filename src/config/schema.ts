@@ -40,6 +40,7 @@ export interface ConfigurationSchema extends Record<string, any> {
     freezeQuery?: boolean;
     // Whether to compute etag headers. http://expressjs.com/en/api.html#etag.options.table
     etag?: boolean;
+    cookieParser?: boolean;
     bodyParsers?: {
       json?: boolean;
       form?: boolean;
