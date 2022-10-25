@@ -230,7 +230,7 @@ export async function startApp<
   }
 
   if (routing?.static?.enabled) {
-    const localdir = path.resolve(rootDirectory, routing?.static?.path || 'static');
+    const localdir = path.resolve(rootDirectory, routing?.static?.path || 'public');
     if (routing.static.mountPath) {
       app.use(routing.static.mountPath, express.static(localdir));
     } else {
