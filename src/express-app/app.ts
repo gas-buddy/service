@@ -207,9 +207,14 @@ export async function startApp<
         req as RequestWithApp<SLocals>,
         res as Response<any, RLocals>,
       );
-      if (maybePromise) {
-        maybePromise.catch(next).then(next);
-      } else {
+      if (maybePromise && typeof maybePromise !== 'boolean') {
+        maybePromise.then((val) => {
+          if (val === false) {
+            return;
+          }
+          next();
+        }).catch(next);
+      } else if (maybePromise !== false) {
         next();
       }
     };

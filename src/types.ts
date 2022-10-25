@@ -62,7 +62,7 @@ export interface Service<
   onRequest?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
 
   // This runs after body parsing but before routing
-  authorize?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): void | Promise<void>;
+  authorize?(req: RequestWithApp<SLocals>, res: Response<any, RLocals>): boolean | Promise<boolean>;
 
   // Add or redact any fields for logging. Note this will be called twice per request,
   // once at the start and once at the end. Modify the values directly.
