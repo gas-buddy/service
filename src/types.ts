@@ -37,6 +37,10 @@ export type ServiceExpress<Locals extends ServiceLocals = ServiceLocals> = Appli
 export type RequestWithApp<Locals extends ServiceLocals = ServiceLocals> = Omit<Request, 'app'> & {
   app: Application<Locals>;
 };
+export type ResponseFromApp<
+  ResBody,
+  RLocals extends RequestLocals = RequestLocals,
+> = Response<ResBody, RLocals>;
 
 export interface Service<
   SLocals extends ServiceLocals = ServiceLocals,
