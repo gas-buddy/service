@@ -24,16 +24,6 @@ export interface ConfigurationSchema extends Record<string, any> {
     openapi?: boolean;
     // Relative to the *root directory* of the app
     routes?: string;
-    // Whether to handle errors and return them to clients
-    // (currently means we will return JSON errors)
-    errors?: {
-      renderErrors: boolean;
-      // Check to see if we got an error from an upstream
-      // service that has code/domain/message, and if so return
-      // that as is. Otherwise we will sanitize it to avoid leaking
-      // information.
-      unnest: boolean;
-    };
     // Whether to add middleware that "freezes" the query string
     // rather than preserving the new Express@5 behavior of reparsing
     // every time (which causes problems for OpenAPI validation)
@@ -52,6 +42,21 @@ export interface ConfigurationSchema extends Record<string, any> {
       path?: string;
       // The path on which to mount the static assets (defaults to /)
       mountPath?: string;
+    },
+    finalHandlers: {
+      // Whether to create and return errors for unhandled routes
+      notFound?: boolean;
+      // Whether to handle errors and return them to clients
+      // (currently means we will return JSON errors)
+      errors?: {
+        enabled?: boolean;
+        render?: boolean;
+        // Check to see if we got an error from an upstream
+        // service that has code/domain/message, and if so return
+        // that as is. Otherwise we will sanitize it to avoid leaking
+        // information.
+        unnest: boolean;
+      };
     },
   },
   server?: {

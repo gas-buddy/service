@@ -271,8 +271,13 @@ export async function startApp<
   // Putting this here allows more flexible middleware insertion
   await serviceImpl.start(app);
 
-  app.use(notFoundMiddleware(logger, routing?.errors?.renderErrors));
-  app.use(errorHandlerMiddleware(app, routing?.errors?.unnest, routing?.errors?.renderErrors));
+  const { notFound, errors } = routing?.finalHandlers || {};
+  if (notFound) {
+    app.use(notFoundMiddleware());
+  }
+  if (errors?.enabled) {
+    app.use(errorHandlerMiddleware(app, errors?.unnest, errors?.render));
+  }
 
   return app;
 }

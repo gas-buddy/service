@@ -7,14 +7,18 @@
   "routing": {
     "openapi": true,
     "routes": "routes",
-    "errors": {
-      "renderErrors": true,
-      "unnest": "servicetype:serv"
-    },
     "freezeQuery": true,
     "bodyParsers": {
       "json": true,
       "form": false
+    },
+    "finalHandlers": {
+      "errors": {
+        "enabled": true,
+        "render": true,
+        "unnest": "servicetype:serv"
+      },
+      "notFound": true
     }
   },
   "server": {
