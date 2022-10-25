@@ -38,7 +38,7 @@ export type RequestWithApp<Locals extends ServiceLocals = ServiceLocals> = Omit<
   app: Application<Locals>;
 };
 export type ResponseFromApp<
-  ResBody,
+  ResBody = any,
   RLocals extends RequestLocals = RequestLocals,
 > = Response<ResBody, RLocals>;
 
