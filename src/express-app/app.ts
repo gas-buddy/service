@@ -164,10 +164,15 @@ export async function startApp<
   // so that the req can decide whether to save the raw request body or not.
   const attachServiceLocals: RequestHandler = (req, res, next) => {
     res.locals.logger = logger;
-    const maybePromise = serviceImpl.onRequest?.(
-      req as RequestWithApp<SLocals>,
-      res as Response<any, RLocals>,
-    );
+    let maybePromise: Promise<void> | void;
+    try {
+      maybePromise = serviceImpl.onRequest?.(
+        req as RequestWithApp<SLocals>,
+        res as Response<any, RLocals>,
+      );
+    } catch (error) {
+      next(error);
+    }
     if (maybePromise) {
       maybePromise.catch(next).then(next);
     } else {
@@ -194,17 +199,24 @@ export async function startApp<
 
   if (serviceImpl.authorize) {
     const authorize: RequestHandler = (req, res, next) => {
-      const maybePromise = serviceImpl.authorize?.(
-        req as RequestWithApp<SLocals>,
-        res as Response<any, RLocals>,
-      );
+      let maybePromise: Promise<boolean> | boolean | undefined;
+      try {
+        maybePromise = serviceImpl.authorize?.(
+          req as RequestWithApp<SLocals>,
+          res as Response<any, RLocals>,
+        );
+      } catch (error) {
+        next(error);
+      }
       if (maybePromise && typeof maybePromise !== 'boolean') {
-        maybePromise.then((val) => {
-          if (val === false) {
-            return;
-          }
-          next();
-        }).catch(next);
+        maybePromise
+          .then((val) => {
+            if (val === false) {
+              return;
+            }
+            next();
+          })
+          .catch(next);
       } else if (maybePromise !== false) {
         next();
       }
@@ -343,7 +355,10 @@ export async function listen<SLocals extends ServiceLocals = ServiceLocals>(
           .then((internalApp) => {
             locals.internalApp = internalApp;
             internalApp.locals.meterProvider = metricInfo.meterProvider;
-            locals.logger.info({ port: serverConfig.internalPort }, 'Internal metadata server started');
+            locals.logger.info(
+              { port: serverConfig.internalPort },
+              'Internal metadata server started',
+            );
           })
           .then(() => {
             if (metricInfo.exporter) {
