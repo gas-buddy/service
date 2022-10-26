@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadConfiguration } from '../src/config';
+import { insertConfigurationBefore, loadConfiguration } from '../src/config';
 
 describe('configuration loader', () => {
   test('overrides and shortstops', async () => {
@@ -21,5 +21,11 @@ describe('configuration loader', () => {
 
     expect(config.get('testKms')).toBeTruthy();
     expect(config.get('testKms')).toEqual('HelloWorld');
+
+    const orig = ['a', 'b', 'd'];
+    const withC = insertConfigurationBefore(orig, 'c', 'd');
+    expect(withC).toEqual(['a', 'b', 'c', 'd']);
+    const withE = insertConfigurationBefore(orig, 'e', 'q');
+    expect(withE).toEqual(['a', 'b', 'd', 'e']);
   });
 });

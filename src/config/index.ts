@@ -103,5 +103,15 @@ export async function loadConfiguration({
   return loaded;
 }
 
+export function insertConfigurationBefore(configDirs: string[], insert: string, before: string) {
+  const index = configDirs.indexOf(before);
+  if (index === -1) {
+    return [...configDirs, insert];
+  }
+  const copy = [...configDirs];
+  copy.splice(index, 0, insert);
+  return copy;
+}
+
 export * from './schema';
 export * from './types';
