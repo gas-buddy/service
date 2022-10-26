@@ -111,7 +111,7 @@ export function insertConfigurationBefore(
   const copy = [...(configDirs || [])];
   const index = copy.indexOf(before);
   if (index === -1) {
-    copy.push(insert);
+    copy.push(insert, before);
   } else {
     copy.splice(index, 0, insert);
   }
