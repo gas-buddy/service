@@ -103,13 +103,18 @@ export async function loadConfiguration({
   return loaded;
 }
 
-export function insertConfigurationBefore(configDirs: string[], insert: string, before: string) {
-  const index = configDirs.indexOf(before);
+export function insertConfigurationBefore(
+  configDirs: string[] | undefined,
+  insert: string,
+  before: string,
+) {
+  const copy = [...(configDirs || [])];
+  const index = copy.indexOf(before);
   if (index === -1) {
-    return [...configDirs, insert];
+    copy.push(insert);
+  } else {
+    copy.splice(index, 0, insert);
   }
-  const copy = [...configDirs];
-  copy.splice(index, 0, insert);
   return copy;
 }
 

@@ -27,5 +27,7 @@ describe('configuration loader', () => {
     expect(withC).toEqual(['a', 'b', 'c', 'd']);
     const withE = insertConfigurationBefore(orig, 'e', 'q');
     expect(withE).toEqual(['a', 'b', 'd', 'e']);
+    expect(insertConfigurationBefore(undefined, 'a', 'b')).toEqual(['a']);
+    expect(insertConfigurationBefore([], 'a', 'b')).toEqual(['a']);
   });
 });
