@@ -1,9 +1,14 @@
 import { URL } from 'node:url';
-import type { FetchConfig, FetchRequest } from 'rest-api-support';
+import type { FetchConfig, FetchRequest, RestApiResponse } from 'rest-api-support';
 import EventSource from 'eventsource';
+import {
+  ServiceError,
+  ServiceExpress,
+  ServiceLike,
+  ServiceLocals,
+} from '../types';
 
 import type { ServiceConfiguration } from '../config/schema';
-import { ServiceExpress } from '../types';
 
 class CustomEventSource extends EventSource {
   private activeListeners: Array<{ handler: (data: any) => void; name: string }> = [];
@@ -76,4 +81,33 @@ export function createServiceInterface<ServiceType>(
   }
 
   return new Implementation(fetchConfig);
+}
+
+function readResponse<
+  SLocals extends ServiceLocals,
+  AppType extends ServiceLike<SLocals>,
+  ResType extends RestApiResponse<number, any>,
+>(
+  app: AppType,
+  response: ResType,
+  message?: string,
+): Extract<ResType, { responseType: 'response' }> {
+  if (response.responseType === 'response') {
+    return response as Extract<ResType, { responseType: 'response' }>;
+  }
+  throw new ServiceError(app, message || response.body.message, {
+    status: response.status,
+  });
+}
+
+export async function throwOrGetResponse<
+  SLocals extends ServiceLocals,
+  AppType extends ServiceLike<SLocals>,
+  ResType extends RestApiResponse<number, any>,
+>(
+  app: AppType,
+  exec: () => Promise<ResType>,
+): Promise<Extract<ResType, { responseType: 'response' }>> {
+  const response = await exec();
+  return readResponse(app, response);
 }

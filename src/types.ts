@@ -162,7 +162,7 @@ export class ServiceError extends Error {
   constructor(
     app: ServiceLike<ServiceLocals>,
     message: string,
-    spec: {
+    spec?: {
       status?: number;
       code?: string;
       domain?: string;
