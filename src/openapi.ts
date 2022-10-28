@@ -43,7 +43,7 @@ export default function openApi(
           const method = Object.keys(module).find((m) => m.toUpperCase() === route.method);
           if (!method) {
             throw new Error(
-              `Could not find a [${method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`,
+              `Could not find a [${route.method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`,
             );
           }
           return module[method];
