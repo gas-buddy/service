@@ -1,7 +1,8 @@
 import type {
   RequestHandler, Request, Response, ErrorRequestHandler,
 } from 'express';
-import { ServiceError, ServiceExpress, ServiceLocals } from '../types';
+import { ServiceError } from '../error';
+import type { ServiceExpress, ServiceLocals } from '../types';
 import type { ServiceHandler } from '../express-app/types';
 
 const LOG_PREFS = Symbol('Logging information');

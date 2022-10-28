@@ -1,5 +1,5 @@
 import { ServiceRouter } from '../../../../src/index';
-import { ServiceError } from '../../../../src/types';
+import { ServiceError } from '../../../../src/error';
 
 export default function route(router: ServiceRouter) {
   router.get('/sync', (req) => {

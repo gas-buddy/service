@@ -1,13 +1,13 @@
 import { URL } from 'node:url';
 import type { FetchConfig, FetchRequest, RestApiResponse } from 'rest-api-support';
 import EventSource from 'eventsource';
-import {
-  ServiceError,
+import { ServiceError, ServiceErrorSpec } from '../error';
+
+import type {
   ServiceExpress,
   ServiceLike,
   ServiceLocals,
 } from '../types';
-
 import type { ServiceConfiguration } from '../config/schema';
 
 class CustomEventSource extends EventSource {
@@ -83,6 +83,10 @@ export function createServiceInterface<ServiceType>(
   return new Implementation(fetchConfig);
 }
 
+interface SpecWithMessage extends ServiceErrorSpec {
+  message?: string;
+}
+
 function readResponse<
   SLocals extends ServiceLocals,
   AppType extends ServiceLike<SLocals>,
@@ -90,14 +94,20 @@ function readResponse<
 >(
   app: AppType,
   response: ResType,
-  message?: string,
+  errorSpec?: SpecWithMessage,
 ): Extract<ResType, { responseType: 'response' }> {
   if (response.responseType === 'response') {
     return response as Extract<ResType, { responseType: 'response' }>;
   }
-  throw new ServiceError(app, message || response.body.message, {
-    status: response.status,
-  });
+  const { message, ...spec } = errorSpec || {};
+  throw new ServiceError(
+    app,
+    message || response.body.message || 'Internal Error',
+    {
+      status: response.status,
+      ...spec,
+    },
+  );
 }
 
 export async function throwOrGetResponse<
@@ -107,7 +117,8 @@ export async function throwOrGetResponse<
 >(
   app: AppType,
   exec: () => Promise<ResType>,
+  errorSpec?: SpecWithMessage,
 ): Promise<Extract<ResType, { responseType: 'response' }>> {
   const response = await exec();
-  return readResponse(app, response);
+  return readResponse(app, response, errorSpec);
 }
