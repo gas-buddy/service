@@ -1256,7 +1256,7 @@ __metadata:
     "@types/jest": ^29.2.0
     "@types/lodash": ^4.14.186
     "@types/minimist": ^1.2.2
-    "@types/node": ^18.11.5
+    "@types/node": ^18.11.8
     "@types/supertest": ^2.0.12
     confit: ^3.0.0
     cookie-parser: ^1.4.6
@@ -1275,7 +1275,7 @@ __metadata:
     pino: ^8.7.0
     pino-pretty: ^9.1.1
     read-pkg-up: ^7.0.1
-    rest-api-support: ^1.16.1
+    rest-api-support: ^1.16.2
     shortstop-dns: ^1.1.0
     shortstop-handlers: ^1.1.1
     shortstop-yaml: ^1.0.0
@@ -2469,10 +2469,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^18.11.5":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 18.11.5
   resolution: "@types/node@npm:18.11.5"
   checksum: ac54e9287dd4549ea3dc8aabc0cf7bfa04c52f02925d7fd68414789617ec770f034c8ae2e111e8bd00d446a46fcac42587b5a316a1303e2f6ea094854248c9ff
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.8":
+  version: 18.11.8
+  resolution: "@types/node@npm:18.11.8"
+  checksum: 60b358f97c1a029722dc785811b217615ef20249c3fbde60a65869cfd7a5cd5b1872ee95c79c187ef70e5a078f4ac7670d2129803985268b1f021ad6e8040af8
   languageName: node
   linkType: hard
 
@@ -3497,7 +3504,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confit@npm:^3.0.0":
+"confit@npm:3.0.0":
   version: 3.0.0
   resolution: "confit@npm:3.0.0"
   dependencies:
@@ -3510,6 +3517,22 @@ __metadata:
     shortstop-handlers: ^1.0.1
     shush: ^1.0.0
   checksum: 69dc728fe5186519aedfdbe69db8e79e9ff08948f481e7575c6c9c402bb330dc6fb4da83cdfa748e931913d271840abbc4541fe5562dde254d95f572dc04a787
+  languageName: node
+  linkType: hard
+
+"confit@patch:confit@npm%3A3.0.0#./.yarn/patches/confit-npm-3.0.0-eade8c7ce1.patch::locator=%40gasbuddy%2Fservice%40workspace%3A.":
+  version: 3.0.0
+  resolution: "confit@patch:confit@npm%3A3.0.0#./.yarn/patches/confit-npm-3.0.0-eade8c7ce1.patch::version=3.0.0&hash=6b57f7&locator=%40gasbuddy%2Fservice%40workspace%3A."
+  dependencies:
+    async: ^2.6.3
+    caller: ^1.0.1
+    core-util-is: ^1.0.2
+    debuglog: ^1.0.1
+    minimist: ^1.2.0
+    shortstop: ^1.0.3
+    shortstop-handlers: ^1.0.1
+    shush: ^1.0.0
+  checksum: 9d82045165bf22519b6a3b8e22231cc58efa1015a71a7b159a0dfbd471c2290c76a97e0f30d4fd7a08a9f49fe114d11b2b86135fd4655c4612ba10813ba27ae4
   languageName: node
   linkType: hard
 
@@ -7295,12 +7318,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rest-api-support@npm:^1.16.1":
-  version: 1.16.1
-  resolution: "rest-api-support@npm:1.16.1"
+"rest-api-support@npm:^1.16.2":
+  version: 1.16.2
+  resolution: "rest-api-support@npm:1.16.2"
   dependencies:
     query-string: ^7.1.1
-  checksum: 1133105a0fc7b47015ffaa33f19335a8e154c840231c78c2cb7a8e11ae6d49dd1dff8a0585e762a220b63836186c440c2b600b9103502b05329a5aad139672bb
+  checksum: 10d39a89940cce2c3a27d79415b5d1e4ff7a0354e976efb0ffc965e96c03883480b724360b10fbf0c30433a7743e1afe2548b542d82c80ac7e21ea010d74779c
   languageName: node
   linkType: hard
 
