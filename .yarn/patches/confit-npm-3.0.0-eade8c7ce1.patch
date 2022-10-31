@@ -1,0 +1,52 @@
+diff --git a/dist/lib/provider.js b/dist/lib/provider.js
+index 3ec01c9a89d0ab60a243361b01266123f2830d98..b7e55de474dd2df02546e13a1dfe8e1c146ec958 100644
+--- a/dist/lib/provider.js
++++ b/dist/lib/provider.js
+@@ -104,7 +104,7 @@ module.exports = {
+             for (var _iterator = _core.$for.getIterator(_core.Object.keys(process.env)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                 var env = _step.value;
+ 
+-                //env:env is decided by process.env.NODE_ENV.
++                //env:env is decided by process.env.APP_ENV or process.env.NODE_ENV.
+                 //Not allowing process.env.env to override the env:env value.
+                 if (ignore.indexOf(env) < 0) {
+                     result[env] = process.env[env];
+@@ -131,10 +131,10 @@ module.exports = {
+     convenience: function convenience() {
+         var nodeEnv, env;
+ 
+-        nodeEnv = process.env.NODE_ENV || "development";
++        nodeEnv = process.env.APP_ENV || process.env.NODE_ENV || "development";
+         env = {};
+ 
+-        debug("NODE_ENV set to " + nodeEnv);
++        debug("APP_ENV/NODE_ENV set to " + nodeEnv);
+ 
+         // Normalize env and set convenience values.
+         var _iteratorNormalCompletion = true;
+diff --git a/lib/provider.js b/lib/provider.js
+index f3ec9377f40e8f9322310598b6104232d36dc0fe..577ca1812e75a3d5bb97e994385ba5d4a4dab6a6 100644
+--- a/lib/provider.js
++++ b/lib/provider.js
+@@ -49,7 +49,7 @@ module.exports = {
+         // process.env is not a normal object, so we
+         // need to map values.
+         for (let env of Object.keys(process.env)) {
+-            //env:env is decided by process.env.NODE_ENV.
++            //env:env is decided by process.env.APP_ENV or process.env.NODE_ENV.
+             //Not allowing process.env.env to override the env:env value.
+             if (ignore.indexOf(env) < 0) {
+                 result[env] = process.env[env];
+@@ -63,10 +63,10 @@ module.exports = {
+     convenience() {
+         var nodeEnv, env;
+ 
+-        nodeEnv = process.env.NODE_ENV || 'development';
++        nodeEnv = process.env.APP_ENV || process.env.NODE_ENV || 'development';
+         env = {};
+ 
+-        debug(`NODE_ENV set to ${nodeEnv}`);
++        debug(`APP_ENV/NODE_ENV set to ${nodeEnv}`);
+ 
+         // Normalize env and set convenience values.
+         for (let current of Object.keys(Common.env)) {

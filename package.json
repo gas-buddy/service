@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "12.13.2",
+  "version": "12.14.0",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -100,5 +100,8 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "resolutions": {
+    "confit@^3.0.0": "patch:confit@npm%3A3.0.0#./.yarn/patches/confit-npm-3.0.0-eade8c7ce1.patch"
+  }
 }
