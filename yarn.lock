@@ -1210,6 +1210,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gasbuddy/confit@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@gasbuddy/confit@npm:3.0.0"
+  dependencies:
+    async: ^2.6.3
+    caller: ^1.0.1
+    core-util-is: ^1.0.2
+    debuglog: ^1.0.1
+    minimist: ^1.2.5
+    shortstop: ^1.0.3
+    shortstop-handlers: ^1.0.1
+    shush: ^1.0.0
+  checksum: ab847258c30d036a9f98e5045b2f04235c6b5a8c3ac727c26fa4d49d591f33a0a0e46b9fc81337d6b04592abcbe48e6aad6648f3106132cbb3ce2868e821f7a1
+  languageName: node
+  linkType: hard
+
 "@gasbuddy/kms-crypto@npm:^5.1.2":
   version: 5.1.2
   resolution: "@gasbuddy/kms-crypto@npm:5.1.2"
@@ -1229,6 +1245,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gasbuddy/service@workspace:."
   dependencies:
+    "@gasbuddy/confit": ^3.0.0
     "@gasbuddy/kms-crypto": ^5.1.2
     "@godaddy/terminus": ^4.11.2
     "@opentelemetry/api": ^1.2.0
@@ -1258,7 +1275,6 @@ __metadata:
     "@types/minimist": ^1.2.2
     "@types/node": ^18.11.8
     "@types/supertest": ^2.0.12
-    confit: ^3.0.0
     cookie-parser: ^1.4.6
     dotenv: ^16.0.3
     eslint: ^8.26.0
@@ -3501,38 +3517,6 @@ __metadata:
     readable-stream: ^2.2.2
     typedarray: ^0.0.6
   checksum: 1ef77032cb4459dcd5187bd710d6fc962b067b64ec6a505810de3d2b8cc0605638551b42f8ec91edf6fcd26141b32ef19ad749239b58fae3aba99187adc32285
-  languageName: node
-  linkType: hard
-
-"confit@npm:3.0.0":
-  version: 3.0.0
-  resolution: "confit@npm:3.0.0"
-  dependencies:
-    async: ^2.6.3
-    caller: ^1.0.1
-    core-util-is: ^1.0.2
-    debuglog: ^1.0.1
-    minimist: ^1.2.0
-    shortstop: ^1.0.3
-    shortstop-handlers: ^1.0.1
-    shush: ^1.0.0
-  checksum: 69dc728fe5186519aedfdbe69db8e79e9ff08948f481e7575c6c9c402bb330dc6fb4da83cdfa748e931913d271840abbc4541fe5562dde254d95f572dc04a787
-  languageName: node
-  linkType: hard
-
-"confit@patch:confit@npm%3A3.0.0#./.yarn/patches/confit-npm-3.0.0-eade8c7ce1.patch::locator=%40gasbuddy%2Fservice%40workspace%3A.":
-  version: 3.0.0
-  resolution: "confit@patch:confit@npm%3A3.0.0#./.yarn/patches/confit-npm-3.0.0-eade8c7ce1.patch::version=3.0.0&hash=6b57f7&locator=%40gasbuddy%2Fservice%40workspace%3A."
-  dependencies:
-    async: ^2.6.3
-    caller: ^1.0.1
-    core-util-is: ^1.0.2
-    debuglog: ^1.0.1
-    minimist: ^1.2.0
-    shortstop: ^1.0.3
-    shortstop-handlers: ^1.0.1
-    shush: ^1.0.0
-  checksum: 9d82045165bf22519b6a3b8e22231cc58efa1015a71a7b159a0dfbd471c2290c76a97e0f30d4fd7a08a9f49fe114d11b2b86135fd4655c4612ba10813ba27ae4
   languageName: node
   linkType: hard
 
@@ -6258,7 +6242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.6, minimist@npm:^1.2.7":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6, minimist@npm:^1.2.7":
   version: 1.2.7
   resolution: "minimist@npm:1.2.7"
   checksum: 7346574a1038ca23c32e02252f603801f09384dd1d78b69a943a4e8c2c28730b80e96193882d3d3b22a063445f460e48316b29b8a25addca2d7e5e8f75478bec

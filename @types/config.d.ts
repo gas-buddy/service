@@ -19,7 +19,7 @@ declare module 'shortstop-dns' {
   }): (address: string, callback: (error?: Error, result?: string[]) => void) => void;
 }
 
-declare module 'confit' {
+declare module '@gasbuddy/confit' {
   type ProtocolFn = (value: any, callback?: any) => void;
 
   interface ProtocolsSetPrivate {

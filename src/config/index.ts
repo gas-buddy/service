@@ -1,4 +1,4 @@
-import confit from 'confit';
+import confit from '@gasbuddy/confit';
 import fs from 'fs';
 import path from 'path';
 import { getKmsWrapper } from './kmsWrapper';
