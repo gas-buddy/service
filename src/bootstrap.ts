@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
 import { isDev } from './env';
-import { startWithTelemetry } from './telemetry';
+import { startWithTelemetry } from './telemetry/index';
 import type { ServiceStartOptions } from './types';
 
 interface BootstrapArguments {

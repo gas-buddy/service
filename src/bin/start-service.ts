@@ -3,7 +3,7 @@ import minimist from 'minimist';
 
 import serviceRepl from '../development/repl';
 import { isDev } from '../env';
-import { bootstrap } from '../start';
+import { bootstrap } from '../bootstrap';
 
 /**
  * built - forces the use of the build directory. Defaults to true in stage/prod, not in dev
