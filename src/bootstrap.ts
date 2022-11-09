@@ -2,9 +2,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
+import type { RequestLocals, ServiceLocals, ServiceStartOptions } from './types';
 import { isDev } from './env';
 import { startWithTelemetry } from './telemetry/index';
-import type { ServiceStartOptions } from './types';
 
 interface BootstrapArguments {
   // The name of the service, else discovered via read-pkg-up
@@ -58,7 +58,10 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
 // to find your implementation and settings. This is most useful
 // for jobs or other scripts that need service infra but are
 // not simply the service
-export async function bootstrap(argv?: BootstrapArguments) {
+export async function bootstrap<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+>(argv?: BootstrapArguments) {
   const { main, rootDirectory, name } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -83,7 +86,7 @@ export async function bootstrap(argv?: BootstrapArguments) {
 
   const absoluteEntrypoint = path.resolve(rootDirectory, entrypoint);
   if (argv?.telemetry) {
-    return startWithTelemetry({
+    return startWithTelemetry<SLocals, RLocals>({
       name,
       rootDirectory,
       service: absoluteEntrypoint,
@@ -93,14 +96,14 @@ export async function bootstrap(argv?: BootstrapArguments) {
   // This needs to be required for TS on-the-fly to work
   // eslint-disable-next-line global-require, import/no-dynamic-require
   const impl = require(absoluteEntrypoint);
-  const opts: ServiceStartOptions = {
+  const opts: ServiceStartOptions<SLocals, RLocals> = {
     name,
     rootDirectory,
     service: impl.default,
     codepath,
   };
   const { startApp, listen } = await import('./express-app/app.js');
-  const app = await startApp(opts);
+  const app = await startApp<SLocals, RLocals>(opts);
   const server = argv?.nobind ? undefined : await listen(app);
   return { server, app };
 }
