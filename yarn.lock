@@ -1291,7 +1291,7 @@ __metadata:
     pino: ^8.7.0
     pino-pretty: ^9.1.1
     read-pkg-up: ^7.0.1
-    rest-api-support: ^1.16.2
+    rest-api-support: ^1.16.3
     shortstop-dns: ^1.1.0
     shortstop-handlers: ^1.1.1
     shortstop-yaml: ^1.0.0
@@ -7458,12 +7458,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rest-api-support@npm:^1.16.2":
-  version: 1.16.2
-  resolution: "rest-api-support@npm:1.16.2"
+"rest-api-support@npm:^1.16.3":
+  version: 1.16.3
+  resolution: "rest-api-support@npm:1.16.3"
   dependencies:
     query-string: ^7.1.1
-  checksum: 10d39a89940cce2c3a27d79415b5d1e4ff7a0354e976efb0ffc965e96c03883480b724360b10fbf0c30433a7743e1afe2548b542d82c80ac7e21ea010d74779c
+  checksum: fcc0747d07d85d489ae8a8570463f79b232bf6e2851f7b3bab276ed68a3b2299b4e08d357b08f45af3fd8a3785df97871d86fe2de9de4f65db71a25bd7b731b3
   languageName: node
   linkType: hard
 

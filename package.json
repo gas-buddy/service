@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/service",
-  "version": "12.16.0",
+  "version": "12.16.1",
   "description": "An opinionated framework for building configuration driven services - web, api, or job. Uses swagger, pino logging, express, confit, Typescript and Jest.",
   "main": "build/index.js",
   "scripts": {
@@ -74,7 +74,7 @@
     "minimist": "^1.2.7",
     "pino": "^8.7.0",
     "read-pkg-up": "^7.0.1",
-    "rest-api-support": "^1.16.2",
+    "rest-api-support": "^1.16.3",
     "shortstop-dns": "^1.1.0",
     "shortstop-handlers": "^1.1.1",
     "shortstop-yaml": "^1.0.0"
