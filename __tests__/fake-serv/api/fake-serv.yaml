@@ -17,6 +17,11 @@ paths:
           required: false
           schema:
             type: number
+        - name: break_things
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: We responded
