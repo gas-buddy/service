@@ -99,7 +99,7 @@ export async function bootstrap<
   const opts: ServiceStartOptions<SLocals, RLocals> = {
     name,
     rootDirectory,
-    service: impl.default,
+    service: impl.default || impl.service,
     codepath,
   };
   const { startApp, listen } = await import('./express-app/app.js');
