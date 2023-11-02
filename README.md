@@ -30,4 +30,16 @@ The module takes care of configuration-driven:
 Our services (like this module) use Typescript with Node 18, which involves transpilation.
 This module takes that into account across the development and production experience.
 
+### Working with this repo
+
+```bash
+git clone git@github.com:gas-buddy/service.git
+cd service
+npx corepack enable ### This is required to work with yarn 2+
+nvm use ### Use node 18+ as specified in .nvmrc - this same version also gets used in github workflows
+yarn set version self ### Use same version as set in package.json, specified as packageManager
+yarn install
+yarn build
+```
+
 This needs lots more documentation... Just a start.
