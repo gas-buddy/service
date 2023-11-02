@@ -1,4 +1,12 @@
 # npmignore should match gitignore, except for the /build directory
+src/
+__tests__/
+.eslint*
+.github/
+.husky/
+.prettier*
+jest.config.js
+
 # Custom
 .transpiled
 .nyc_output
