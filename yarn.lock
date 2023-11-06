@@ -1273,6 +1273,7 @@ __metadata:
     "@gasbuddy/confit": ^3.0.0
     "@gasbuddy/kms-crypto": ^5.1.2
     "@godaddy/terminus": ^4.12.0
+    "@kei-g/chmod": ^1.0.12
     "@opentelemetry/api": ^1.4.1
     "@opentelemetry/api-metrics": ^0.33.0
     "@opentelemetry/exporter-prometheus": ^0.39.1
@@ -1704,6 +1705,17 @@ __metadata:
   version: 7.1.3
   resolution: "@jsdevtools/ono@npm:7.1.3"
   checksum: 2297fcd472ba810bffe8519d2249171132844c7174f3a16634f9260761c8c78bc0428a4190b5b6d72d45673c13918ab9844d706c3ed4ef8f62ab11a2627a08ad
+  languageName: node
+  linkType: hard
+
+"@kei-g/chmod@npm:^1.0.12":
+  version: 1.0.12
+  resolution: "@kei-g/chmod@npm:1.0.12"
+  dependencies:
+    libfsasync: ^1.0.16
+  bin:
+    chmod: index.js
+  checksum: 9b78bd82c14a26e31409eac9afea333b1625b6fd6d3fa1c3263aaa36a652432ea10933851df1d03354dd20ac11508144274c1b5d6b00b81359dd30a1f513c4d8
   languageName: node
   linkType: hard
 
@@ -6118,6 +6130,13 @@ __metadata:
     prelude-ls: ^1.2.1
     type-check: ~0.4.0
   checksum: 12c5021c859bd0f5248561bf139121f0358285ec545ebf48bb3d346820d5c61a4309535c7f387ed7d84361cf821e124ce346c6b7cef8ee09a67c1473b46d0fc4
+  languageName: node
+  linkType: hard
+
+"libfsasync@npm:^1.0.16":
+  version: 1.0.16
+  resolution: "libfsasync@npm:1.0.16"
+  checksum: 5daf3257a4205758523bb4719dfa460be013780c868c988ffe31deaf6f619e889d0b1616adc96ec86f9e2649d965543de5f13a7b8ab63d7bc659709350040c9b
   languageName: node
   linkType: hard
 

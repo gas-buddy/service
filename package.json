@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src",
-    "build": "tsc -p tsconfig.build.json && yarn dlx @kei-g/chmod build/bin/*",
+    "build": "tsc -p tsconfig.build.json && chmod +x build/bin/*",
     "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
     "clean": "npx rimraf ./build",
     "prepublishOnly": "yarn build",
@@ -80,6 +80,7 @@
     "shortstop-yaml": "^1.0.0"
   },
   "devDependencies": {
+    "@kei-g/chmod": "^1.0.12",
     "@types/cookie-parser": "^1.4.3",
     "@types/eventsource": "1.1.11",
     "@types/express": "^4.17.17",
