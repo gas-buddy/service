@@ -87,7 +87,7 @@ export async function bootstrap<
       const targetDir = main.replace(/^(\.?\/?)build\//, '$1src/');
       entrypoint = useJsEntrypoint ? targetDir : targetDir.replace(/\.js$/, '.ts');
     } else {
-      entrypoint = './src/index.ts';
+      entrypoint = useJsEntrypoint ? 'src/index.js' : './src/index.ts';
     }
     codepath = 'src';
   } else if (main) {
