@@ -80,6 +80,7 @@
     "shortstop-yaml": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/register": "^7.22.15",
     "@kei-g/chmod": "^1.0.12",
     "@types/cookie-parser": "^1.4.3",
     "@types/eventsource": "1.1.11",

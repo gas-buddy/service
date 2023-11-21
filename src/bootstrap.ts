@@ -78,7 +78,18 @@ export async function bootstrap<
   let entrypoint: string;
   let codepath: 'build' | 'src' = 'build';
   if (isDev() && argv?.built !== true) {
-    if (!useJsEntrypoint) {
+    const targetExtension = useJsEntrypoint ? 'js' : 'ts';
+    if (useJsEntrypoint) {
+      /* eslint-disable global-require */
+      /* eslint-disable import/no-extraneous-dependencies */
+      (require('@babel/register'))({
+        root: rootDirectory,
+        ignore: [/node_modules/],
+        only: [rootDirectory],
+      });
+      /* eslint-enable import/no-extraneous-dependencies */
+      /* eslint-enable global-require */
+    } else {
       // eslint-disable-next-line import/no-extraneous-dependencies
       const { register } = await import('ts-node');
       register();
@@ -87,7 +98,7 @@ export async function bootstrap<
       const targetDir = main.replace(/^(\.?\/?)build\//, '$1src/');
       entrypoint = useJsEntrypoint ? targetDir : targetDir.replace(/\.js$/, '.ts');
     } else {
-      entrypoint = useJsEntrypoint ? 'src/index.js' : './src/index.ts';
+      entrypoint = `src/index.${targetExtension}`;
     }
     codepath = 'src';
   } else if (main) {
