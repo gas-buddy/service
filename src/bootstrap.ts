@@ -21,6 +21,8 @@ interface BootstrapArguments {
   telemetry?: boolean;
   // Don't bind to http port or expose metrics
   nobind?: boolean;
+  // Specify whether the app wants to use a src/index.js as entrypoint instead of a src/index.ts
+  useJsEntrypoint?: boolean;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -31,11 +33,14 @@ function resolveMain(packageJson: NormalizedPackageJson) {
 }
 
 async function getServiceDetails(argv: BootstrapArguments = {}) {
+  const useJsEntrypoint = !!argv.useJsEntrypoint;
+
   if (argv.name && argv.root) {
     return {
       rootDirectory: argv.root,
       name: argv.name,
-      main: argv.main || (isDev() && !argv.built ? 'src/index.ts' : 'build/index.js'),
+      main: argv.main || (isDev() && !argv.built ? `src/index.${useJsEntrypoint ? 'j' : 't'}s` : 'build/index.js'),
+      useJsEntrypoint,
     };
   }
   const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
@@ -51,6 +56,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     main,
     rootDirectory: path.dirname(pkg.path),
     name: parts[parts.length - 1],
+    useJsEntrypoint,
   };
 }
 
@@ -62,18 +68,37 @@ export async function bootstrap<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
 >(argv?: BootstrapArguments) {
-  const { main, rootDirectory, name } = await getServiceDetails(argv);
+  const {
+    main,
+    rootDirectory,
+    name,
+    useJsEntrypoint,
+  } = await getServiceDetails(argv);
 
   let entrypoint: string;
   let codepath: 'build' | 'src' = 'build';
   if (isDev() && argv?.built !== true) {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const { register } = await import('ts-node');
-    register();
-    if (main) {
-      entrypoint = main.replace(/^(\.?\/?)build\//, '$1src/').replace(/\.js$/, '.ts');
+    const targetExtension = useJsEntrypoint ? 'js' : 'ts';
+    if (useJsEntrypoint) {
+      /* eslint-disable global-require */
+      /* eslint-disable import/no-extraneous-dependencies */
+      (require('@babel/register'))({
+        root: rootDirectory,
+        ignore: [/node_modules/],
+        only: [rootDirectory],
+      });
+      /* eslint-enable import/no-extraneous-dependencies */
+      /* eslint-enable global-require */
     } else {
-      entrypoint = './src/index.ts';
+      // eslint-disable-next-line import/no-extraneous-dependencies
+      const { register } = await import('ts-node');
+      register();
+    }
+    if (main) {
+      const targetDir = main.replace(/^(\.?\/?)build\//, '$1src/');
+      entrypoint = useJsEntrypoint ? targetDir : targetDir.replace(/\.js$/, '.ts');
+    } else {
+      entrypoint = `src/index.${targetExtension}`;
     }
     codepath = 'src';
   } else if (main) {
