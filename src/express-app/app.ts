@@ -87,7 +87,7 @@ export async function startApp<
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service, rootDirectory, codepath = 'build', name,
+    service, rootDirectory, codepath = 'build', name, useJsEntrypoint,
   } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
@@ -258,10 +258,11 @@ export async function startApp<
   }
 
   if (routing?.routes) {
+    const routeFileExtension = useJsEntrypoint ? 'js' : 'ts';
     await loadRoutes(
       app,
       path.resolve(rootDirectory, codepath, config.get('routing:routes')),
-      codepath === 'build' ? '**/*.js' : '**/*.ts',
+      codepath === 'build' ? '**/*.js' : `**/*.${routeFileExtension}`,
     );
   }
   if (routing?.openapi) {
