@@ -96,6 +96,8 @@ export interface ServiceStartOptions<
   // locals: { stuff } as Partial<MyLocals>
   locals?: Partial<SLocals>;
 
+  useJsEntrypoint?: boolean;
+
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
 }

@@ -126,6 +126,7 @@ export async function bootstrap<
     rootDirectory,
     service: impl.default || impl.service,
     codepath,
+    useJsEntrypoint,
   };
   const { startApp, listen } = await import('./express-app/app.js');
   const app = await startApp<SLocals, RLocals>(opts);
