@@ -123,6 +123,7 @@ export async function startApp<
   };
   const options = serviceImpl.configure?.(startOptions, baseOptions) || baseOptions;
 
+  logger.info('Loading configuration');
   const config = await loadConfiguration({
     name,
     configurationDirectories: options.configurationDirectories,
@@ -156,6 +157,7 @@ export async function startApp<
   }
 
   if (config.get('trustProxy')) {
+    logger.info('Setting up Trust Proxy');
     app.set('trust proxy', config.get('trustProxy'));
   }
 
@@ -180,13 +182,16 @@ export async function startApp<
       next();
     }
   };
+  logger.info('Setting up requests to attach service locals');
   app.use(attachServiceLocals);
 
   if (routing?.cookieParser) {
+    logger.info('Enabling cookie parser');
     app.use(cookieParser());
   }
 
   if (routing?.bodyParsers?.json) {
+    logger.info('Enabling body parser for json requests');
     app.use(
       express.json({
         verify(req, res, buf) {
@@ -199,6 +204,7 @@ export async function startApp<
     );
   }
   if (routing?.bodyParsers?.form) {
+    logger.info('Enabling body parser for form submissions');
     app.use(express.urlencoded());
   }
 
@@ -226,10 +232,12 @@ export async function startApp<
         next();
       }
     };
+    logger.info('Setting up authorization middleware');
     app.use(authorize);
   }
 
   if (routing?.static?.enabled) {
+    logger.info('Enabling static assets');
     const localdir = path.resolve(rootDirectory, routing?.static?.path || 'public');
     if (routing.static.mountPath) {
       app.use(routing.static.mountPath, express.static(localdir));
@@ -266,6 +274,7 @@ export async function startApp<
     );
   }
   if (routing?.openapi) {
+    logger.info('Setting up OpenAPI integration');
     app.use(openApi(app, rootDirectory, codepath, options.openApiOptions));
   }
 
