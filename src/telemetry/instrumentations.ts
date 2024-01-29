@@ -10,6 +10,7 @@ import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import { NetInstrumentation } from '@opentelemetry/instrumentation-net';
 import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
+import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { FetchInstrumentation } from './fetchInstrumentation';
 
 const InstrumentationMap = {
@@ -25,6 +26,7 @@ const InstrumentationMap = {
   '@opentelemetry/instrumentation-net': NetInstrumentation,
   '@opentelemetry/instrumentation-pg': PgInstrumentation,
   '@opentelemetry/instrumentation-pino': PinoInstrumentation,
+  '@opentelemetry/instrumentation-graphql': GraphQLInstrumentation,
 };
 
 // Config types inferred automatically from the first argument of the constructor
