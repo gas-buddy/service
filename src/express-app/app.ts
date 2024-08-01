@@ -87,7 +87,12 @@ export async function startApp<
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service, rootDirectory, codepath = 'build', name, useJsEntrypoint,
+    service,
+    rootDirectory,
+    codepath = 'build',
+    name,
+    useJsEntrypoint,
+    onConfigurationLoaded,
   } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
@@ -148,6 +153,13 @@ export async function startApp<
     config,
     name,
   });
+
+  // Allow consumers of the service to have a handle on configuration as soon as its initialized
+  // to request synchronous changes if needed
+  // This support is needed mostly for cronjobs and cli utilities
+  if (onConfigurationLoaded && typeof onConfigurationLoaded === 'function') {
+    onConfigurationLoaded(app);
+  }
 
   try {
     await enableMetrics(app, name);

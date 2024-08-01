@@ -68,4 +68,38 @@ describe('fake-serv', () => {
       });
     });
   });
+
+  test('allow configuration modification before starting service', async () => {
+    const options: ServiceStartOptions<FakeServLocals> = {
+      service: fakeServ,
+      name: 'fake-serv',
+      rootDirectory: path.resolve(__dirname, './fake-serv'),
+      codepath: 'src',
+      onConfigurationLoaded: (app) => {
+        Object.assign(app.locals.config, {
+          logging: {
+            level: 'warn',
+          },
+        });
+      },
+    };
+    const configSpy = jest.spyOn(options, 'onConfigurationLoaded');
+
+    const app = await startApp(options).catch((error) => {
+      console.error(error);
+      throw error;
+    });
+    expect(app).toBeTruthy();
+
+    expect(configSpy).toHaveBeenCalled();
+
+    const { body } = await request(app).get('/world').timeout(500).expect(200);
+    expect(body.hello).toEqual('world');
+
+    // Mocking
+    await request(app).post('/world').expect(500);
+
+    // Clean shutdown
+    await expect(shutdownApp(app)).resolves.toBeUndefined();
+  });
 });

@@ -12,7 +12,7 @@ import { bootstrap } from '../bootstrap';
  * nobind - do not listen on http port or expose metrics
  */
 const argv = minimist(process.argv.slice(2), {
-  boolean: ['built', 'repl', 'telemetry', 'nobind'],
+  boolean: ['built', 'repl', 'telemetry', 'nobind', 'useJsEntrypoint'],
 });
 
 const noTelemetry = (argv.repl || isDev()) && !argv.telemetry;

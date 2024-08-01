@@ -2,7 +2,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
-import type { RequestLocals, ServiceLocals, ServiceStartOptions } from './types';
+import type {
+  RequestLocals, ServiceExpress, ServiceLocals, ServiceStartOptions,
+} from './types';
 import { isDev } from './env';
 import { startWithTelemetry } from './telemetry/index';
 
@@ -23,6 +25,8 @@ interface BootstrapArguments {
   nobind?: boolean;
   // Specify whether the app wants to use a src/index.js as entrypoint instead of a src/index.ts
   useJsEntrypoint?: boolean;
+  // Handle configuration changes for service configuration before actually starting the app
+  onConfigurationLoaded?: (app: ServiceExpress<ServiceLocals>) => void;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -41,6 +45,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
       name: argv.name,
       main: argv.main || (isDev() && !argv.built ? `src/index.${useJsEntrypoint ? 'j' : 't'}s` : 'build/index.js'),
       useJsEntrypoint,
+      onConfigurationLoaded: argv.onConfigurationLoaded,
     };
   }
   const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
@@ -57,6 +62,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     rootDirectory: path.dirname(pkg.path),
     name: parts[parts.length - 1],
     useJsEntrypoint,
+    onConfigurationLoaded: argv.onConfigurationLoaded,
   };
 }
 
@@ -73,6 +79,7 @@ export async function bootstrap<
     rootDirectory,
     name,
     useJsEntrypoint,
+    onConfigurationLoaded,
   } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -115,6 +122,7 @@ export async function bootstrap<
       name,
       rootDirectory,
       service: absoluteEntrypoint,
+      onConfigurationLoaded,
     });
   }
 
@@ -133,3 +141,5 @@ export async function bootstrap<
   const server = argv?.nobind ? undefined : await listen(app);
   return { server, app };
 }
+
+export { bootstrap as startServiceInstance };

@@ -100,6 +100,8 @@ export interface ServiceStartOptions<
 
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
+
+  onConfigurationLoaded?: (app: ServiceExpress<SLocals>) => void,
 }
 
 export interface DelayLoadServiceStartOptions extends Omit<ServiceStartOptions, 'service'> {
