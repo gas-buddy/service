@@ -92,7 +92,7 @@ export async function startApp<
     codepath = 'build',
     name,
     useJsEntrypoint,
-    onConfigurationLoaded,
+    configChanges,
   } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
@@ -154,13 +154,6 @@ export async function startApp<
     name,
   });
 
-  // Allow consumers of the service to have a handle on configuration as soon as its initialized
-  // to request synchronous changes if needed
-  // This support is needed mostly for cronjobs and cli utilities
-  if (onConfigurationLoaded && typeof onConfigurationLoaded === 'function') {
-    onConfigurationLoaded(app);
-  }
-
   try {
     await enableMetrics(app, name);
   } catch (error) {
@@ -196,6 +189,14 @@ export async function startApp<
   };
   logger.info('Setting up requests to attach service locals');
   app.use(attachServiceLocals);
+
+  // Allow consumers of the service to have a handle on configuration as soon as its initialized
+  // to request synchronous changes if needed
+  // This support is needed mostly for cronjobs and cli utilities
+  if (configChanges) {
+    const overrides = configChanges(app);
+    Object.assign(app.locals.config, overrides);
+  }
 
   if (routing?.cookieParser) {
     logger.info('Enabling cookie parser');

@@ -70,20 +70,23 @@ describe('fake-serv', () => {
   });
 
   test('allow configuration modification before starting service', async () => {
+    let configSpy;
+
     const options: ServiceStartOptions<FakeServLocals> = {
       service: fakeServ,
       name: 'fake-serv',
       rootDirectory: path.resolve(__dirname, './fake-serv'),
       codepath: 'src',
-      onConfigurationLoaded: (app) => {
-        Object.assign(app.locals.config, {
+      configChanges: (app) => {
+        configSpy = jest.spyOn(app.locals.config, 'get');
+        return {
           logging: {
+            ...app.locals.config.get('logging'),
             level: 'warn',
           },
-        });
+        };
       },
     };
-    const configSpy = jest.spyOn(options, 'onConfigurationLoaded');
 
     const app = await startApp(options).catch((error) => {
       console.error(error);

@@ -25,8 +25,8 @@ interface BootstrapArguments {
   nobind?: boolean;
   // Specify whether the app wants to use a src/index.js as entrypoint instead of a src/index.ts
   useJsEntrypoint?: boolean;
-  // Handle configuration changes for service configuration before actually starting the app
-  onConfigurationLoaded?: (app: ServiceExpress<ServiceLocals>) => void;
+  // Provide configuration changes to be overwritten before actually starting the app
+  configChanges?: (app: ServiceExpress<ServiceLocals>) => Record<string, any>;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -45,7 +45,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
       name: argv.name,
       main: argv.main || (isDev() && !argv.built ? `src/index.${useJsEntrypoint ? 'j' : 't'}s` : 'build/index.js'),
       useJsEntrypoint,
-      onConfigurationLoaded: argv.onConfigurationLoaded,
+      configChanges: argv.configChanges,
     };
   }
   const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
@@ -62,7 +62,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     rootDirectory: path.dirname(pkg.path),
     name: parts[parts.length - 1],
     useJsEntrypoint,
-    onConfigurationLoaded: argv.onConfigurationLoaded,
+    configChanges: argv.configChanges,
   };
 }
 
@@ -79,7 +79,7 @@ export async function bootstrap<
     rootDirectory,
     name,
     useJsEntrypoint,
-    onConfigurationLoaded,
+    configChanges,
   } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -122,7 +122,6 @@ export async function bootstrap<
       name,
       rootDirectory,
       service: absoluteEntrypoint,
-      onConfigurationLoaded,
     });
   }
 
@@ -135,6 +134,7 @@ export async function bootstrap<
     service: impl.default || impl.service,
     codepath,
     useJsEntrypoint,
+    configChanges,
   };
   const { startApp, listen } = await import('./express-app/app.js');
   const app = await startApp<SLocals, RLocals>(opts);
