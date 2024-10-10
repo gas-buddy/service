@@ -37,7 +37,7 @@ function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
     return;
   }
 
-  const { logger, service } = app.locals;
+  const { logger, service, runId } = app.locals;
   const hrdur = process.hrtime(prefs.start);
 
   const dur = hrdur[0] + hrdur[1] / 1000000000;
@@ -49,6 +49,11 @@ function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
 
   if (res.locals.user?.id) {
     endLog.u = res.locals.user.id;
+  }
+
+  if (!endLog.c && !endLog.trace_id && runId) {
+    endLog.trace_id = runId;
+    endLog.c = runId;
   }
 
   if (error) {
@@ -84,7 +89,7 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
   logRequests?: boolean,
   logResponses?: boolean,
 ): RequestHandler {
-  const { logger, service } = app.locals;
+  const { logger, service, runId } = app.locals;
   return function gblogger(req, res, next) {
     const prefs: LogPrefs = {
       start: process.hrtime(),
@@ -120,7 +125,7 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
       ...getBasicInfo(req),
       ref: req.headers.referer || undefined,
       sid: (req as any).session?.id,
-      c: req.headers.correlationid || undefined,
+      c: req.headers.correlationid || runId || undefined,
     };
     service.getLogFields?.(req as any, preLog);
     logger.info(preLog, 'pre');

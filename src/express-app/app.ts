@@ -82,13 +82,16 @@ async function endMetrics<SLocals extends ServiceLocals = ServiceLocals>(
   logger.info('Metrics shutdown');
 }
 
+let runId: string | undefined;
+
 export async function startApp<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service, rootDirectory, codepath = 'build', name, useJsEntrypoint, runId,
+    service, rootDirectory, codepath = 'build', name, useJsEntrypoint, runId: temporaryRunId,
   } = startOptions;
+  runId = temporaryRunId;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
@@ -161,6 +164,7 @@ export async function startApp<
     logger,
     config,
     name,
+    runId,
   });
 
   try {
@@ -308,6 +312,13 @@ export async function startApp<
 
 export async function shutdownApp(app: ServiceExpress) {
   const { logger } = app.locals;
+  // Clear runId if it was provided for app startup
+  if (runId) {
+    runId = undefined;
+  }
+  if (app.locals.runId) {
+    delete app.locals.runId;
+  }
   try {
     await app.locals.service.stop?.(app);
     await endMetrics(app);
