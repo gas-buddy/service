@@ -142,3 +142,8 @@ export interface RequestLike<
     locals: RLocals;
   };
 }
+
+export type RunWithServiceOptions = {
+  overwriteConfig?: (config: ConfigStore) => void;
+  runId?: string;
+};

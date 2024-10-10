@@ -6,5 +6,4 @@ export * from './env';
 export * from './config';
 export * from './error';
 export * from './bootstrap';
-export * from './hook';
-export * from './runWithService';
+export * from './hooks';
