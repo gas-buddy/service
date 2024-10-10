@@ -13,11 +13,7 @@ import type { RequestHandler, Response } from 'express';
 import { loadConfiguration } from '../config/index';
 import findPort from '../development/port-finder';
 import openApi from '../openapi';
-import {
-  errorHandlerMiddleware,
-  loggerMiddleware,
-  notFoundMiddleware,
-} from '../telemetry/requestLogger';
+import { errorHandlerMiddleware, notFoundMiddleware } from './middlewares';
 import loadRoutes from './route-loader';
 
 import type {
@@ -31,7 +27,7 @@ import type {
 import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
-import getLogger from '../logger';
+import { getLogger, loggerMiddleware } from '../logger';
 
 const METRICS_KEY = Symbol('PrometheusMetricsInfo');
 
