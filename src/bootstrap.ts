@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
 import type { RequestLocals, ServiceLocals, ServiceStartOptions } from './types';
+import { ConfigStore } from './config/types';
 import { isDev } from './env';
 import { startWithTelemetry } from './telemetry/index';
 
@@ -25,6 +26,8 @@ interface BootstrapArguments {
   useJsEntrypoint?: boolean;
   // Unique id applied to application for telemetry, specifically for cronjobs and utilities
   runId?: string;
+  // Hook to overwrite hydrated configuration before starting the service
+  overwriteConfig?: (config: ConfigStore) => void;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -37,6 +40,7 @@ function resolveMain(packageJson: NormalizedPackageJson) {
 async function getServiceDetails(argv: BootstrapArguments = {}) {
   const useJsEntrypoint = !!argv.useJsEntrypoint;
   const runId = argv.nobind ? argv.runId : undefined;
+  const overwriteConfig = argv.nobind ? argv.overwriteConfig : undefined;
 
   if (argv.name && argv.root) {
     return {
@@ -62,6 +66,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     name: parts[parts.length - 1],
     useJsEntrypoint,
     runId,
+    overwriteConfig,
   };
 }
 
@@ -79,6 +84,7 @@ export async function bootstrap<
     name,
     useJsEntrypoint,
     runId,
+    overwriteConfig,
   } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -134,6 +140,7 @@ export async function bootstrap<
     codepath,
     useJsEntrypoint,
     runId,
+    overwriteConfig,
   };
   const { startApp, listen } = await import('./express-app/app.js');
   const app = await startApp<SLocals, RLocals>(opts);
@@ -141,4 +148,4 @@ export async function bootstrap<
   return { server, app };
 }
 
-export { bootstrap as runWithService };
+export { bootstrap as startServiceInstance };
