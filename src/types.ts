@@ -98,6 +98,8 @@ export interface ServiceStartOptions<
 
   useJsEntrypoint?: boolean;
 
+  runId?: string;
+
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
 }

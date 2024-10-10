@@ -23,6 +23,8 @@ interface BootstrapArguments {
   nobind?: boolean;
   // Specify whether the app wants to use a src/index.js as entrypoint instead of a src/index.ts
   useJsEntrypoint?: boolean;
+  // Unique id applied to application for telemetry, specifically for cronjobs and utilities
+  runId?: string;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -34,6 +36,7 @@ function resolveMain(packageJson: NormalizedPackageJson) {
 
 async function getServiceDetails(argv: BootstrapArguments = {}) {
   const useJsEntrypoint = !!argv.useJsEntrypoint;
+  const runId = argv.nobind ? argv.runId : undefined;
 
   if (argv.name && argv.root) {
     return {
@@ -41,6 +44,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
       name: argv.name,
       main: argv.main || (isDev() && !argv.built ? `src/index.${useJsEntrypoint ? 'j' : 't'}s` : 'build/index.js'),
       useJsEntrypoint,
+      runId,
     };
   }
   const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
@@ -57,6 +61,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     rootDirectory: path.dirname(pkg.path),
     name: parts[parts.length - 1],
     useJsEntrypoint,
+    runId,
   };
 }
 
@@ -73,6 +78,7 @@ export async function bootstrap<
     rootDirectory,
     name,
     useJsEntrypoint,
+    runId,
   } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -127,6 +133,7 @@ export async function bootstrap<
     service: impl.default || impl.service,
     codepath,
     useJsEntrypoint,
+    runId,
   };
   const { startApp, listen } = await import('./express-app/app.js');
   const app = await startApp<SLocals, RLocals>(opts);

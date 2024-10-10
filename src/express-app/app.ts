@@ -87,26 +87,40 @@ export async function startApp<
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service, rootDirectory, codepath = 'build', name, useJsEntrypoint,
+    service, rootDirectory, codepath = 'build', name, useJsEntrypoint, runId,
   } = startOptions;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
     minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
   });
+  const logFormatters = {
+    bindings(bindings: pino.Bindings) {
+      const updatedBindings = {
+        ...bindings,
+        trace_id: bindings.trace_id // Use trace_id if available
+          || bindings.correlationid || bindings.c // Use correlationid if available
+          || runId // Use runId if available - used in case of jobs and utilities
+          || undefined, // Dont set if none of the above are available,
+      };
+      return updatedBindings;
+    },
+  };
   const logger = shouldPrettyPrint
     ? pino({
       transport: {
-        destination,
         target: 'pino-pretty',
         options: {
           colorize: true,
         },
       },
+      destination,
+      formatters: logFormatters,
     })
     : pino(
       {
         formatters: {
+          ...logFormatters,
           level(label) {
             return { level: label };
           },
