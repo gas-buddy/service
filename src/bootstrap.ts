@@ -140,3 +140,5 @@ export async function bootstrap<
   const server = argv?.nobind ? undefined : await listen(app);
   return { server, app };
 }
+
+export { bootstrap as runWithService };
