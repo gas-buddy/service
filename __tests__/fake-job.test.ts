@@ -1,6 +1,15 @@
 import { runWithService } from '../src/hooks';
 
 describe('fake-job', () => {
+  test('verify assertions for options', async () => {
+    runWithService(async (app) => {
+      expect(app).toBeDefined();
+      // @ts-ignore
+    }, {}).catch((e) => {
+      expect(e.message).toEqual('"name" is required in options');
+    });
+  });
+
   test('basic job functionality', async () => {
     runWithService(async (app) => {
       expect(app).toBeDefined();
@@ -21,6 +30,7 @@ describe('fake-job', () => {
       // Verify that the runId provided to service run does get applied in locals
       expect(app.locals.runId).toEqual('generated-uuid-123456789');
     }, {
+      name: 'fake-job',
       runId: 'generated-uuid-123456789',
       overwriteConfig: (config) => {
         config.set('test', 'foo bar');

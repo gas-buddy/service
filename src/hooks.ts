@@ -1,4 +1,5 @@
 import type { Server } from 'http';
+import assert from 'assert';
 import type {
   RequestLocals,
   Service,
@@ -43,19 +44,34 @@ export async function runWithService(
     app: ServiceExpress,
     server: Server | undefined,
   ) => Promise<void>,
-  options: RunWithServiceOptions = {},
+  options: RunWithServiceOptions,
 ) {
-  const opts = options || {};
+  assert(options.name, '"name" is required in options');
 
+  let exitCode = -1;
   return startServiceInstance({
     nobind: true,
-    runId: opts.runId,
-    overwriteConfig: opts.overwriteConfig,
+    name: options.name,
+    runId: options.runId,
+    overwriteConfig: options.overwriteConfig,
   })
-    .then(({ app, server }) => asyncFn(app, server))
+    .then(({ app, server }) => {
+      app.locals.logger.info('Executing: runWithService');
+      try {
+        asyncFn(app, server);
+        exitCode = 1;
+        app.locals.logger.info('Completed: runWithService');
+      } catch (err) {
+        app.locals.logger.error({ error: err }, 'FAILED: runWithService');
+        exitCode = 1;
+      }
+    })
     .catch((e) => {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.error('Service configuration failed', e);
-      process.exitCode = -1;
+      exitCode = 1;
+    })
+    .finally(() => {
+      process.exit(exitCode);
     });
 }
