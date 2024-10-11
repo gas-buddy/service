@@ -46,26 +46,28 @@ export async function runWithService(
   ) => Promise<void>,
   options: RunWithServiceOptions,
 ) {
-  assert(options.name, '"name" is required in options');
+  const { name: taskName, runId, overwriteConfig } = options;
+  assert(!!taskName?.length, '"name" is required in options');
 
   let exitCode = -1;
   return startServiceInstance({
     nobind: true,
-    name: options.name,
-    runId: options.runId,
-    overwriteConfig: options.overwriteConfig,
+    name: taskName,
+    runId,
+    overwriteConfig,
   })
     .then(async ({ app, server }) => {
-      app.locals.logger.info(`Executing: ${options.name}`);
+      const { logger } = app.locals;
+      logger.info(`Executing: ${taskName}`);
       try {
         await asyncFn(app, server);
         exitCode = 0;
-        app.locals.logger.info(`Completed: ${options.name}`);
+        logger.info(`Completed: ${taskName}`);
       } catch (err) {
-        app.locals.logger.error({ error: err }, `FAILED: ${options.name}`);
+        logger.error({ error: err }, `FAILED: ${taskName}`);
         exitCode = 1;
       } finally {
-        app.locals.logger.info(`Exiting: process-batch-file, exitCode: ${exitCode}`);
+        logger.info(`Exiting: ${taskName}, exitCode: ${exitCode}`);
         process.exit(exitCode);
       }
     })
