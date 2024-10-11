@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import readPackageUp from 'read-pkg-up';
 import type { NormalizedPackageJson } from 'read-pkg-up';
 import type { RequestLocals, ServiceLocals, ServiceStartOptions } from './types';
+import { ConfigStore } from './config/types';
 import { isDev } from './env';
 import { startWithTelemetry } from './telemetry/index';
 
@@ -23,6 +24,10 @@ interface BootstrapArguments {
   nobind?: boolean;
   // Specify whether the app wants to use a src/index.js as entrypoint instead of a src/index.ts
   useJsEntrypoint?: boolean;
+  // Unique id applied to application for telemetry, specifically for cronjobs and utilities
+  runId?: string;
+  // Hook to overwrite hydrated configuration before starting the service
+  overwriteConfig?: (config: ConfigStore) => void;
 }
 
 function resolveMain(packageJson: NormalizedPackageJson) {
@@ -34,6 +39,8 @@ function resolveMain(packageJson: NormalizedPackageJson) {
 
 async function getServiceDetails(argv: BootstrapArguments = {}) {
   const useJsEntrypoint = !!argv.useJsEntrypoint;
+  const runId = argv.nobind ? argv.runId : undefined;
+  const overwriteConfig = argv.nobind ? argv.overwriteConfig : undefined;
 
   if (argv.name && argv.root) {
     return {
@@ -41,6 +48,7 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
       name: argv.name,
       main: argv.main || (isDev() && !argv.built ? `src/index.${useJsEntrypoint ? 'j' : 't'}s` : 'build/index.js'),
       useJsEntrypoint,
+      runId,
     };
   }
   const cwd = argv.packageDir ? path.resolve(argv.packageDir) : process.cwd();
@@ -57,6 +65,8 @@ async function getServiceDetails(argv: BootstrapArguments = {}) {
     rootDirectory: path.dirname(pkg.path),
     name: parts[parts.length - 1],
     useJsEntrypoint,
+    runId,
+    overwriteConfig,
   };
 }
 
@@ -73,6 +83,8 @@ export async function bootstrap<
     rootDirectory,
     name,
     useJsEntrypoint,
+    runId,
+    overwriteConfig,
   } = await getServiceDetails(argv);
 
   let entrypoint: string;
@@ -127,9 +139,13 @@ export async function bootstrap<
     service: impl.default || impl.service,
     codepath,
     useJsEntrypoint,
+    runId,
+    overwriteConfig,
   };
   const { startApp, listen } = await import('./express-app/app.js');
   const app = await startApp<SLocals, RLocals>(opts);
   const server = argv?.nobind ? undefined : await listen(app);
   return { server, app };
 }
+
+export { bootstrap as startServiceInstance };

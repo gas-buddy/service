@@ -13,11 +13,7 @@ import type { RequestHandler, Response } from 'express';
 import { loadConfiguration } from '../config/index';
 import findPort from '../development/port-finder';
 import openApi from '../openapi';
-import {
-  errorHandlerMiddleware,
-  loggerMiddleware,
-  notFoundMiddleware,
-} from '../telemetry/requestLogger';
+import { errorHandlerMiddleware, notFoundMiddleware } from './middlewares';
 import loadRoutes from './route-loader';
 
 import type {
@@ -31,6 +27,7 @@ import type {
 import { ConfigurationSchema } from '../config/schema';
 import { isDev } from '../env';
 import startInternalApp from './internal-server';
+import { getLogger, loggerMiddleware } from '../logger';
 
 const METRICS_KEY = Symbol('PrometheusMetricsInfo');
 
@@ -82,38 +79,33 @@ async function endMetrics<SLocals extends ServiceLocals = ServiceLocals>(
   logger.info('Metrics shutdown');
 }
 
+let runId: string | undefined;
+
 export async function startApp<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
 >(startOptions: ServiceStartOptions<SLocals, RLocals>): Promise<ServiceExpress<SLocals>> {
   const {
-    service, rootDirectory, codepath = 'build', name, useJsEntrypoint,
+    service,
+    rootDirectory,
+    codepath = 'build',
+    name,
+    useJsEntrypoint,
+    runId: temporaryRunId,
+    overwriteConfig,
   } = startOptions;
+  runId = temporaryRunId;
   const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
   const destination = pino.destination({
     dest: process.env.LOG_TO_FILE || process.stdout.fd,
     minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
   });
-  const logger = shouldPrettyPrint
-    ? pino({
-      transport: {
-        destination,
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-        },
-      },
-    })
-    : pino(
-      {
-        formatters: {
-          level(label) {
-            return { level: label };
-          },
-        },
-      },
-      destination,
-    );
+
+  const logger = getLogger({
+    shouldPrettyPrint,
+    runId,
+    destination,
+  });
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
@@ -129,6 +121,11 @@ export async function startApp<
     configurationDirectories: options.configurationDirectories,
     rootDirectory: codepath,
   });
+
+  // Allow overwriting configuration
+  if (typeof overwriteConfig === 'function') {
+    overwriteConfig(config);
+  }
 
   const logging = config.get('logging') as ConfigurationSchema['logging'];
   logger.level = logging?.level || 'info';
@@ -147,6 +144,7 @@ export async function startApp<
     logger,
     config,
     name,
+    runId,
   });
 
   try {
@@ -294,6 +292,13 @@ export async function startApp<
 
 export async function shutdownApp(app: ServiceExpress) {
   const { logger } = app.locals;
+  // Clear runId if it was provided for app startup
+  if (runId) {
+    runId = undefined;
+  }
+  if (app.locals.runId) {
+    delete app.locals.runId;
+  }
   try {
     await app.locals.service.stop?.(app);
     await endMetrics(app);

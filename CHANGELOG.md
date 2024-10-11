@@ -180,3 +180,10 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 12.0.0
 ======
 * Move some configuration keys under "server" setting - see schema.ts for the update
+
+12.22.0
+=======
+
+* Add support for tracing using `runId` through startup options and app.locals
+* Add `runWithService` hook to support writing cronjobs and cli utilities
+* Reorganized middleware relate code

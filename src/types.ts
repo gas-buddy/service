@@ -24,6 +24,7 @@ export interface ServiceLocals {
   config: ConfigStore;
   meter: metrics.Meter;
   internalApp: Application<InternalLocals>;
+  runId?: string | undefined;
 }
 
 export interface RequestLocals {
@@ -98,8 +99,12 @@ export interface ServiceStartOptions<
 
   useJsEntrypoint?: boolean;
 
+  runId?: string;
+
   // And finally, the function that creates the service instance
   service: () => Service<SLocals, RLocals>;
+
+  overwriteConfig?: (config: ConfigStore) => void;
 }
 
 export interface DelayLoadServiceStartOptions extends Omit<ServiceStartOptions, 'service'> {
@@ -137,3 +142,9 @@ export interface RequestLike<
     locals: RLocals;
   };
 }
+
+export type RunWithServiceOptions = {
+  name: string;
+  overwriteConfig?: (config: ConfigStore) => void;
+  runId?: string;
+};
