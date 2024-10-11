@@ -55,10 +55,10 @@ export async function runWithService(
     runId: options.runId,
     overwriteConfig: options.overwriteConfig,
   })
-    .then(({ app, server }) => {
+    .then(async ({ app, server }) => {
       app.locals.logger.info(`Executing: ${options.name}`);
       try {
-        asyncFn(app, server);
+        await asyncFn(app, server);
         exitCode = 0;
         app.locals.logger.info(`Completed: ${options.name}`);
       } catch (err) {

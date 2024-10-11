@@ -30,6 +30,7 @@ describe('fake-job', () => {
 
       // Verify that the runId provided to service run does get applied in locals
       expect(app.locals.runId).toEqual('generated-uuid-123456789');
+      console.log('loggerSpy.mock.lastCall: ', loggerSpy.mock.lastCall);
       expect(loggerSpy.mock.lastCall).toHaveBeenCalledWith({
         trace_id: 'generated-uuid-123456789',
       });
