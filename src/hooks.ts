@@ -56,15 +56,16 @@ export async function runWithService(
     overwriteConfig: options.overwriteConfig,
   })
     .then(({ app, server }) => {
-      app.locals.logger.info('Executing: runWithService');
+      app.locals.logger.info(`Executing: ${options.name}`);
       try {
         asyncFn(app, server);
         exitCode = 0;
-        app.locals.logger.info('Completed: runWithService');
+        app.locals.logger.info(`Completed: ${options.name}`);
       } catch (err) {
-        app.locals.logger.error({ error: err }, 'FAILED: runWithService');
+        app.locals.logger.error({ error: err }, `FAILED: ${options.name}`);
         exitCode = 1;
       } finally {
+        app.locals.logger.info(`Exiting: process-batch-file, exitCode: ${exitCode}`);
         process.exit(exitCode);
       }
     })
