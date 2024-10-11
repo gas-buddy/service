@@ -59,19 +59,17 @@ export async function runWithService(
       app.locals.logger.info('Executing: runWithService');
       try {
         asyncFn(app, server);
-        exitCode = 1;
+        exitCode = 0;
         app.locals.logger.info('Completed: runWithService');
       } catch (err) {
         app.locals.logger.error({ error: err }, 'FAILED: runWithService');
         exitCode = 1;
+      } finally {
+        process.exit(exitCode);
       }
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
-      console.error('Service configuration failed', e);
-      exitCode = 1;
-    })
-    .finally(() => {
-      process.exit(exitCode);
+      console.error('runWithService failed with unexpected error', e);
     });
 }
