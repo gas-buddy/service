@@ -39,9 +39,9 @@ export function useService<
   };
 }
 
-export async function runWithService(
+export async function runWithService<SLocals extends ServiceLocals = ServiceLocals>(
   asyncFn: (
-    app: ServiceExpress,
+    app: ServiceExpress<ServiceLocals>,
     server: Server | undefined,
   ) => Promise<void>,
   options: RunWithServiceOptions,
@@ -60,7 +60,7 @@ export async function runWithService(
       const { logger } = app.locals;
       logger.info(`Executing: ${taskName}`);
       try {
-        await asyncFn(app, server);
+        await asyncFn(app as ServiceExpress<SLocals>, server);
         exitCode = 0;
         logger.info(`Completed: ${taskName}`);
       } catch (err) {
