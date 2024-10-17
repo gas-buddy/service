@@ -46,14 +46,13 @@ export async function runWithService<SLocals extends ServiceLocals = ServiceLoca
   ) => Promise<void>,
   options: RunWithServiceOptions,
 ) {
-  const { name: taskName, runId, overwriteConfig } = options;
+  const { name: taskName, overwriteConfig } = options;
   assert(!!taskName?.length, '"name" is required in options');
 
   let exitCode = -1;
   return startServiceInstance({
     nobind: true,
     name: taskName,
-    runId,
     overwriteConfig,
   })
     .then(async ({ app, server }) => {

@@ -14,7 +14,6 @@ describe('fake-job', () => {
       expect(app).toBeDefined();
       expect(app.locals).toBeDefined();
       expect(app.locals.logger).toBeDefined();
-      const loggerSpy = jest.spyOn(app.locals.logger, 'info');
 
       expect(app.locals.config).toBeDefined();
 
@@ -27,15 +26,8 @@ describe('fake-job', () => {
       });
       // @ts-ignore
       expect(app.locals.foo).toEqual('bar');
-
-      // Verify that the runId provided to service run does get applied in locals
-      expect(app.locals.runId).toEqual('generated-uuid-123456789');
-      expect(loggerSpy.mock.lastCall).toHaveBeenCalledWith({
-        trace_id: 'generated-uuid-123456789',
-      });
     }, {
       name: 'fake-job',
-      runId: 'generated-uuid-123456789',
       overwriteConfig: (config) => {
         config.set('test', 'foo bar');
       },

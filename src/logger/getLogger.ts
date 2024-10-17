@@ -2,7 +2,6 @@ import pino from 'pino';
 
 export type BaseLoggerOptions = {
   shouldPrettyPrint?: boolean;
-  runId?: string;
   destination: pino.DestinationStream,
 };
 
@@ -13,7 +12,7 @@ export function getLogger(options: BaseLoggerOptions) {
     return logger;
   }
 
-  const { shouldPrettyPrint, runId, destination } = options;
+  const { shouldPrettyPrint, destination } = options;
   logger = pino({
     ...shouldPrettyPrint && {
       transport: {
@@ -30,7 +29,6 @@ export function getLogger(options: BaseLoggerOptions) {
           ...bindings,
           trace_id: bindings.trace_id // Use trace_id if available
             || bindings.correlationid || bindings.c // Use correlationid if available
-            || runId // Use runId if available - used in case of jobs and utilities
             || undefined, // Dont set if none of the above are available,
         };
         return updatedBindings;
