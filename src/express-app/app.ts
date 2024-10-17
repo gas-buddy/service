@@ -25,7 +25,6 @@ import type {
   ServiceStartOptions,
 } from '../types';
 import { ConfigurationSchema } from '../config/schema';
-import { isDev } from '../env';
 import startInternalApp from './internal-server';
 import { getLogger, loggerMiddleware } from '../logger';
 
@@ -91,16 +90,8 @@ export async function startApp<
     useJsEntrypoint,
     overwriteConfig,
   } = startOptions;
-  const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
-  const destination = pino.destination({
-    dest: process.env.LOG_TO_FILE || process.stdout.fd,
-    minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
-  });
 
-  const logger = getLogger({
-    shouldPrettyPrint,
-    destination,
-  });
+  const logger = getLogger();
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
