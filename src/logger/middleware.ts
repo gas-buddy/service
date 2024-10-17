@@ -9,7 +9,7 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
   logRequests?: boolean,
   logResponses?: boolean,
 ): RequestHandler {
-  const { logger, service, runId } = app.locals;
+  const { logger, service } = app.locals;
   return function gblogger(req, res, next) {
     const prefs: LogPrefs = {
       start: process.hrtime(),
@@ -45,7 +45,7 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
       ...getBasicInfo(req),
       ref: req.headers.referer || undefined,
       sid: (req as any).session?.id,
-      c: req.headers.correlationid || runId || undefined,
+      c: req.headers.correlationid || undefined,
     };
     service.getLogFields?.(req as any, preLog);
     logger.info(preLog, 'pre');

@@ -25,7 +25,6 @@ import type {
   ServiceStartOptions,
 } from '../types';
 import { ConfigurationSchema } from '../config/schema';
-import { isDev } from '../env';
 import startInternalApp from './internal-server';
 import { getLogger, loggerMiddleware } from '../logger';
 
@@ -79,8 +78,6 @@ async function endMetrics<SLocals extends ServiceLocals = ServiceLocals>(
   logger.info('Metrics shutdown');
 }
 
-let runId: string | undefined;
-
 export async function startApp<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
@@ -91,21 +88,10 @@ export async function startApp<
     codepath = 'build',
     name,
     useJsEntrypoint,
-    runId: temporaryRunId,
     overwriteConfig,
   } = startOptions;
-  runId = temporaryRunId;
-  const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
-  const destination = pino.destination({
-    dest: process.env.LOG_TO_FILE || process.stdout.fd,
-    minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
-  });
 
-  const logger = getLogger({
-    shouldPrettyPrint,
-    runId,
-    destination,
-  });
+  const logger = getLogger();
 
   const serviceImpl = service();
   assert(serviceImpl?.start, 'Service function did not return a conforming object');
@@ -144,7 +130,6 @@ export async function startApp<
     logger,
     config,
     name,
-    runId,
   });
 
   try {
@@ -292,13 +277,6 @@ export async function startApp<
 
 export async function shutdownApp(app: ServiceExpress) {
   const { logger } = app.locals;
-  // Clear runId if it was provided for app startup
-  if (runId) {
-    runId = undefined;
-  }
-  if (app.locals.runId) {
-    delete app.locals.runId;
-  }
   try {
     await app.locals.service.stop?.(app);
     await endMetrics(app);
