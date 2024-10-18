@@ -29,7 +29,7 @@ export function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
     return;
   }
 
-  const { logger, service, runId } = app.locals;
+  const { logger, service } = app.locals;
   const hrdur = process.hrtime(prefs.start);
 
   const dur = hrdur[0] + hrdur[1] / 1000000000;
@@ -41,11 +41,6 @@ export function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
 
   if (res.locals.user?.id) {
     endLog.u = res.locals.user.id;
-  }
-
-  if (!endLog.c && !endLog.trace_id && runId) {
-    endLog.trace_id = runId;
-    endLog.c = runId;
   }
 
   if (error) {

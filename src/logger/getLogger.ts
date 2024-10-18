@@ -1,47 +1,57 @@
 import pino from 'pino';
+import { isDev } from '../env';
 
 export type BaseLoggerOptions = {
   shouldPrettyPrint?: boolean;
-  runId?: string;
   destination: pino.DestinationStream,
+  meta?: Record<string, any>;
 };
 
-let logger: pino.Logger;
+function getBindings(bindings: pino.Bindings, meta?: Record<string, any>) {
+  const updatedBindings = {
+    ...bindings,
+    ...meta,
+  };
+  return updatedBindings;
+}
 
-export function getLogger(options: BaseLoggerOptions) {
-  if (logger) {
-    return logger;
-  }
+export function getLogger(meta?: Record<string, any>) {
+  const shouldPrettyPrint = isDev() && !process.env.NO_PRETTY_LOGS;
+  const destination = pino.destination({
+    dest: process.env.LOG_TO_FILE || process.stdout.fd,
+    minLength: process.env.LOG_BUFFER ? Number(process.env.LOG_BUFFER) : undefined,
+  });
 
-  const { shouldPrettyPrint, runId, destination } = options;
-  logger = pino({
-    ...shouldPrettyPrint && {
+  let loggerOptions;
+  if (shouldPrettyPrint) {
+    loggerOptions = {
       transport: {
+        destination,
         target: 'pino-pretty',
         options: {
           colorize: true,
         },
       },
-    },
-    destination,
-    formatters: {
-      bindings(bindings: pino.Bindings) {
-        const updatedBindings = {
-          ...bindings,
-          trace_id: bindings.trace_id // Use trace_id if available
-            || bindings.correlationid || bindings.c // Use correlationid if available
-            || runId // Use runId if available - used in case of jobs and utilities
-            || undefined, // Dont set if none of the above are available,
-        };
-        return updatedBindings;
+      formatters: {
+        bindings(bindings: pino.Bindings) {
+          return getBindings(bindings, meta);
+        },
       },
-      ...shouldPrettyPrint ? {} : {
-        level(label) {
+    };
+  } else {
+    loggerOptions = {
+      destination,
+      formatters: {
+        bindings(bindings: pino.Bindings) {
+          return getBindings(bindings, meta);
+        },
+        level(label: string) {
           return { level: label };
         },
       },
-    },
-  });
+    };
+  }
 
+  const logger = pino(loggerOptions);
   return logger;
 }

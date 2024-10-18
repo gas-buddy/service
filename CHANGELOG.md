@@ -187,3 +187,11 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 * Add support for tracing using `runId` through startup options and app.locals
 * Add `runWithService` hook to support writing cronjobs and cli utilities
 * Reorganized middleware relate code
+
+12.23.0
+=======
+
+* Remove support for `runId` used to add trace_id to logs
+* Remove `runWithService` and `useService` hooks
+* Make logger customizable with additional metadata passed in args to apply to log bindings
+* Use single instance of `telemetry` for app startup

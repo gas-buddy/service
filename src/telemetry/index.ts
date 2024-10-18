@@ -23,10 +23,7 @@ function getExporter() {
   return new opentelemetry.tracing.ConsoleSpanExporter();
 }
 
-export async function startWithTelemetry<
-  SLocals extends ServiceLocals = ServiceLocals,
-  RLocals extends RequestLocals = RequestLocals,
->(options: DelayLoadServiceStartOptions) {
+async function startTelemetry(options: DelayLoadServiceStartOptions) {
   const sdk = new opentelemetry.NodeSDK({
     serviceName: options.name,
     autoDetectResources: true,
@@ -47,6 +44,18 @@ export async function startWithTelemetry<
     })],
   });
   await sdk.start();
+  return sdk;
+}
+
+let telemetry: opentelemetry.NodeSDK;
+
+export async function startWithTelemetry<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+>(options: DelayLoadServiceStartOptions) {
+  if (!telemetry) {
+    telemetry = await startTelemetry(options);
+  }
 
   const { startApp, listen } = await import('../express-app/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
@@ -60,7 +69,7 @@ export async function startWithTelemetry<
   app.locals.logger.info('OpenTelemetry enabled');
 
   const server = await listen(app, async () => {
-    await sdk.shutdown();
+    await telemetry.shutdown();
     app.locals.logger.info('OpenTelemetry shut down');
   });
   return { app, server };
