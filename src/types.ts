@@ -143,4 +143,5 @@ export interface RequestLike<
 export type RunWithServiceOptions = {
   name: string;
   overwriteConfig?: (config: ConfigStore) => void;
+  correlationid?: string;
 };

@@ -1,6 +1,5 @@
-import type {
-  Request, Response,
-} from 'express';
+import type { Request, Response } from 'express';
+import { getClientIp } from 'request-ip';
 import { ServiceError } from '../error';
 import type { ServiceExpress, ServiceLocals } from '../types';
 import { LOG_PREFS } from './constants';
@@ -8,10 +7,18 @@ import { LogPrefs } from './types';
 
 export function getBasicInfo(req: Request) {
   const url = req.originalUrl || req.url;
+  const userAgent = req.headers['user-agent'];
+  const ip = getClientIp(req);
+  const referer = typeof req.get === 'function' && req.get('referer') ? req.get('referer') : req.headers.referer;
+  const sessionId = (req as any).session?.id;
 
   const preInfo: Record<string, string> = {
     url,
     m: req.method,
+    ...ip && { ip },
+    ...userAgent && { ua: userAgent },
+    ...referer && { ref: referer },
+    ...sessionId && { sid: sessionId },
   };
 
   return preInfo;
