@@ -24,6 +24,7 @@ export interface ServiceLocals {
   config: ConfigStore;
   meter: metrics.Meter;
   internalApp: Application<InternalLocals>;
+  traceId?: string;
 }
 
 export interface RequestLocals {
@@ -139,9 +140,3 @@ export interface RequestLike<
     locals: RLocals;
   };
 }
-
-export type RunWithServiceOptions = {
-  name: string;
-  overwriteConfig?: (config: ConfigStore) => void;
-  correlationid?: string;
-};
