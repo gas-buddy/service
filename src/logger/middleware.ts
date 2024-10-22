@@ -41,9 +41,14 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
       };
     }
 
+    let referer: string | undefined;
+    if (typeof req.get === 'function' && req.get('referer')) {
+      referer = req.get('referer');
+    }
+
     const preLog: Record<string, any> = {
       ...getBasicInfo(req),
-      ref: req.headers.referer || undefined,
+      ref: referer || undefined,
       sid: (req as any).session?.id,
       c: req.headers.correlationid || undefined,
     };
