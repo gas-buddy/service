@@ -1,5 +1,4 @@
 import { URL } from 'node:url';
-import crypto from 'node:crypto';
 import type { FetchConfig, FetchRequest, RestApiResponse } from 'rest-api-support';
 import EventSource from 'eventsource';
 import { ServiceError, ServiceErrorSpec } from '../error';
@@ -47,20 +46,12 @@ export function createServiceInterface<ServiceType>(
     config?.basePath || ''
   }`;
 
-  // Add tracing support across services using existing traceId or generating a new one
-  const tracingHeaders = {
-    headers: {
-      correlationid: service.locals.traceId || crypto.randomBytes(16).toString('hex'),
-    },
-  };
-
   const fetchConfig: FetchConfig = {
     fetch,
     AbortController,
     EventSource: CustomEventSource,
     FormData,
     baseUrl,
-    ...tracingHeaders,
   };
 
   // In development, it can be useful to route requests through
@@ -82,7 +73,7 @@ export function createServiceInterface<ServiceType>(
       parsedUrl.protocol = proxyUrl.protocol;
       parsedUrl.port = proxyUrl.port || proxyPort;
       // eslint-disable-next-line no-param-reassign
-      params.headers = params.headers || { ...tracingHeaders.headers };
+      params.headers = params.headers || {};
       Object.assign(params.headers, headers);
       // eslint-disable-next-line no-param-reassign
       params.url = parsedUrl.href;
