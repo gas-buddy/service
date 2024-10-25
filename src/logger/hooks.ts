@@ -1,6 +1,7 @@
 import type {
   Request, Response,
 } from 'express';
+import { getClientIp } from 'request-ip';
 import { ServiceError } from '../error';
 import type { ServiceExpress, ServiceLocals } from '../types';
 import { LOG_PREFS } from './constants';
@@ -33,8 +34,12 @@ export function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
   const hrdur = process.hrtime(prefs.start);
 
   const dur = hrdur[0] + hrdur[1] / 1000000000;
+  const ip = getClientIp(req);
+  const ua = req.headers['user-agent'];
   const endLog: Record<string, any> = {
     ...getBasicInfo(req),
+    ...ip && { ip },
+    ...ua && { ua },
     s: (error as any)?.status || res.statusCode || 0,
     dur,
   };
