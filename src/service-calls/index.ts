@@ -1,4 +1,5 @@
 import { URL } from 'node:url';
+import crypto from 'node:crypto';
 import type { FetchConfig, FetchRequest, RestApiResponse } from 'rest-api-support';
 import EventSource from 'eventsource';
 import { ServiceError, ServiceErrorSpec } from '../error';
@@ -63,10 +64,15 @@ export function createServiceInterface<ServiceType>(
     const proxyPort = proxyUrl.protocol === 'https:' ? '8443' : '8000';
 
     fetchConfig.requestInterceptor = (params: FetchRequest) => {
+      /* eslint-disable no-param-reassign */
       const parsedUrl = new URL(params.url);
       const proto = parsedUrl.protocol.replace(/:$/, '');
       const defaultPort = proto === 'https' ? 8443 : 8000;
-      const headers: FetchRequest['headers'] = {};
+      const headers: FetchRequest['headers'] = {
+        correlationid: params.headers?.correlationid
+          || service.locals.traceId
+          || crypto.randomBytes(16).toString('hex'),
+      };
       headers.host = `${proto}.${parsedUrl.hostname}.${port || defaultPort}`;
       headers.source = service.locals.name;
       parsedUrl.hostname = proxyUrl.hostname;
@@ -75,10 +81,22 @@ export function createServiceInterface<ServiceType>(
       // eslint-disable-next-line no-param-reassign
       params.headers = params.headers || {};
       Object.assign(params.headers, headers);
-      // eslint-disable-next-line no-param-reassign
       params.url = parsedUrl.href;
+      /* eslint-enable no-param-reassign */
     };
   }
+
+  fetchConfig.requestInterceptor = (params: FetchRequest) => {
+    /* eslint-disable no-param-reassign */
+    params.headers = params.headers || {};
+    const headers: FetchRequest['headers'] = {
+      correlationid: params.headers?.correlationid
+        || service.locals.traceId
+        || crypto.randomBytes(16).toString('hex'),
+    };
+    Object.assign(params.headers, headers);
+    /* eslint-enable no-param-reassign */
+  };
 
   return new Implementation(fetchConfig);
 }
