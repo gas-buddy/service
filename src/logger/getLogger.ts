@@ -40,6 +40,11 @@ export function getLogger(meta?: Record<string, any>) {
           colorize: true,
         },
       },
+      formatters: {
+        bindings(logInfo: pino.Bindings) {
+          return getBindings(logInfo, meta);
+        },
+      },
       mixin: ensureTracing,
     };
   } else {
