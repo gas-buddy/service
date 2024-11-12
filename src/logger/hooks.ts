@@ -1,6 +1,4 @@
-import type {
-  Request, Response,
-} from 'express';
+import type { Request, Response } from 'express';
 import { getClientIp } from 'request-ip';
 import { ServiceError } from '../error';
 import type { ServiceExpress, ServiceLocals } from '../types';
@@ -9,10 +7,13 @@ import { LogPrefs } from './types';
 
 export function getBasicInfo(req: Request) {
   const url = req.originalUrl || req.url;
-
+  const ip = getClientIp(req);
+  const ua = req.headers['user-agent'];
   const preInfo: Record<string, string> = {
     url,
     m: req.method,
+    ...ip && { ip },
+    ...ua && { ua },
   };
 
   return preInfo;

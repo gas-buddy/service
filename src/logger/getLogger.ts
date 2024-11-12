@@ -1,11 +1,20 @@
 import pino from 'pino';
 import { isDev } from '../env';
+import { currentTelemetryInfo } from '../telemetry';
 
-export type BaseLoggerOptions = {
-  shouldPrettyPrint?: boolean;
-  destination: pino.DestinationStream,
-  meta?: Record<string, any>;
-};
+function ensureTracing(logInfo: object) {
+  if (!('trace_id' in logInfo)) {
+    const currentSpan = currentTelemetryInfo();
+    if (currentSpan) {
+      Object.assign(logInfo, {
+        trace_id: currentSpan.traceId,
+        span_id: currentSpan.spanId,
+        trace_flags: currentSpan.traceFlags,
+      });
+    }
+  }
+  return logInfo;
+}
 
 function getBindings(bindings: pino.Bindings, meta?: Record<string, any>) {
   const updatedBindings = {
@@ -26,32 +35,26 @@ export function getLogger(meta?: Record<string, any>) {
   if (shouldPrettyPrint) {
     loggerOptions = {
       transport: {
-        destination,
         target: 'pino-pretty',
         options: {
           colorize: true,
         },
       },
-      formatters: {
-        bindings(bindings: pino.Bindings) {
-          return getBindings(bindings, meta);
-        },
-      },
+      mixin: ensureTracing,
     };
   } else {
     loggerOptions = {
-      destination,
       formatters: {
-        bindings(bindings: pino.Bindings) {
-          return getBindings(bindings, meta);
+        bindings(logInfo: pino.Bindings) {
+          return getBindings(logInfo, meta);
         },
         level(label: string) {
           return { level: label };
         },
       },
+      mixin: ensureTracing,
     };
   }
 
-  const logger = pino(loggerOptions);
-  return logger;
+  return pino(loggerOptions, destination);
 }
