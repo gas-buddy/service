@@ -44,7 +44,7 @@ async function startTelemetry(options: DelayLoadServiceStartOptions) {
           // This particular line is "GasBuddy" specific, in that we have a number
           // of services not yet on OpenTelemetry that look for this header instead.
           // Putting traceId gives us a "shot in heck" of useful searches.
-          if (!/^c:/m.test(request.headers)) {
+          if (!/^correlationid:/m.test(request.headers)) {
             const ctx = span.spanContext();
             // eslint-disable-next-line no-param-reassign
             additionalHeaders.correlationid = ctx.traceId;
