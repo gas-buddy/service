@@ -1,4 +1,11 @@
-import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+import {
+  diag,
+  DiagConsoleLogger,
+  DiagLogLevel,
+  trace,
+  context,
+  SpanContext,
+} from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import * as opentelemetry from '@opentelemetry/sdk-node';
 
@@ -12,7 +19,10 @@ import type {
 } from '../types';
 
 // For troubleshooting, set the log level to DiagLogLevel.DEBUG
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
+diag.setLogger(new DiagConsoleLogger(), {
+  suppressOverrideMessage: true,
+  logLevel: DiagLogLevel.INFO,
+});
 
 function getExporter() {
   if (['production', 'staging'].includes(process.env.APP_ENV || process.env.NODE_ENV || '')) {
@@ -36,7 +46,9 @@ async function startTelemetry(options: DelayLoadServiceStartOptions) {
           // Putting traceId gives us a "shot in heck" of useful searches.
           if (!/^correlationid:/m.test(request.headers)) {
             const ctx = span.spanContext();
+            // eslint-disable-next-line no-param-reassign
             additionalHeaders.correlationid = ctx.traceId;
+            // eslint-disable-next-line no-param-reassign
             additionalHeaders.span = ctx.spanId;
           }
         },
@@ -73,4 +85,9 @@ export async function startWithTelemetry<
     app.locals.logger.info('OpenTelemetry shut down');
   });
   return { app, server };
+}
+
+export function currentTelemetryInfo(): SpanContext | undefined {
+  const currentSpan = trace.getSpan(context.active());
+  return currentSpan?.spanContext();
 }

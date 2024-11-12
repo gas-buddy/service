@@ -195,3 +195,10 @@ to ameliorate as best as possible given the ubiquity of service calls. See [MIGR
 * Remove `runWithService` and `useService` hooks
 * Make logger customizable with additional metadata passed in args to apply to log bindings
 * Use single instance of `telemetry` for app startup
+
+12.24.0
+=======
+
+* Add currentTelemetryInfo helper for callers to use current telemetry info with regards to traceId, span and traceFlags
+* Update logger to ensure tracing info is injected using telemetry info if available
+* Ensure outgoing service calls use a default request interceptor to pass on correlationid in headers

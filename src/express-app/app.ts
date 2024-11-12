@@ -4,7 +4,7 @@ import http from 'http';
 import path from 'path';
 import { pino } from 'pino';
 import cookieParser from 'cookie-parser';
-import { MeterProvider } from '@opentelemetry/sdk-metrics';
+import { MeterProvider, MetricReader } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api-metrics';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { createTerminus } from '@godaddy/terminus';
@@ -41,7 +41,9 @@ async function enableMetrics<SLocals extends ServiceLocals = ServiceLocals>(
 ) {
   const meterProvider = new MeterProvider();
   metrics.setGlobalMeterProvider(meterProvider);
-  app.locals.meter = meterProvider.getMeter(name);
+  Object.assign(app.locals, {
+    meter: meterProvider.getMeter(name),
+  });
 
   const metricsConfig = app.locals.config.get('server:metrics');
   const value: InternalMetricsInfo = { meterProvider };
@@ -56,7 +58,7 @@ async function enableMetrics<SLocals extends ServiceLocals = ServiceLocals>(
     // this up front and then just tie it to the internal express
     // app if and when "listen" is called.
     const exporter = new PrometheusExporter(finalConfig);
-    meterProvider.addMetricReader(exporter);
+    meterProvider.addMetricReader(exporter as unknown as MetricReader);
     value.exporter = exporter;
   } else {
     app.locals.logger.info('No metrics will be exported');
@@ -159,6 +161,7 @@ export async function startApp<
     } catch (error) {
       next(error);
     }
+    // @ts-ignore
     if (maybePromise) {
       maybePromise.catch(next).then(next);
     } else {
@@ -343,6 +346,7 @@ export async function listen<SLocals extends ServiceLocals = ServiceLocals>(
   });
 
   const metricInfo = (app.locals as any)[METRICS_KEY] as InternalMetricsInfo;
+  // eslint-disable-next-line no-param-reassign
   delete (app.locals as any)[METRICS_KEY];
 
   // TODO handle rejection/error?
@@ -357,6 +361,7 @@ export async function listen<SLocals extends ServiceLocals = ServiceLocals>(
         startInternalApp(app, serverConfig.internalPort)
           .then((internalApp) => {
             locals.internalApp = internalApp;
+            // eslint-disable-next-line no-param-reassign
             internalApp.locals.meterProvider = metricInfo.meterProvider;
             locals.logger.info(
               { port: serverConfig.internalPort },

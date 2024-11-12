@@ -45,7 +45,7 @@ function serviceTypeFactory(name: string) {
   return function serviceType(v: string) {
     let checkValue = v;
     let matchIsGood = true;
-    if (checkValue[0] === '!') {
+    if (checkValue.startsWith('!')) {
       matchIsGood = false;
       checkValue = checkValue.substring(1);
     }
@@ -100,7 +100,7 @@ export default function shortstops(
     env,
     // A version of env that can default to false
     env_switch(v: string) {
-      if (v && v[0] === '!') {
+      if (v && v.startsWith('!')) {
         const bval = env(`${v.substring(1)}|b`);
         return !bval;
       }
