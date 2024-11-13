@@ -10,6 +10,7 @@ import type {
   ServiceLocals,
 } from '../types';
 import type { ServiceConfiguration } from '../config/schema';
+import { currentTelemetryInfo } from '../telemetry';
 
 class CustomEventSource extends EventSource {
   private activeListeners: Array<{ handler: (data: any) => void; name: string }> = [];
@@ -70,6 +71,7 @@ export function createServiceInterface<ServiceType>(
       const defaultPort = proto === 'https' ? 8443 : 8000;
       const headers: FetchRequest['headers'] = {
         correlationid: params.headers?.correlationid
+          || currentTelemetryInfo()?.traceId
           || service.locals.traceId
           || crypto.randomBytes(16).toString('hex'),
       };
@@ -91,6 +93,7 @@ export function createServiceInterface<ServiceType>(
     params.headers = params.headers || {};
     const headers: FetchRequest['headers'] = {
       correlationid: params.headers?.correlationid
+        || currentTelemetryInfo()?.traceId
         || service.locals.traceId
         || crypto.randomBytes(16).toString('hex'),
     };
