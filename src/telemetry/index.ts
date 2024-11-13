@@ -6,8 +6,17 @@ import {
   context,
   SpanContext,
 } from '@opentelemetry/api';
+import {
+  Detector,
+  DetectorSync,
+  IResource,
+  ResourceDetectionConfig,
+  envDetectorSync,
+  hostDetectorSync,
+  processDetectorSync,
+} from '@opentelemetry/resources';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
-import * as opentelemetry from '@opentelemetry/sdk-node';
+import * as OpenTelemetry from '@opentelemetry/sdk-node';
 
 import { getAutoInstrumentations } from './instrumentations';
 
@@ -18,9 +27,20 @@ import type {
   ServiceStartOptions,
 } from '../types';
 
-// For troubleshooting, set the log level to DiagLogLevel.DEBUG
+function awaitAttributes(detector: DetectorSync): Detector {
+  return {
+    async detect(config?: ResourceDetectionConfig): Promise<IResource> {
+      const resource = detector.detect(config);
+      await resource.waitForAsyncAttributes?.();
+
+      return resource;
+    },
+  };
+}
+
 diag.setLogger(new DiagConsoleLogger(), {
   suppressOverrideMessage: true,
+  // For troubleshooting, set the log level to DiagLogLevel.DEBUG
   logLevel: DiagLogLevel.INFO,
 });
 
@@ -30,13 +50,20 @@ function getExporter() {
       url: process.env.OTLP_EXPORTER || 'http://otlp-exporter:4318/v1/traces',
     });
   }
-  return new opentelemetry.tracing.ConsoleSpanExporter();
+  return new OpenTelemetry.tracing.ConsoleSpanExporter();
 }
 
-async function startTelemetry(options: DelayLoadServiceStartOptions) {
-  const sdk = new opentelemetry.NodeSDK({
+export async function startWithTelemetry<
+  SLocals extends ServiceLocals = ServiceLocals,
+  RLocals extends RequestLocals = RequestLocals,
+>(options: DelayLoadServiceStartOptions) {
+  const telemetry = new OpenTelemetry.NodeSDK({
     serviceName: options.name,
-    autoDetectResources: true,
+    resourceDetectors: [
+      awaitAttributes(envDetectorSync),
+      awaitAttributes(processDetectorSync),
+      awaitAttributes(hostDetectorSync),
+    ],
     traceExporter: getExporter(),
     instrumentations: [getAutoInstrumentations({
       'opentelemetry-instrumentation-node-18-fetch': {
@@ -55,19 +82,7 @@ async function startTelemetry(options: DelayLoadServiceStartOptions) {
       },
     })],
   });
-  await sdk.start();
-  return sdk;
-}
-
-let telemetry: opentelemetry.NodeSDK;
-
-export async function startWithTelemetry<
-  SLocals extends ServiceLocals = ServiceLocals,
-  RLocals extends RequestLocals = RequestLocals,
->(options: DelayLoadServiceStartOptions) {
-  if (!telemetry) {
-    telemetry = await startTelemetry(options);
-  }
+  await telemetry.start();
 
   const { startApp, listen } = await import('../express-app/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
