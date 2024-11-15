@@ -24,7 +24,6 @@ export interface ServiceLocals {
   config: ConfigStore;
   meter: metrics.Meter;
   internalApp: Application<InternalLocals>;
-  traceId?: string;
 }
 
 export interface RequestLocals {
