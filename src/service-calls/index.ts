@@ -72,7 +72,6 @@ export function createServiceInterface<ServiceType>(
       const headers: FetchRequest['headers'] = {
         correlationid: params.headers?.correlationid
           || currentTelemetryInfo()?.traceId
-          || service.locals.traceId
           || crypto.randomBytes(16).toString('hex'),
       };
       headers.host = `${proto}.${parsedUrl.hostname}.${port || defaultPort}`;
@@ -94,7 +93,6 @@ export function createServiceInterface<ServiceType>(
     const headers: FetchRequest['headers'] = {
       correlationid: params.headers?.correlationid
         || currentTelemetryInfo()?.traceId
-        || service.locals.traceId
         || crypto.randomBytes(16).toString('hex'),
     };
     Object.assign(params.headers, headers);
