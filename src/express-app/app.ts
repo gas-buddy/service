@@ -195,7 +195,7 @@ export async function startApp<
   }
 
   if (serviceImpl.authorize) {
-    const authorize: RequestHandler = (req, res, next) => {
+    const authorize = (): RequestHandler => (req, res, next) => {
       let maybePromise: Promise<boolean> | boolean | undefined;
       try {
         maybePromise = serviceImpl.authorize?.(
