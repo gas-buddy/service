@@ -3,7 +3,6 @@ import type { ServiceExpress, ServiceLocals } from '../types';
 import { LogPrefs } from './types';
 import { LOG_PREFS } from './constants';
 import { finishLog, getBasicInfo } from './hooks';
-import { currentTelemetryInfo } from '../telemetry';
 
 export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
   app: ServiceExpress<SLocals>,
@@ -46,7 +45,6 @@ export function loggerMiddleware<SLocals extends ServiceLocals = ServiceLocals>(
       ...getBasicInfo(req),
       ref: req.headers.referer || undefined,
       sid: (req as any).session?.id,
-      c: req.headers.correlationid || currentTelemetryInfo()?.traceId || undefined,
     };
     service.getLogFields?.(req as any, preLog);
     logger.info(preLog, 'pre');
