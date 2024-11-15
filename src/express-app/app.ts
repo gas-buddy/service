@@ -150,7 +150,7 @@ export async function startApp<
 
   // Allow the service to add locals, etc. We put this before the body parsers
   // so that the req can decide whether to save the raw request body or not.
-  const attachServiceLocals: RequestHandler = (req, res, next) => {
+  const attachServiceLocals = (): RequestHandler => (req, res, next) => {
     res.locals.logger = logger;
     let maybePromise: Promise<void> | void;
     try {
