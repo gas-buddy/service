@@ -4,16 +4,22 @@ import { ServiceError } from '../error';
 import type { ServiceExpress, ServiceLocals } from '../types';
 import { LOG_PREFS } from './constants';
 import { LogPrefs } from './types';
+import { currentTelemetryInfo } from '../telemetry';
 
 export function getBasicInfo(req: Request) {
   const url = req.originalUrl || req.url;
   const ip = getClientIp(req);
   const ua = req.headers['user-agent'];
+  const correlationid = req.headers.correlationid
+    || currentTelemetryInfo()?.traceId
+    || req.app?.locals?.traceId
+    || undefined;
   const preInfo: Record<string, string> = {
     url,
     m: req.method,
     ...ip && { ip },
     ...ua && { ua },
+    ...correlationid && { c: correlationid },
   };
 
   return preInfo;
