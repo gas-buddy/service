@@ -75,6 +75,7 @@ export interface Service<
   // Add or redact any fields for logging. Note this will be called twice per request,
   // once at the start and once at the end. Modify the values directly.
   getLogFields?(req: RequestWithApp<SLocals>, values: Record<string, string | number>): void;
+  redactLog?: (log: Record<string, any>) => void;
 }
 
 export type ServiceFactory<

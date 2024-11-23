@@ -80,5 +80,7 @@ export function finishLog<SLocals extends ServiceLocals = ServiceLocals>(
   }
 
   service.getLogFields?.(req as any, endLog);
+  // If service entrypoint has redactLog function, call it to clean log object
+  service.redactLog?.(endLog);
   logger.info(endLog, 'req');
 }
