@@ -7,16 +7,14 @@ import {
   SpanContext,
 } from '@opentelemetry/api';
 import {
-  Detector,
-  DetectorSync,
-  IResource,
-  ResourceDetectionConfig,
+  detectResourcesSync,
   envDetectorSync,
   hostDetectorSync,
   processDetectorSync,
+  Resource,
 } from '@opentelemetry/resources';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
-import * as OpenTelemetry from '@opentelemetry/sdk-node';
+import * as opentelemetry from '@opentelemetry/sdk-node';
 
 import { getAutoInstrumentations } from './instrumentations';
 
@@ -27,20 +25,20 @@ import type {
   ServiceStartOptions,
 } from '../types';
 
-function awaitAttributes(detector: DetectorSync): Detector {
-  return {
-    async detect(config?: ResourceDetectionConfig): Promise<IResource> {
-      const resource = detector.detect(config);
-      await resource.waitForAsyncAttributes?.();
-
-      return resource;
-    },
-  };
+async function getTelemetryResources(): Promise<Resource> {
+  const attributes = detectResourcesSync({
+    detectors: [
+      envDetectorSync,
+      hostDetectorSync,
+      processDetectorSync,
+    ],
+  });
+  return attributes;
 }
 
+// For troubleshooting, set the log level to DiagLogLevel.DEBUG
 diag.setLogger(new DiagConsoleLogger(), {
   suppressOverrideMessage: true,
-  // For troubleshooting, set the log level to DiagLogLevel.DEBUG
   logLevel: DiagLogLevel.INFO,
 });
 
@@ -50,39 +48,44 @@ function getExporter() {
       url: process.env.OTLP_EXPORTER || 'http://otlp-exporter:4318/v1/traces',
     });
   }
-  return new OpenTelemetry.tracing.ConsoleSpanExporter();
+  return new opentelemetry.tracing.ConsoleSpanExporter();
+}
+
+let telemetry: opentelemetry.NodeSDK | undefined;
+
+async function startTelemetry(serviceName: string) {
+  if (!telemetry) {
+    telemetry = new opentelemetry.NodeSDK({
+      serviceName,
+      autoDetectResources: false,
+      resource: await getTelemetryResources(),
+      traceExporter: getExporter(),
+      instrumentations: [getAutoInstrumentations({
+        'opentelemetry-instrumentation-node-18-fetch': {
+          onRequest({ request, span, additionalHeaders }) {
+            // This particular line is "GasBuddy" specific, in that we have a number
+            // of services not yet on OpenTelemetry that look for this header instead.
+            // Putting traceId gives us a "shot in heck" of useful searches.
+            if (!/^correlationid:/m.test(request.headers)) {
+              const ctx = span.spanContext();
+              // eslint-disable-next-line no-param-reassign
+              additionalHeaders.correlationid = ctx.traceId;
+              // eslint-disable-next-line no-param-reassign
+              additionalHeaders.span = ctx.spanId;
+            }
+          },
+        },
+      })],
+    });
+    await telemetry.start();
+  }
 }
 
 export async function startWithTelemetry<
   SLocals extends ServiceLocals = ServiceLocals,
   RLocals extends RequestLocals = RequestLocals,
 >(options: DelayLoadServiceStartOptions) {
-  const telemetry = new OpenTelemetry.NodeSDK({
-    serviceName: options.name,
-    resourceDetectors: [
-      awaitAttributes(envDetectorSync),
-      awaitAttributes(processDetectorSync),
-      awaitAttributes(hostDetectorSync),
-    ],
-    traceExporter: getExporter(),
-    instrumentations: [getAutoInstrumentations({
-      'opentelemetry-instrumentation-node-18-fetch': {
-        onRequest({ request, span, additionalHeaders }) {
-          // This particular line is "GasBuddy" specific, in that we have a number
-          // of services not yet on OpenTelemetry that look for this header instead.
-          // Putting traceId gives us a "shot in heck" of useful searches.
-          if (!/^correlationid:/m.test(request.headers)) {
-            const ctx = span.spanContext();
-            // eslint-disable-next-line no-param-reassign
-            additionalHeaders.correlationid = ctx.traceId;
-            // eslint-disable-next-line no-param-reassign
-            additionalHeaders.span = ctx.spanId;
-          }
-        },
-      },
-    })],
-  });
-  await telemetry.start();
+  await startTelemetry(options.name);
 
   const { startApp, listen } = await import('../express-app/app.js');
   // eslint-disable-next-line import/no-dynamic-require, global-require
@@ -96,7 +99,7 @@ export async function startWithTelemetry<
   app.locals.logger.info('OpenTelemetry enabled');
 
   const server = await listen(app, async () => {
-    await telemetry.shutdown();
+    await telemetry?.shutdown();
     app.locals.logger.info('OpenTelemetry shut down');
   });
   return { app, server };
